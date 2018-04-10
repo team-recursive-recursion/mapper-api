@@ -24,9 +24,17 @@ namespace Mapper_Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials() );
+            });
+
             services.AddMvc();
             services.AddScoped<GolfCourseService>();
-            
             var connectionString = Configuration.GetConnectionString("MapperContext");
             services.AddEntityFrameworkNpgsql().AddDbContext<CourseDb>(options => options.UseNpgsql(connectionString)); 
             
@@ -43,9 +51,10 @@ namespace Mapper_Api
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
+//            app.UseCors(builder =>
+//                builder.WithOrigins("http://localhost:5000"));
+            app.UseCors("CorsPolicy"); 
             app.UseStaticFiles();
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
