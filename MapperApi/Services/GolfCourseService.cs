@@ -1,10 +1,10 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
- using GeoJSON.Net.Contrib.Wkb;
- using Mapper_Api.Context;
+using GeoJSON.Net.Contrib.Wkb;
+using Mapper_Api.Context;
 using Mapper_Api.Models;
 using Newtonsoft.Json;
 using SQLitePCL;
@@ -47,27 +47,36 @@ namespace Mapper_Api.Services
         public async Task<CoursePolygon> CreatePolygon(Guid courseId, CoursePolygon.PolygonTypes polygonType,
             string geoJSONString)
         {
-            GeoJSON.Net.Geometry.Polygon polygon =
-                JsonConvert.DeserializeObject<GeoJSON.Net.Geometry.Polygon>(geoJSONString);
-            var coursePolygon = new CoursePolygon
+            try
             {
-                PolygonRaw = polygon.ToWkb(),
-                CourseId = courseId,
-                PolygonId = Guid.NewGuid(),
-                Type = polygonType
-            };
-            ValidationContext validationContext = new ValidationContext(coursePolygon);
-            var results = new List<ValidationResult>();
-            if (!Validator.TryValidateObject(coursePolygon, validationContext, results, true))
-            {
-                throw new ArgumentException(results.First().ErrorMessage, results.First().MemberNames.FirstOrDefault());
+                GeoJSON.Net.Geometry.Polygon polygon =
+                    JsonConvert.DeserializeObject<GeoJSON.Net.Geometry.Polygon>(geoJSONString);
+
+                var coursePolygon = new CoursePolygon
+                {
+                    PolygonRaw = polygon.ToWkb(),
+                    CourseId = courseId,
+                    PolygonId = Guid.NewGuid(),
+                    Type = polygonType
+                };
+                ValidationContext validationContext = new ValidationContext(coursePolygon);
+                var results = new List<ValidationResult>();
+                if (!Validator.TryValidateObject(coursePolygon, validationContext, results, true))
+                {
+                    throw new ArgumentException(results.First().ErrorMessage,
+                        results.First().MemberNames.FirstOrDefault());
+                }
+
+                db.CoursePolygons.Add(coursePolygon);
+
+                await db.SaveChangesAsync();
+
+                return coursePolygon;
             }
-
-            db.CoursePolygons.Add(coursePolygon);
-
-            await db.SaveChangesAsync();
-
-            return coursePolygon;
+            catch (JsonSerializationException e)
+            {
+                throw new ArgumentException(e.Message);
+            }
         }
 
         public async Task<Point> CreatePoint(Guid creatorId, Guid courseId, Point.PointTypes pointType)

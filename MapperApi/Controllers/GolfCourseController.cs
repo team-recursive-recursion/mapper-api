@@ -32,8 +32,15 @@ namespace Mapper_Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddPolygon(string geoJson, CoursePolygon.PolygonTypes type, Guid courseId)
         {
-            var coursePoly = await service.CreatePolygon(courseId, type, geoJson);
-            return Ok(coursePoly);
+            try
+            {
+                var coursePoly = await service.CreatePolygon(courseId, type, geoJson);
+                return Ok(coursePoly);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpGet]
@@ -50,8 +57,9 @@ namespace Mapper_Api.Controllers
             {
                 return BadRequest("Requires course Id");
             }
+
             var polyList = Queryable.Where(service.GetGolfPolygons(), p => p.CourseId == courseId);
-            
+
             return Ok(await polyList.ToListAsync());
         }
     }
