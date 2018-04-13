@@ -77,6 +77,10 @@ namespace Mapper_Api.Services
             {
                 throw new ArgumentException(e.Message);
             }
+            catch (NullReferenceException e)
+            {
+                throw new ArgumentException("Required argument not set");
+            }
         }
 
         public async Task<Point> CreatePoint(Guid creatorId, Guid courseId, Point.PointTypes pointType)

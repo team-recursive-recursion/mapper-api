@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mapper Api", "Mapper Api.csproj", "{A43B276B-7ADF-4787-B51C-45F43031AA7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSuite", "..\Test\TestSuite\TestSuite.csproj", "{D27C055A-36D1-4F2B-8FAD-C35229319387}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A43B276B-7ADF-4787-B51C-45F43031AA7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A43B276B-7ADF-4787-B51C-45F43031AA7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A43B276B-7ADF-4787-B51C-45F43031AA7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A43B276B-7ADF-4787-B51C-45F43031AA7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D27C055A-36D1-4F2B-8FAD-C35229319387}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D27C055A-36D1-4F2B-8FAD-C35229319387}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D27C055A-36D1-4F2B-8FAD-C35229319387}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D27C055A-36D1-4F2B-8FAD-C35229319387}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
