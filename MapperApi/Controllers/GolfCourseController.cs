@@ -1,32 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GeoJSON.Net.Contrib.Wkb;
-using GeoJSON.Net.Geometry;
-using Mapper_Api.Context;
 using Mapper_Api.Models;
 using Mapper_Api.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mapper_Api.Controllers
 {
     public class GolfCourseController : Controller
     {
-        private readonly GolfCourseService service;
+        private readonly GolfCourseService _service;
 
         public GolfCourseController(GolfCourseService service)
         {
-            this.service = service;
+            _service = service;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateCourse(string courseName)
         {
-            var golfCourse = await service.CreateGolfCourse(courseName);
+            var golfCourse = await _service.CreateGolfCourse(courseName);
             return Ok(golfCourse);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCourseName(Guid courseId, string courseName)
+        {
+            try
+            {
+                var golfCourse = await _service.UpdateGolfCourse(courseId, courseName);
+                return Ok(golfCourse);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest("Invalid parameters");
+            }
         }
 
         [HttpPost]
@@ -34,7 +48,7 @@ namespace Mapper_Api.Controllers
         {
             try
             {
-                var coursePoly = await service.CreatePolygon(courseId, type, geoJson);
+                var coursePoly = await _service.CreatePolygon(courseId, null, type, geoJson);
                 return Ok(coursePoly);
             }
             catch (ArgumentException e)
@@ -46,7 +60,7 @@ namespace Mapper_Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCourses()
         {
-            var golfCourses = service.GetGolfCourses();
+            var golfCourses = _service.GetGolfCourses();
             return Ok(await golfCourses.ToListAsync());
         }
 
@@ -58,9 +72,25 @@ namespace Mapper_Api.Controllers
                 return BadRequest("Requires course Id");
             }
 
-            var polyList = Queryable.Where(service.GetGolfPolygons(), p => p.CourseId == courseId);
-
+            var polyList = Queryable.SelectMany(Queryable.Where(_service.GetGolfCourses(),
+                    p => p.CourseId == courseId),
+                (GolfCourse u) => u.CoursePolygons);
             return Ok(await polyList.ToListAsync());
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePolygon(Guid polygonId, CoursePolygon.PolygonTypes? type,
+            String geoJson)
+        {
+            try
+            {
+                return Ok(await _service.UpdatePolygon(polygonId, geoJson, type));
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }

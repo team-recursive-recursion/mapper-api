@@ -6,7 +6,7 @@ using GeoJSON.Net.Geometry;
 
 namespace Mapper_Api.Models
 {
-    public class CoursePolygon
+    public class CoursePolygon : CourseElement
     {
         public enum PolygonTypes
         {
@@ -14,18 +14,17 @@ namespace Mapper_Api.Models
             GREEN = 1,
             FAIRWAY = 2,
             BUNKER = 3,
-            WATERHAZARD = 4,
+            WATERHAZARD = 4
         }
 
-        [Key] public Guid PolygonId { get; set; }
-        [Required] public Guid CourseId { get; set; }
         [Required] public PolygonTypes Type { get; set; }
         [Required] public byte[] PolygonRaw { get; set; }
         [Required] public DateTime CreatedAt { get; set; }
         [Required] public DateTime UpdatedAt { get; set; }
 
+        [ForeignKey("CourseId")] public GolfCourse GolfCourse { get; set; }
+
         [NotMapped]
-        [Required]
         public Polygon Polygon
         {
             get => PolygonRaw.ToGeoJSONObject<Polygon>();

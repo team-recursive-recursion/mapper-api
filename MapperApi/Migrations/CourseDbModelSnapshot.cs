@@ -23,14 +23,18 @@ namespace MapperApi.Migrations
 
             modelBuilder.Entity("Mapper_Api.Models.CoursePolygon", b =>
                 {
-                    b.Property<Guid>("PolygonId")
+                    b.Property<Guid>("CourseElementID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CourseId");
+                    b.Property<Guid?>("CourseId");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("GolfCourseID");
+
+                    b.Property<Guid?>("HoleID");
 
                     b.Property<byte[]>("PolygonRaw")
                         .IsRequired();
@@ -41,7 +45,9 @@ namespace MapperApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("now()");
 
-                    b.HasKey("PolygonId");
+                    b.HasKey("CourseElementID");
+
+                    b.HasIndex("CourseId");
 
                     b.ToTable("CoursePolygons");
                 });
@@ -65,6 +71,13 @@ namespace MapperApi.Migrations
                     b.HasKey("CourseId");
 
                     b.ToTable("GolfCourses");
+                });
+
+            modelBuilder.Entity("Mapper_Api.Models.CoursePolygon", b =>
+                {
+                    b.HasOne("Mapper_Api.Models.GolfCourse", "GolfCourse")
+                        .WithMany("CoursePolygons")
+                        .HasForeignKey("CourseId");
                 });
 #pragma warning restore 612, 618
         }
