@@ -51,8 +51,6 @@ namespace Mapper_Api
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-//            app.UseCors(builder =>
-//                builder.WithOrigins("http://localhost:5000"));
             app.UseCors("CorsPolicy"); 
             app.UseStaticFiles();
             app.UseMvc(routes =>

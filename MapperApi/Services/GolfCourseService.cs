@@ -13,13 +13,16 @@ namespace Mapper_Api.Services
 {
     public class GolfCourseService
     {
-        private CourseDb db;
+        private CourseDb _db;
 
         public GolfCourseService(CourseDb courseDb)
         {
-            this.db = courseDb;
+            _db = courseDb;
         }
 
+/***
+ * Course ------ CRUD ------
+ */
         public async Task<GolfCourse> CreateGolfCourse(string courseName)
         {
             GolfCourse course = new GolfCourse
@@ -37,14 +40,19 @@ namespace Mapper_Api.Services
                 throw new ArgumentException(results.First().ErrorMessage, results.First().MemberNames.FirstOrDefault());
             }
 
-            db.GolfCourses.Add(course);
-            await db.SaveChangesAsync();
+            _db.GolfCourses.Add(course);
+            await _db.SaveChangesAsync();
             return course;
+        }
+
+        public IQueryable<GolfCourse> GetGolfCourses()
+        {
+            return _db.GolfCourses;
         }
 
         public async Task<GolfCourse> UpdateGolfCourse(Guid courseId, string courseName)
         {
-            GolfCourse course = db.GolfCourses.Where(p => p.CourseId == courseId).DefaultIfEmpty(null).First();
+            GolfCourse course = _db.GolfCourses.Where(p => p.CourseId == courseId).DefaultIfEmpty(null).First();
             if (course == null)
             {
                 throw new ArgumentException("Not a valid course id");
@@ -59,19 +67,47 @@ namespace Mapper_Api.Services
                     results.First().MemberNames.FirstOrDefault());
             }
 
-            db.GolfCourses.Update(course);
-            await db.SaveChangesAsync();
+            _db.GolfCourses.Update(course);
+            await _db.SaveChangesAsync();
             return course;
         }
 
+        public async Task<GolfCourse> RemoveGolfCourse(Guid courseId)
+        {
+            GolfCourse course = _db.GolfCourses.Where(p => p.CourseId == courseId).DefaultIfEmpty(null).First();
+            if (course == null)
+            {
+                throw new ArgumentException("Not a valid course id");
+            }
+
+            ValidationContext validationContext = new ValidationContext(course);
+            var results = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(course, validationContext, results, true))
+            {
+                throw new ArgumentException(results.First().ErrorMessage,
+                    results.First().MemberNames.FirstOrDefault());
+            }
+
+            _db.GolfCourses.Remove(course);
+            await _db.SaveChangesAsync();
+            return course;
+        }
+/***
+ * Course ------ CRUD ------
+ */
+
+
+/***
+ * Polygon ------ CRUD ------
+ */
         public async Task<CoursePolygon> CreatePolygon(Guid courseId, Guid? holeId,
             CoursePolygon.PolygonTypes polygonType,
-            string geoJSONString)
+            string geoJsonString)
         {
             try
             {
                 GeoJSON.Net.Geometry.Polygon polygon =
-                    JsonConvert.DeserializeObject<GeoJSON.Net.Geometry.Polygon>(geoJSONString);
+                    JsonConvert.DeserializeObject<GeoJSON.Net.Geometry.Polygon>(geoJsonString);
 
                 var coursePolygon = new CoursePolygon
                 {
@@ -90,9 +126,9 @@ namespace Mapper_Api.Services
                         results.First().MemberNames.FirstOrDefault());
                 }
 
-                db.CoursePolygons.Update(coursePolygon);
+                _db.CoursePolygons.Add(coursePolygon);
 
-                await db.SaveChangesAsync();
+                await _db.SaveChangesAsync();
                 return coursePolygon;
             }
             catch (JsonSerializationException e)
@@ -106,13 +142,12 @@ namespace Mapper_Api.Services
             }
         }
 
-        public async Task<Point> CreatePoint(Guid creatorId, Guid courseId, Point.PointTypes pointType)
+        public IQueryable<CoursePolygon> GetGolfPolygons()
         {
-            throw new NotImplementedException("Create Point");
+            return _db.CoursePolygons;
         }
 
-        public Task<CoursePolygon> UpdatePolygon(Guid polygonID,
-            CoursePolygon.PolygonTypes polygonType)
+        public Task<CoursePolygon> UpdatePolygon(Guid polygonID, CoursePolygon.PolygonTypes polygonType)
         {
             return UpdatePolygon(polygonID, null, polygonType);
         }
@@ -126,7 +161,7 @@ namespace Mapper_Api.Services
             CoursePolygon.PolygonTypes? polygonType)
         {
             CoursePolygon coursePolygon =
-                db.CoursePolygons.Where(polygon => polygon.CourseElementID == polygonID).DefaultIfEmpty(null).First();
+                _db.CoursePolygons.Where(polygon => polygon.CourseElementID == polygonID).DefaultIfEmpty(null).First();
             if (coursePolygon == null)
             {
                 throw new ArgumentException($"Polygon does not exist with id : {polygonID.ToString()}");
@@ -154,8 +189,8 @@ namespace Mapper_Api.Services
                         results.First().MemberNames.FirstOrDefault());
                 }
 
-                db.CoursePolygons.Update(coursePolygon);
-                await db.SaveChangesAsync();
+                _db.CoursePolygons.Update(coursePolygon);
+                await _db.SaveChangesAsync();
                 return coursePolygon;
             }
             catch (JsonSerializationException e)
@@ -168,20 +203,26 @@ namespace Mapper_Api.Services
             }
         }
 
-        public async Task<Point> UpdatePoint(Guid creatorId, Guid courseId, Point.PointTypes pointType)
-        {
-            throw new NotImplementedException("Update Point");
-        }
-
-        public async Task<GolfCourse> RemoveGolfCourse(Guid ownerId, string courseName)
-        {
-            throw new NotImplementedException("Remove Golf Course");
-        }
-
         public async Task<CoursePolygon> RemovePolygon(Guid creatorId, Guid courseId,
             CoursePolygon.PolygonTypes polygonType)
         {
             throw new NotImplementedException("Remove Polygon");
+        }
+/***
+ * Polygon ------ CRUD ------
+ */
+
+/***
+ * Create Point ------ CRUD ------
+ */
+        public async Task<Point> CreatePoint(Guid creatorId, Guid courseId, Point.PointTypes pointType)
+        {
+            throw new NotImplementedException("Create Point");
+        }
+
+        public async Task<Point> UpdatePoint(Guid creatorId, Guid courseId, Point.PointTypes pointType)
+        {
+            throw new NotImplementedException("Update Point");
         }
 
         public async Task<Point> RemovePoint(Guid creatorId, Guid courseId, Point.PointTypes pointType)
@@ -189,14 +230,8 @@ namespace Mapper_Api.Services
             throw new NotImplementedException("Remove Point");
         }
 
-        public IQueryable<GolfCourse> GetGolfCourses()
-        {
-            return db.GolfCourses;
-        }
-
-        public IQueryable<CoursePolygon> GetGolfPolygons()
-        {
-            return db.CoursePolygons;
-        }
+/***
+ * Create Point ------ CRUD ------
+ */
     }
 }
