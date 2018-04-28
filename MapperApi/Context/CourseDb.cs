@@ -31,5 +31,7 @@ namespace Mapper_Api.Context
                 .Property(b => b.UpdatedAt)
                 .HasDefaultValueSql("now()");
         }
+
+        public DbSet<Mapper_Api.Models.Point> Point { get; set; }
     }
 }
