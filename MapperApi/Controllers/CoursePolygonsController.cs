@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
 
 namespace Mapper_Api.Controllers
 {
+    [Produces("application/json")]
+    [Route("api/Polygons")]
     public class CoursePolygonsController : Controller
     {
         private readonly CourseDb _context;
@@ -19,136 +20,108 @@ namespace Mapper_Api.Controllers
             _context = context;
         }
 
-        // GET: CoursePolygons
-        public async Task<IActionResult> Index()
+        // GET: api/Polygons
+        [HttpGet]
+        public IEnumerable<CoursePolygon> GetCoursePolygons()
         {
-            return View(await _context.CoursePolygons.ToListAsync());
+            return _context.CoursePolygons;
         }
 
-        // GET: CoursePolygons/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        // GET: api/Polygons/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCoursePolygon([FromRoute] Guid id)
         {
-            if (id == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            var coursePolygon = await _context.CoursePolygons
-                .SingleOrDefaultAsync(m => m.PolygonId == id);
+            var coursePolygon = await _context.CoursePolygons.SingleOrDefaultAsync(m => m.CourseElementId == id);
+
             if (coursePolygon == null)
             {
                 return NotFound();
             }
 
-            return View(coursePolygon);
+            return Ok(coursePolygon);
         }
 
-        // GET: CoursePolygons/Create
-        public IActionResult Create()
+        // PUT: api/Polygons/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutCoursePolygon([FromRoute] Guid id, [FromBody] CoursePolygon coursePolygon)
         {
-            return View();
-        }
-
-        // POST: CoursePolygons/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PolygonId,CourseId,Type,PolygonRaw,CreatedAt,UpdatedAt")] CoursePolygon coursePolygon)
-        {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                coursePolygon.PolygonId = Guid.NewGuid();
-                _context.Add(coursePolygon);
+                return BadRequest(ModelState);
+            }
+
+            if (id != coursePolygon.CourseElementId)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(coursePolygon).State = EntityState.Modified;
+
+            try
+            {
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
-            return View(coursePolygon);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CoursePolygonExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: CoursePolygons/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var coursePolygon = await _context.CoursePolygons.SingleOrDefaultAsync(m => m.PolygonId == id);
-            if (coursePolygon == null)
-            {
-                return NotFound();
-            }
-            return View(coursePolygon);
-        }
-
-        // POST: CoursePolygons/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: api/Polygons
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("PolygonId,CourseId,Type,PolygonRaw,CreatedAt,UpdatedAt")] CoursePolygon coursePolygon)
+        public async Task<IActionResult> PostCoursePolygon([FromBody] CoursePolygon coursePolygon)
         {
-            if (id != coursePolygon.PolygonId)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                var errors = ModelState.Select(x => x.Value.Errors)
+                    .Where(y=>y.Count>0)
+                    .ToList();
+                return BadRequest(errors);
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(coursePolygon);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CoursePolygonExists(coursePolygon.PolygonId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(coursePolygon);
+            _context.CoursePolygons.Add(coursePolygon);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction("GetCoursePolygon", new {id = coursePolygon.CourseElementId}, coursePolygon);
         }
 
-        // GET: CoursePolygons/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        // DELETE: api/Polygons/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCoursePolygon([FromRoute] Guid id)
         {
-            if (id == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            var coursePolygon = await _context.CoursePolygons
-                .SingleOrDefaultAsync(m => m.PolygonId == id);
+            var coursePolygon = await _context.CoursePolygons.SingleOrDefaultAsync(m => m.CourseElementId == id);
             if (coursePolygon == null)
             {
                 return NotFound();
             }
 
-            return View(coursePolygon);
-        }
-
-        // POST: CoursePolygons/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var coursePolygon = await _context.CoursePolygons.SingleOrDefaultAsync(m => m.PolygonId == id);
             _context.CoursePolygons.Remove(coursePolygon);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return Ok(coursePolygon);
         }
 
         private bool CoursePolygonExists(Guid id)
         {
-            return _context.CoursePolygons.Any(e => e.PolygonId == id);
+            return _context.CoursePolygons.Any(e => e.CourseElementId == id);
         }
     }
 }

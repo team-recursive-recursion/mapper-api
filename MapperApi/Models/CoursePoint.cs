@@ -1,9 +1,12 @@
-﻿﻿using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using GeoJSON.Net.Contrib.Wkb;
+using Newtonsoft.Json;
 
 namespace Mapper_Api.Models
 {
-    public class Point
+    public class Point : CourseElement
     {
         public enum PointTypes
         {
@@ -11,10 +14,16 @@ namespace Mapper_Api.Models
             HOLE = 1,
         }
 
-        [Key] public Guid PolygonId { get; set; }
-        [Required] public Guid CourseId { get; set; }
         [Required] public PointTypes Type { get; set; }
-        [Required] public DateTime CreatedAt;
-        [Required] public DateTime UpdatedAt;
+        [Required] public byte[] PointRaw { get; set; }
+        public DateTime CreatedAt;
+        public DateTime UpdatedAt;
+
+        [NotMapped]
+        public string GeoJson
+        {
+            get => JsonConvert.SerializeObject(PointRaw.ToGeoJSONObject<GeoJSON.Net.Geometry.Point>());
+            set => PointRaw = JsonConvert.DeserializeObject<GeoJSON.Net.Geometry.Point>(value).ToWkb();
+        }
     }
 }

@@ -11,57 +11,57 @@ using Mapper_Api.Models;
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Points")]
-    public class PointsController : Controller
+    [Route("api/Holes")]
+    public class HolesController : Controller
     {
         private readonly CourseDb _context;
 
-        public PointsController(CourseDb context)
+        public HolesController(CourseDb context)
         {
             _context = context;
         }
 
-        // GET: api/Points
+        // GET: api/Holes
         [HttpGet]
-        public IEnumerable<Point> GetPoint()
+        public IEnumerable<Hole> GetHole()
         {
-            return _context.Point;
+            return _context.Hole;
         }
 
-        // GET: api/Points/5
+        // GET: api/Holes/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPoint([FromRoute] Guid id)
+        public async Task<IActionResult> GetHole([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var point = await _context.Point.SingleOrDefaultAsync(m => m.CourseElementId == id);
+            var hole = await _context.Hole.SingleOrDefaultAsync(m => m.HoleID == id);
 
-            if (point == null)
+            if (hole == null)
             {
                 return NotFound();
             }
 
-            return Ok(point);
+            return Ok(hole);
         }
 
-        // PUT: api/Points/5
+        // PUT: api/Holes/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPoint([FromRoute] Guid id, [FromBody] Point point)
+        public async Task<IActionResult> PutHole([FromRoute] Guid id, [FromBody] Hole hole)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != point.CourseElementId)
+            if (id != hole.HoleID)
             {
                 return BadRequest();
             }
 
-            _context.Entry(point).State = EntityState.Modified;
+            _context.Entry(hole).State = EntityState.Modified;
 
             try
             {
@@ -69,7 +69,7 @@ namespace Mapper_Api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PointExists(id))
+                if (!HoleExists(id))
                 {
                     return NotFound();
                 }
@@ -82,45 +82,45 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Points
+        // POST: api/Holes
         [HttpPost]
-        public async Task<IActionResult> PostPoint([FromBody] Point point)
+        public async Task<IActionResult> PostHole([FromBody] Hole hole)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Point.Add(point);
+            _context.Hole.Add(hole);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPoint", new { id = point.CourseElementId }, point);
+            return CreatedAtAction("GetHole", new { id = hole.HoleID }, hole);
         }
 
-        // DELETE: api/Points/5
+        // DELETE: api/Holes/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePoint([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteHole([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var point = await _context.Point.SingleOrDefaultAsync(m => m.CourseElementId == id);
-            if (point == null)
+            var hole = await _context.Hole.SingleOrDefaultAsync(m => m.HoleID == id);
+            if (hole == null)
             {
                 return NotFound();
             }
 
-            _context.Point.Remove(point);
+            _context.Hole.Remove(hole);
             await _context.SaveChangesAsync();
 
-            return Ok(point);
+            return Ok(hole);
         }
 
-        private bool PointExists(Guid id)
+        private bool HoleExists(Guid id)
         {
-            return _context.Point.Any(e => e.CourseElementId == id);
+            return _context.Hole.Any(e => e.HoleID == id);
         }
     }
 }

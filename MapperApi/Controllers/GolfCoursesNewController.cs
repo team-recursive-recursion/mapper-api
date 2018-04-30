@@ -11,57 +11,57 @@ using Mapper_Api.Models;
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Points")]
-    public class PointsController : Controller
+    [Route("api/GolfCoursesNew")]
+    public class GolfCoursesNewController : Controller
     {
         private readonly CourseDb _context;
 
-        public PointsController(CourseDb context)
+        public GolfCoursesNewController(CourseDb context)
         {
             _context = context;
         }
 
-        // GET: api/Points
+        // GET: api/GolfCoursesNew
         [HttpGet]
-        public IEnumerable<Point> GetPoint()
+        public IEnumerable<GolfCourse> GetGolfCourses()
         {
-            return _context.Point;
+            return _context.GolfCourses;
         }
 
-        // GET: api/Points/5
+        // GET: api/GolfCoursesNew/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPoint([FromRoute] Guid id)
+        public async Task<IActionResult> GetGolfCourse([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var point = await _context.Point.SingleOrDefaultAsync(m => m.CourseElementId == id);
+            var golfCourse = await _context.GolfCourses.SingleOrDefaultAsync(m => m.CourseId == id);
 
-            if (point == null)
+            if (golfCourse == null)
             {
                 return NotFound();
             }
 
-            return Ok(point);
+            return Ok(golfCourse);
         }
 
-        // PUT: api/Points/5
+        // PUT: api/GolfCoursesNew/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPoint([FromRoute] Guid id, [FromBody] Point point)
+        public async Task<IActionResult> PutGolfCourse([FromRoute] Guid id, [FromBody] GolfCourse golfCourse)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != point.CourseElementId)
+            if (id != golfCourse.CourseId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(point).State = EntityState.Modified;
+            _context.Entry(golfCourse).State = EntityState.Modified;
 
             try
             {
@@ -69,7 +69,7 @@ namespace Mapper_Api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PointExists(id))
+                if (!GolfCourseExists(id))
                 {
                     return NotFound();
                 }
@@ -82,45 +82,45 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Points
+        // POST: api/GolfCoursesNew
         [HttpPost]
-        public async Task<IActionResult> PostPoint([FromBody] Point point)
+        public async Task<IActionResult> PostGolfCourse([FromBody] GolfCourse golfCourse)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Point.Add(point);
+            _context.GolfCourses.Add(golfCourse);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPoint", new { id = point.CourseElementId }, point);
+            return CreatedAtAction("GetGolfCourse", new { id = golfCourse.CourseId }, golfCourse);
         }
 
-        // DELETE: api/Points/5
+        // DELETE: api/GolfCoursesNew/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePoint([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteGolfCourse([FromRoute] Guid id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var point = await _context.Point.SingleOrDefaultAsync(m => m.CourseElementId == id);
-            if (point == null)
+            var golfCourse = await _context.GolfCourses.SingleOrDefaultAsync(m => m.CourseId == id);
+            if (golfCourse == null)
             {
                 return NotFound();
             }
 
-            _context.Point.Remove(point);
+            _context.GolfCourses.Remove(golfCourse);
             await _context.SaveChangesAsync();
 
-            return Ok(point);
+            return Ok(golfCourse);
         }
 
-        private bool PointExists(Guid id)
+        private bool GolfCourseExists(Guid id)
         {
-            return _context.Point.Any(e => e.CourseElementId == id);
+            return _context.GolfCourses.Any(e => e.CourseId == id);
         }
     }
 }
