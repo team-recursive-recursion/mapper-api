@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Mapper_Api.Models;
 using Xunit;
 
 namespace TestSuite.API.CousreService
@@ -12,14 +13,13 @@ namespace TestSuite.API.CousreService
             //arrange
             string jsonStringValid =
                 "{\"type\": \"Polygon\",\"coordinates\": [[[-64.73, 32.31],[-80.19, 25.76],[-66.09, 18.43],[-64.73, 32.31]]]}";
-            var courseID = Guid.NewGuid();
+            GolfCourse course = await golfCourseService.CreateGolfCourse("testCourse");
             var polygonType = Mapper_Api.Models.CoursePolygon.PolygonTypes.BUNKER;
             //act
-            var golfCourse = await golfCourseService.CreatePolygon(courseID, polygonType, jsonStringValid);
-
+            var polygon = await golfCourseService.CreatePolygon(course.CourseId, null, polygonType, jsonStringValid);
             //assert
-            Assert.Equal(polygonType, golfCourse.Type);
-            Assert.Equal(courseID, golfCourse.CourseId);
+            Assert.Equal(polygonType, polygon.Type);
+            Assert.Equal(course.CourseId, polygon.CourseElementId);
         }
 
         [Theory]
@@ -40,7 +40,7 @@ namespace TestSuite.API.CousreService
             // act
             // assert
             await Assert.ThrowsAsync<ArgumentException>(() =>
-                golfCourseService.CreatePolygon(courseID, (Mapper_Api.Models.CoursePolygon.PolygonTypes) type,
+                golfCourseService.CreatePolygon(courseID, null, (Mapper_Api.Models.CoursePolygon.PolygonTypes) type,
                     polygon));
         }
     }
