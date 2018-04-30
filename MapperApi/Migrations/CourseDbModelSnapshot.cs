@@ -71,6 +71,8 @@ namespace MapperApi.Migrations
                     b.Property<Guid>("HoleID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Name");
+
                     b.HasKey("HoleID");
 
                     b.ToTable("Hole");

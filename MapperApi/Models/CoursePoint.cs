@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using GeoJSON.Net.Contrib.Wkb;
+using Newtonsoft.Json;
 
 namespace Mapper_Api.Models
 {
@@ -19,9 +20,10 @@ namespace Mapper_Api.Models
         public DateTime UpdatedAt;
 
         [NotMapped]
-        public GeoJSON.Net.Geometry.Point JsonPoint
+        public string GeoJson
         {
-            get => PointRaw.ToGeoJSONObject<GeoJSON.Net.Geometry.Point>();
+            get => JsonConvert.SerializeObject(PointRaw.ToGeoJSONObject<GeoJSON.Net.Geometry.Point>());
+            set => PointRaw = JsonConvert.DeserializeObject<GeoJSON.Net.Geometry.Point>(value).ToWkb();
         }
     }
 }

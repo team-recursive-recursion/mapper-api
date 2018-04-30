@@ -113,7 +113,7 @@ namespace Mapper_Api.Services
                 {
                     CourseId = courseId,
                     HoleId = holeId,
-                    PolygonRaw = polygon.ToWkb(),
+                    GeoJson = geoJsonString,
                     Type = polygonType
                 };
 
@@ -171,9 +171,7 @@ namespace Mapper_Api.Services
             {
                 if (geoJSONString != null)
                 {
-                    GeoJSON.Net.Geometry.Polygon polygon =
-                        JsonConvert.DeserializeObject<GeoJSON.Net.Geometry.Polygon>((string) geoJSONString);
-                    coursePolygon.PolygonRaw = polygon.ToWkb();
+                    coursePolygon.GeoJson = geoJSONString;
                 }
 
                 if (polygonType != null)

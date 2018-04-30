@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using GeoJSON.Net.Contrib.Wkb;
 using GeoJSON.Net.Geometry;
+using Newtonsoft.Json;
 
 namespace Mapper_Api.Models
 {
@@ -23,9 +24,10 @@ namespace Mapper_Api.Models
         public DateTime UpdatedAt { get; set; }
 
         [NotMapped]
-        public Polygon Polygon
+        public string GeoJson
         {
-            get => PolygonRaw.ToGeoJSONObject<Polygon>();
+            get => JsonConvert.SerializeObject(PolygonRaw.ToGeoJSONObject<Polygon>());
+            set => PolygonRaw = JsonConvert.DeserializeObject<Polygon>(value).ToWkb();
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Mapper_Api.Context;
@@ -11,7 +10,7 @@ using Mapper_Api.Models;
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/CoursePolygons")]
+    [Route("api/Polygons")]
     public class CoursePolygonsController : Controller
     {
         private readonly CourseDb _context;
@@ -21,14 +20,14 @@ namespace Mapper_Api.Controllers
             _context = context;
         }
 
-        // GET: api/CoursePolygons
+        // GET: api/Polygons
         [HttpGet]
         public IEnumerable<CoursePolygon> GetCoursePolygons()
         {
             return _context.CoursePolygons;
         }
 
-        // GET: api/CoursePolygons/5
+        // GET: api/Polygons/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCoursePolygon([FromRoute] Guid id)
         {
@@ -47,7 +46,7 @@ namespace Mapper_Api.Controllers
             return Ok(coursePolygon);
         }
 
-        // PUT: api/CoursePolygons/5
+        // PUT: api/Polygons/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCoursePolygon([FromRoute] Guid id, [FromBody] CoursePolygon coursePolygon)
         {
@@ -82,22 +81,24 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // POST: api/CoursePolygons
+        // POST: api/Polygons
         [HttpPost]
         public async Task<IActionResult> PostCoursePolygon([FromBody] CoursePolygon coursePolygon)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState.Select(x => x.Value.Errors)
+                    .Where(y=>y.Count>0)
+                    .ToList();
+                return BadRequest(errors);
             }
 
             _context.CoursePolygons.Add(coursePolygon);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCoursePolygon", new { id = coursePolygon.CourseElementId }, coursePolygon);
+            return CreatedAtAction("GetCoursePolygon", new {id = coursePolygon.CourseElementId}, coursePolygon);
         }
 
-        // DELETE: api/CoursePolygons/5
+        // DELETE: api/Polygons/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCoursePolygon([FromRoute] Guid id)
         {
