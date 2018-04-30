@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  mapperapi:
+    image: mapperapi
+    build:
+      context: .
+      dockerfile: Dockerfile
