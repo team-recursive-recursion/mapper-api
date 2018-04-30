@@ -6,7 +6,7 @@ namespace Mapper_Api.Models
     public class Hole
     {
         public Guid HoleID { get; set; }
-        public List<CoursePolygon> CoursePolygons { get; set; }
-        public List<CoursePolygon> CoursePoinrs { get; set; }
+        public string Name { get; set; }
+        public List<CourseElement> CourseElements { get; set; }
     }
 }

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Mapper_Api.Models;
 using Mapper_Api.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mapper_Api.Controllers
@@ -37,7 +36,7 @@ namespace Mapper_Api.Controllers
             {
                 return BadRequest(e.Message);
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
                 return BadRequest("Invalid parameters");
             }
@@ -74,7 +73,7 @@ namespace Mapper_Api.Controllers
 
             var polyList = Queryable.SelectMany(Queryable.Where(_service.GetGolfCourses(),
                     p => p.CourseId == courseId),
-                (GolfCourse u) => u.CoursePolygons);
+                    u => u.CourseElements);
             return Ok(await polyList.ToListAsync());
         }
 

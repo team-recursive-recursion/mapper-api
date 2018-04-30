@@ -19,10 +19,8 @@ namespace Mapper_Api.Models
 
         [Required] public PolygonTypes Type { get; set; }
         [Required] public byte[] PolygonRaw { get; set; }
-        [Required] public DateTime CreatedAt { get; set; }
-        [Required] public DateTime UpdatedAt { get; set; }
-
-        [ForeignKey("CourseId")] public GolfCourse GolfCourse { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         [NotMapped]
         public Polygon Polygon

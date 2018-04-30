@@ -111,8 +111,8 @@ namespace Mapper_Api.Services
 
                 var coursePolygon = new CoursePolygon
                 {
-                    CourseElementID = courseId,
-                    HoleID = holeId,
+                    CourseId = courseId,
+                    HoleId = holeId,
                     PolygonRaw = polygon.ToWkb(),
                     Type = polygonType
                 };
@@ -161,7 +161,7 @@ namespace Mapper_Api.Services
             CoursePolygon.PolygonTypes? polygonType)
         {
             CoursePolygon coursePolygon =
-                _db.CoursePolygons.Where(polygon => polygon.CourseElementID == polygonID).DefaultIfEmpty(null).First();
+                _db.CoursePolygons.Where(polygon => polygon.CourseElementId == polygonID).DefaultIfEmpty(null).First();
             if (coursePolygon == null)
             {
                 throw new ArgumentException($"Polygon does not exist with id : {polygonID.ToString()}");

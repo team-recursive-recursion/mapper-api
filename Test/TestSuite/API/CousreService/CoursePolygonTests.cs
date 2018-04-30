@@ -19,7 +19,7 @@ namespace TestSuite.API.CousreService
             var polygon = await golfCourseService.CreatePolygon(course.CourseId, null, polygonType, jsonStringValid);
             //assert
             Assert.Equal(polygonType, polygon.Type);
-            Assert.Equal(course.CourseId, polygon.CourseElementID);
+            Assert.Equal(course.CourseId, polygon.CourseElementId);
         }
 
         [Theory]

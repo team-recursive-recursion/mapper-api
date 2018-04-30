@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using GeoJSON.Net.Contrib.Wkb;
 
 namespace Mapper_Api.Models
 {
@@ -11,10 +13,15 @@ namespace Mapper_Api.Models
             HOLE = 1,
         }
 
-        [Required] public Guid CourseID { get; set; }
         [Required] public PointTypes Type { get; set; }
-        [Required] public DateTime CreatedAt;
-        [Required] public DateTime UpdatedAt;
-        
+        [Required] public byte[] PointRaw { get; set; }
+        public DateTime CreatedAt;
+        public DateTime UpdatedAt;
+
+        [NotMapped]
+        public GeoJSON.Net.Geometry.Point JsonPoint
+        {
+            get => PointRaw.ToGeoJSONObject<GeoJSON.Net.Geometry.Point>();
+        }
     }
 }
