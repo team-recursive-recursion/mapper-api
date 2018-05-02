@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,14 +30,18 @@ namespace Mapper_Api
                     builder => builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .AllowCredentials() );
+                        .AllowCredentials());
             });
 
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling =
+                    Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
+            ;
             services.AddScoped<GolfCourseService>();
             var connectionString = Configuration.GetConnectionString("MapperContext");
-            services.AddEntityFrameworkNpgsql().AddDbContext<CourseDb>(options => options.UseNpgsql(connectionString)); 
-            
+            services.AddEntityFrameworkNpgsql().AddDbContext<CourseDb>(options => options.UseNpgsql(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,7 +55,8 @@ namespace Mapper_Api
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            app.UseCors("CorsPolicy"); 
+
+            app.UseCors("CorsPolicy");
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {

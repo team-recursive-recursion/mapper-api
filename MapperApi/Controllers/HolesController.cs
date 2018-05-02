@@ -37,7 +37,8 @@ namespace Mapper_Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var hole = await _context.Hole.SingleOrDefaultAsync(m => m.HoleID == id);
+            var hole = await _context.Hole
+                .Include(h => h.CourseElements).SingleOrDefaultAsync(m => m.HoleID == id);
 
             if (hole == null)
             {
@@ -94,7 +95,7 @@ namespace Mapper_Api.Controllers
             _context.Hole.Add(hole);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetHole", new { id = hole.HoleID }, hole);
+            return CreatedAtAction("GetHole", new {id = hole.HoleID}, hole);
         }
 
         // DELETE: api/Holes/5
@@ -106,7 +107,9 @@ namespace Mapper_Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var hole = await _context.Hole.SingleOrDefaultAsync(m => m.HoleID == id);
+            var hole = await _context.Hole
+                .SingleOrDefaultAsync(m => m.HoleID == id);
+
             if (hole == null)
             {
                 return NotFound();

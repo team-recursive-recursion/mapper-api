@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mapper Api", "Mapper Api.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestSuite", "..\Test\TestSuite\TestSuite.csproj", "{D27C055A-36D1-4F2B-8FAD-C35229319387}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{2B9218D3-1213-4338-A598-89F04487AB4D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{D27C055A-36D1-4F2B-8FAD-C35229319387}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D27C055A-36D1-4F2B-8FAD-C35229319387}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D27C055A-36D1-4F2B-8FAD-C35229319387}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2B9218D3-1213-4338-A598-89F04487AB4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2B9218D3-1213-4338-A598-89F04487AB4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2B9218D3-1213-4338-A598-89F04487AB4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2B9218D3-1213-4338-A598-89F04487AB4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
