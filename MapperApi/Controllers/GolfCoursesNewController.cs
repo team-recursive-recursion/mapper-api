@@ -37,12 +37,21 @@ namespace Mapper_Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var golfCourse = await _context.GolfCourses.SingleOrDefaultAsync(m => m.CourseId == id);
 
+            var golfCourse = await _context.GolfCourses
+                .Include(m => m.Holes)
+                .SingleOrDefaultAsync(m => m.CourseId == id);    
+            
             if (golfCourse == null)
             {
                 return NotFound();
             }
+
+            await _context.Entry(golfCourse)
+                .Collection(b => b.CourseElements)
+                .Query()
+                .Where(p => p.Hole == null)
+                .LoadAsync();
 
             return Ok(golfCourse);
         }
@@ -94,7 +103,7 @@ namespace Mapper_Api.Controllers
             _context.GolfCourses.Add(golfCourse);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetGolfCourse", new { id = golfCourse.CourseId }, golfCourse);
+            return CreatedAtAction("GetGolfCourse", new {id = golfCourse.CourseId}, golfCourse);
         }
 
         // DELETE: api/GolfCoursesNew/5
@@ -106,7 +115,9 @@ namespace Mapper_Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var golfCourse = await _context.GolfCourses.SingleOrDefaultAsync(m => m.CourseId == id);
+            var golfCourse = await _context.GolfCourses
+                .SingleOrDefaultAsync(m => m.CourseId == id);
+
             if (golfCourse == null)
             {
                 return NotFound();

@@ -71,9 +71,13 @@ namespace MapperApi.Migrations
                     b.Property<Guid>("HoleID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<Guid>("CourseId");
+
                     b.Property<string>("Name");
 
                     b.HasKey("HoleID");
+
+                    b.HasIndex("CourseId");
 
                     b.ToTable("Hole");
                 });
@@ -125,6 +129,14 @@ namespace MapperApi.Migrations
                     b.HasOne("Mapper_Api.Models.Hole", "Hole")
                         .WithMany("CourseElements")
                         .HasForeignKey("HoleId");
+                });
+
+            modelBuilder.Entity("Mapper_Api.Models.Hole", b =>
+                {
+                    b.HasOne("Mapper_Api.Models.GolfCourse", "GolfCourse")
+                        .WithMany("Holes")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
