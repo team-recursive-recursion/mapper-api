@@ -1,8 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mapper Api", "Mapper Api.csproj", "{A43B276B-7ADF-4787-B51C-45F43031AA7B}"
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mapper Api", "Mapper Api.csproj", "{A43B276B-7ADF-4787-B51C-45F43031AA7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSuite", "..\Test\TestSuite\TestSuite.csproj", "{D27C055A-36D1-4F2B-8FAD-C35229319387}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestSuite", "..\Test\TestSuite\TestSuite.csproj", "{D27C055A-36D1-4F2B-8FAD-C35229319387}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +21,11 @@ Global
 		{D27C055A-36D1-4F2B-8FAD-C35229319387}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D27C055A-36D1-4F2B-8FAD-C35229319387}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D27C055A-36D1-4F2B-8FAD-C35229319387}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12EF582E-3EF6-4D03-B7D0-6F3424C1E8E3}
 	EndGlobalSection
 EndGlobal

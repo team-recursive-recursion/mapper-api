@@ -1,4 +1,5 @@
-﻿using Mapper_Api.Models;
+﻿using System;
+using Mapper_Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
@@ -22,14 +23,20 @@ namespace Mapper_Api.Context
             modelBuilder.Entity<GolfCourse>()
                 .Property(b => b.UpdatedAt)
                 .HasDefaultValueSql("now()");
-            
+
             modelBuilder.Entity<CoursePolygon>()
                 .Property(b => b.CreatedAt)
                 .HasDefaultValueSql("now()");
-
+            
             modelBuilder.Entity<CoursePolygon>()
                 .Property(b => b.UpdatedAt)
                 .HasDefaultValueSql("now()");
         }
+
+        public DbSet<Mapper_Api.Models.Point> Point { get; set; }
+
+        public DbSet<Mapper_Api.Models.CourseElement> CourseElement { get; set; }
+
+        public DbSet<Mapper_Api.Models.Hole> Hole { get; set; }
     }
 }

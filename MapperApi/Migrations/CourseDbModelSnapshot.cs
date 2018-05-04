@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System;
 
 namespace MapperApi.Migrations
@@ -21,29 +22,27 @@ namespace MapperApi.Migrations
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011");
 
-            modelBuilder.Entity("Mapper_Api.Models.CoursePolygon", b =>
+            modelBuilder.Entity("Mapper_Api.Models.CourseElement", b =>
                 {
-                    b.Property<Guid>("PolygonId")
+                    b.Property<Guid>("CourseElementId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<Guid>("CourseId");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<byte[]>("PolygonRaw")
+                    b.Property<string>("Discriminator")
                         .IsRequired();
 
-                    b.Property<int>("Type");
+                    b.Property<Guid?>("HoleId");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("now()");
+                    b.HasKey("CourseElementId");
 
-                    b.HasKey("PolygonId");
+                    b.HasIndex("CourseId");
 
-                    b.ToTable("CoursePolygons");
+                    b.HasIndex("HoleId");
+
+                    b.ToTable("CourseElement");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("CourseElement");
                 });
 
             modelBuilder.Entity("Mapper_Api.Models.GolfCourse", b =>
@@ -65,6 +64,79 @@ namespace MapperApi.Migrations
                     b.HasKey("CourseId");
 
                     b.ToTable("GolfCourses");
+                });
+
+            modelBuilder.Entity("Mapper_Api.Models.Hole", b =>
+                {
+                    b.Property<Guid>("HoleID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("CourseId");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("HoleID");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Hole");
+                });
+
+            modelBuilder.Entity("Mapper_Api.Models.CoursePolygon", b =>
+                {
+                    b.HasBaseType("Mapper_Api.Models.CourseElement");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<byte[]>("PolygonRaw")
+                        .IsRequired();
+
+                    b.Property<int>("Type");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("now()");
+
+                    b.ToTable("CoursePolygon");
+
+                    b.HasDiscriminator().HasValue("CoursePolygon");
+                });
+
+            modelBuilder.Entity("Mapper_Api.Models.Point", b =>
+                {
+                    b.HasBaseType("Mapper_Api.Models.CourseElement");
+
+                    b.Property<byte[]>("PointRaw")
+                        .IsRequired();
+
+                    b.Property<int>("Type")
+                        .HasColumnName("Point_Type");
+
+                    b.ToTable("Point");
+
+                    b.HasDiscriminator().HasValue("Point");
+                });
+
+            modelBuilder.Entity("Mapper_Api.Models.CourseElement", b =>
+                {
+                    b.HasOne("Mapper_Api.Models.GolfCourse", "GolfCourse")
+                        .WithMany("CourseElements")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Mapper_Api.Models.Hole", "Hole")
+                        .WithMany("CourseElements")
+                        .HasForeignKey("HoleId");
+                });
+
+            modelBuilder.Entity("Mapper_Api.Models.Hole", b =>
+                {
+                    b.HasOne("Mapper_Api.Models.GolfCourse", "GolfCourse")
+                        .WithMany("Holes")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
