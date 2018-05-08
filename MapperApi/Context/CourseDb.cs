@@ -31,6 +31,10 @@ namespace Mapper_Api.Context
             modelBuilder.Entity<CoursePolygon>()
                 .Property(b => b.UpdatedAt)
                 .HasDefaultValueSql("now()");
+            
+            modelBuilder.Entity<User>()
+                .HasAlternateKey(c => c.Email)
+                .HasName("Email");
         }
 
         public DbSet<Mapper_Api.Models.Point> Point { get; set; }
