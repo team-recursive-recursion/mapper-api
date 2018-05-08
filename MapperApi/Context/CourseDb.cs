@@ -38,5 +38,7 @@ namespace Mapper_Api.Context
         public DbSet<Mapper_Api.Models.CourseElement> CourseElement { get; set; }
 
         public DbSet<Mapper_Api.Models.Hole> Hole { get; set; }
+
+        public DbSet<Mapper_Api.Models.User> User { get; set; }
     }
 }
