@@ -1,4 +1,12 @@
-﻿using System;
+﻿/***
+ * Filename: GolfCourseController.cs
+ * Author : ebendutoit
+ * Class   : GolfCourseController
+ *
+ *      API entrypoint for golfcourses
+ ***/
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapper_Api.Models;
@@ -25,11 +33,13 @@ namespace Mapper_Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateCourseName(Guid courseId, string courseName)
+        public async Task<IActionResult> UpdateCourseName(Guid courseId,
+                string courseName)
         {
             try
             {
-                var golfCourse = await _service.UpdateGolfCourse(courseId, courseName);
+                var golfCourse =
+                        await _service.UpdateGolfCourse(courseId, courseName);
                 return Ok(golfCourse);
             }
             catch (ArgumentException e)
@@ -43,11 +53,14 @@ namespace Mapper_Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPolygon(string geoJson, CoursePolygon.PolygonTypes type, Guid courseId)
+        public async Task<IActionResult> AddPolygon(string geoJson,
+                CoursePolygon.PolygonTypes type, Guid courseId)
         {
             try
             {
-                var coursePoly = await _service.CreatePolygon(courseId, null, type, geoJson);
+                var coursePoly =
+                        await _service.CreatePolygon(courseId, null, type,
+                                geoJson);
                 return Ok(coursePoly);
             }
             catch (ArgumentException e)
@@ -66,25 +79,24 @@ namespace Mapper_Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPolygons(Guid? courseId = null)
         {
-            if (courseId == null)
-            {
-                return BadRequest("Requires course Id");
-            }
+            if (courseId == null) return BadRequest("Requires course Id");
 
-            var polyList = Queryable.SelectMany(Queryable.Where(_service.GetGolfCourses(),
-                    p => p.CourseId == courseId),
-                    u => u.CourseElements);
+            var polyList = _service.GetGolfCourses()
+                    .Where(p => p.CourseId == courseId)
+                    .SelectMany(u => u.CourseElements);
             return Ok(await polyList.ToListAsync());
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> UpdatePolygon(Guid polygonId, CoursePolygon.PolygonTypes? type,
-            String geoJson)
+        public async Task<IActionResult> UpdatePolygon(Guid polygonId,
+                CoursePolygon.PolygonTypes? type,
+                string geoJson)
         {
             try
             {
-                return Ok(await _service.UpdatePolygon(polygonId, geoJson, type));
+                return Ok(
+                        await _service.UpdatePolygon(polygonId, geoJson, type));
             }
             catch (ArgumentException e)
             {

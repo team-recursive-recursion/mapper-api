@@ -1,4 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/***
+ * Filename: ApiEndpointsController.cs
+ * Author : ebendutoit
+ * Class   : ApiEndpointsController
+ *
+ *      Website entrypoint for api discovery
+ ***/
+using Microsoft.AspNetCore.Mvc;
 
 namespace Mapper_Api.Controllers
 {
@@ -8,7 +15,7 @@ namespace Mapper_Api.Controllers
         public IActionResult Index()
         {
             return
-            View();
+                    View();
         }
     }
 }

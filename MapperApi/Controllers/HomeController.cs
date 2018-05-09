@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/***
+ * Filename: HomeController.cs
+ * Author : ebendutoit
+ * Class   : HomeController
+ *          Entrypoint for website if navigated to server
+ ***/
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Mapper_Api.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Mapper_Api.Controllers
 {
@@ -31,7 +33,11 @@ namespace Mapper_Api.Controllers
 
         public IActionResult Error()
         {
-            return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+            return View(new ErrorViewModel
+            {
+                    RequestId =
+                            Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
     }
 }

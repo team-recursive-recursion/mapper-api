@@ -26,8 +26,12 @@ namespace Mapper_Api.Models
         [NotMapped]
         public string GeoJson
         {
-            get => JsonConvert.SerializeObject(PolygonRaw.ToGeoJSONObject<Polygon>());
-            set => PolygonRaw = JsonConvert.DeserializeObject<Polygon>(value).ToWkb();
+            get =>
+                    JsonConvert.SerializeObject(
+                            PolygonRaw.ToGeoJSONObject<Polygon>());
+            set =>
+                    PolygonRaw = JsonConvert.DeserializeObject<Polygon>(value)
+                            .ToWkb();
         }
     }
 }

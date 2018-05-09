@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/***
+ * Filename: GolfCoursesController.cs
+ * Author : ebendutoit
+ * Class   : GolfcoursesController
+ *
+ *      ApplicationEntrypoint for Golf courses
+ ***/
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mapper_Api.Controllers
 {
@@ -28,17 +34,11 @@ namespace Mapper_Api.Controllers
         // GET: GolfCourses/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var golfCourse = await _context.GolfCourses
-                .SingleOrDefaultAsync(m => m.CourseId == id);
-            if (golfCourse == null)
-            {
-                return NotFound();
-            }
+                    .SingleOrDefaultAsync(m => m.CourseId == id);
+            if (golfCourse == null) return NotFound();
 
             return View(golfCourse);
         }
@@ -54,7 +54,9 @@ namespace Mapper_Api.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CourseId,CourseName,CreatedAt,UpdatedAt")] GolfCourse golfCourse)
+        public async Task<IActionResult> Create(
+                [Bind("CourseId,CourseName,CreatedAt,UpdatedAt")]
+                GolfCourse golfCourse)
         {
             if (ModelState.IsValid)
             {
@@ -63,22 +65,19 @@ namespace Mapper_Api.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(golfCourse);
         }
 
         // GET: GolfCourses/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var golfCourse = await _context.GolfCourses.SingleOrDefaultAsync(m => m.CourseId == id);
-            if (golfCourse == null)
-            {
-                return NotFound();
-            }
+            var golfCourse =
+                    await _context.GolfCourses.SingleOrDefaultAsync(m =>
+                            m.CourseId == id);
+            if (golfCourse == null) return NotFound();
             return View(golfCourse);
         }
 
@@ -87,12 +86,11 @@ namespace Mapper_Api.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("CourseId,CourseName,CreatedAt,UpdatedAt")] GolfCourse golfCourse)
+        public async Task<IActionResult> Edit(Guid id,
+                [Bind("CourseId,CourseName,CreatedAt,UpdatedAt")]
+                GolfCourse golfCourse)
         {
-            if (id != golfCourse.CourseId)
-            {
-                return NotFound();
-            }
+            if (id != golfCourse.CourseId) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -104,43 +102,37 @@ namespace Mapper_Api.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!GolfCourseExists(golfCourse.CourseId))
-                    {
                         return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(golfCourse);
         }
 
         // GET: GolfCourses/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var golfCourse = await _context.GolfCourses
-                .SingleOrDefaultAsync(m => m.CourseId == id);
-            if (golfCourse == null)
-            {
-                return NotFound();
-            }
+                    .SingleOrDefaultAsync(m => m.CourseId == id);
+            if (golfCourse == null) return NotFound();
 
             return View(golfCourse);
         }
 
         // POST: GolfCourses/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
+        [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var golfCourse = await _context.GolfCourses.SingleOrDefaultAsync(m => m.CourseId == id);
+            var golfCourse =
+                    await _context.GolfCourses.SingleOrDefaultAsync(m =>
+                            m.CourseId == id);
             _context.GolfCourses.Remove(golfCourse);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

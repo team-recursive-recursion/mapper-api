@@ -10,7 +10,7 @@ namespace Mapper_Api.Models
         [Required] public string CourseName { get; set; }
         [Required] public DateTime CreatedAt { get; set; }
         [Required] public DateTime UpdatedAt { get; set; }
-        
+
         public List<Hole> Holes { get; set; }
         public List<CourseElement> CourseElements { get; set; }
     }

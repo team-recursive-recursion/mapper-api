@@ -1,5 +1,3 @@
-using System;
-
 namespace Mapper_Api.Models
 {
     public class ErrorViewModel

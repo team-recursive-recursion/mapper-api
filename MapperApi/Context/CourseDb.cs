@@ -1,7 +1,12 @@
-﻿using System;
+﻿/***
+ * Filename: CourseDb.cs
+ * Author : ebendutoit
+ * Class   : CourseDb
+ *
+ *      Database context for API 
+ ***/
 using Mapper_Api.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Mapper_Api.Context
 {
@@ -14,29 +19,35 @@ namespace Mapper_Api.Context
         public DbSet<GolfCourse> GolfCourses { get; set; }
         public DbSet<CoursePolygon> CoursePolygons { get; set; }
 
+        public DbSet<Point> Point { get; set; }
+
+        public DbSet<CourseElement> CourseElement { get; set; }
+
+        public DbSet<Hole> Hole { get; set; }
+
+        public DbSet<User> User { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<GolfCourse>()
-                .Property(b => b.CreatedAt)
-                .HasDefaultValueSql("now()");
+                    .Property(b => b.CreatedAt)
+                    .HasDefaultValueSql("now()");
 
             modelBuilder.Entity<GolfCourse>()
-                .Property(b => b.UpdatedAt)
-                .HasDefaultValueSql("now()");
+                    .Property(b => b.UpdatedAt)
+                    .HasDefaultValueSql("now()");
 
             modelBuilder.Entity<CoursePolygon>()
-                .Property(b => b.CreatedAt)
-                .HasDefaultValueSql("now()");
-            
+                    .Property(b => b.CreatedAt)
+                    .HasDefaultValueSql("now()");
+
             modelBuilder.Entity<CoursePolygon>()
-                .Property(b => b.UpdatedAt)
-                .HasDefaultValueSql("now()");
+                    .Property(b => b.UpdatedAt)
+                    .HasDefaultValueSql("now()");
+
+            modelBuilder.Entity<User>()
+                    .HasAlternateKey(c => c.Email)
+                    .HasName("Email");
         }
-
-        public DbSet<Mapper_Api.Models.Point> Point { get; set; }
-
-        public DbSet<Mapper_Api.Models.CourseElement> CourseElement { get; set; }
-
-        public DbSet<Mapper_Api.Models.Hole> Hole { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace Mapper_Api.Models
 
         public Guid CourseId { get; set; }
         public GolfCourse GolfCourse { get; set; }
-        
+
         public List<CourseElement> CourseElements { get; set; }
     }
 }
