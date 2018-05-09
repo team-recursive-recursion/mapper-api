@@ -1,11 +1,19 @@
-﻿using System;
+﻿/***
+ * Filename: CoursePolygonsController.cs
+ * Author : ebendutoit
+ * Class   : CoursePolygonController
+ *
+ *      API entrypoint fro polygons
+ ***/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mapper_Api.Controllers
 {
@@ -31,34 +39,25 @@ namespace Mapper_Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCoursePolygon([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var coursePolygon = await _context.CoursePolygons.SingleOrDefaultAsync(m => m.CourseElementId == id);
+            var coursePolygon =
+                    await _context.CoursePolygons.SingleOrDefaultAsync(m =>
+                            m.CourseElementId == id);
 
-            if (coursePolygon == null)
-            {
-                return NotFound();
-            }
+            if (coursePolygon == null) return NotFound();
 
             return Ok(coursePolygon);
         }
 
         // PUT: api/Polygons/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCoursePolygon([FromRoute] Guid id, [FromBody] CoursePolygon coursePolygon)
+        public async Task<IActionResult> PutCoursePolygon([FromRoute] Guid id,
+                [FromBody] CoursePolygon coursePolygon)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (id != coursePolygon.CourseElementId)
-            {
-                return BadRequest();
-            }
+            if (id != coursePolygon.CourseElementId) return BadRequest();
 
             _context.Entry(coursePolygon).State = EntityState.Modified;
 
@@ -69,13 +68,8 @@ namespace Mapper_Api.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!CoursePolygonExists(id))
-                {
                     return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
@@ -83,35 +77,34 @@ namespace Mapper_Api.Controllers
 
         // POST: api/Polygons
         [HttpPost]
-        public async Task<IActionResult> PostCoursePolygon([FromBody] CoursePolygon coursePolygon)
+        public async Task<IActionResult> PostCoursePolygon(
+                [FromBody] CoursePolygon coursePolygon)
         {
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Select(x => x.Value.Errors)
-                    .Where(y=>y.Count>0)
-                    .ToList();
+                        .Where(y => y.Count > 0)
+                        .ToList();
                 return BadRequest(errors);
             }
 
             _context.CoursePolygons.Add(coursePolygon);
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetCoursePolygon", new {id = coursePolygon.CourseElementId}, coursePolygon);
+            return CreatedAtAction("GetCoursePolygon",
+                    new {id = coursePolygon.CourseElementId}, coursePolygon);
         }
 
         // DELETE: api/Polygons/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCoursePolygon([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteCoursePolygon(
+                [FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var coursePolygon = await _context.CoursePolygons.SingleOrDefaultAsync(m => m.CourseElementId == id);
-            if (coursePolygon == null)
-            {
-                return NotFound();
-            }
+            var coursePolygon =
+                    await _context.CoursePolygons.SingleOrDefaultAsync(m =>
+                            m.CourseElementId == id);
+            if (coursePolygon == null) return NotFound();
 
             _context.CoursePolygons.Remove(coursePolygon);
             await _context.SaveChangesAsync();

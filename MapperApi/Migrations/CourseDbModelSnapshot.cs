@@ -82,6 +82,31 @@ namespace MapperApi.Migrations
                     b.ToTable("Hole");
                 });
 
+            modelBuilder.Entity("Mapper_Api.Models.User", b =>
+                {
+                    b.Property<Guid>("UserID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Email")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("Password")
+                        .IsRequired();
+
+                    b.Property<string>("Surname")
+                        .IsRequired();
+
+                    b.HasKey("UserID");
+
+                    b.HasAlternateKey("Email")
+                        .HasName("Email");
+
+                    b.ToTable("User");
+                });
+
             modelBuilder.Entity("Mapper_Api.Models.CoursePolygon", b =>
                 {
                     b.HasBaseType("Mapper_Api.Models.CourseElement");

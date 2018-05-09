@@ -11,10 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mapper_Api
 {
@@ -38,8 +38,8 @@ namespace Mapper_Api
 
         [Route("api/Users/Test")]
         [HttpPost]
-        public async Task<IActionResult> Test([FromRoute] String email,
-                [FromRoute] String password)
+        public async Task<IActionResult> Test([FromRoute] string email,
+                [FromRoute] string password)
         {
             return Ok($"{email} and {password}");
         }
@@ -49,19 +49,14 @@ namespace Mapper_Api
         [HttpPost]
         public async Task<IActionResult> Match([FromBody] UserView uview)
         {
-            User user = await _context.User
+            var user = await _context.User
                     .SingleOrDefaultAsync(u => u.Email == uview.Email);
 
-            if (user == null) {
-                return NotFound("The user does not exist.");
-            } else {
-                if (user.Password == uview.Password) {
-                    // TODO don't return password
-                    return Ok(user);
-                } else {
-                    return BadRequest("Invalid username or password");
-                }
-            }
+            if (user == null) return NotFound("The user does not exist.");
+
+            if (user.Password == uview.Password)
+                return Ok(user);
+            return BadRequest("Invalid username or password");
         }
 
         // POST: api/Users/Create/
@@ -69,13 +64,11 @@ namespace Mapper_Api
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] User user)
         {
-            if (!ModelState.IsValid) {
-                return BadRequest(ModelState);
-            }
-            
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             _context.User.Add(user);
             await _context.SaveChangesAsync();
-            return CreatedAtAction("CreateUser", new {id = user.UserID}, user);
+            return CreatedAtAction("Create", new {id = user.UserID}, user);
         }
 
         private bool EmailExists(string email)

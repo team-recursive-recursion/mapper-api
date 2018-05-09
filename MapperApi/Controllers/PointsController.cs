@@ -1,12 +1,20 @@
-﻿using System;
+﻿/***
+ * Filename: PointsController.cs
+ * Author : ebendutoit
+ * Class   : PointsController
+ *
+ *      Entrypoint for points from api
+ ***/
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mapper_Api.Controllers
 {
@@ -32,34 +40,25 @@ namespace Mapper_Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPoint([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var point = await _context.Point.SingleOrDefaultAsync(m => m.CourseElementId == id);
+            var point =
+                    await _context.Point.SingleOrDefaultAsync(m =>
+                            m.CourseElementId == id);
 
-            if (point == null)
-            {
-                return NotFound();
-            }
+            if (point == null) return NotFound();
 
             return Ok(point);
         }
 
         // PUT: api/Points/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPoint([FromRoute] Guid id, [FromBody] Point point)
+        public async Task<IActionResult> PutPoint([FromRoute] Guid id,
+                [FromBody] Point point)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (id != point.CourseElementId)
-            {
-                return BadRequest();
-            }
+            if (id != point.CourseElementId) return BadRequest();
 
             _context.Entry(point).State = EntityState.Modified;
 
@@ -70,13 +69,8 @@ namespace Mapper_Api.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!PointExists(id))
-                {
                     return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
@@ -86,31 +80,25 @@ namespace Mapper_Api.Controllers
         [HttpPost]
         public async Task<IActionResult> PostPoint([FromBody] Point point)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             _context.Point.Add(point);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPoint", new { id = point.CourseElementId }, point);
+            return CreatedAtAction("GetPoint", new {id = point.CourseElementId},
+                    point);
         }
 
         // DELETE: api/Points/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePoint([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var point = await _context.Point.SingleOrDefaultAsync(m => m.CourseElementId == id);
-            if (point == null)
-            {
-                return NotFound();
-            }
+            var point =
+                    await _context.Point.SingleOrDefaultAsync(m =>
+                            m.CourseElementId == id);
+            if (point == null) return NotFound();
 
             _context.Point.Remove(point);
             await _context.SaveChangesAsync();
