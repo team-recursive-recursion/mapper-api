@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/GolfCoursesNew")]
+    [Route("api/courses")]
     public class GolfCoursesNewController : Controller
     {
         private readonly CourseDb _context;
@@ -27,14 +27,14 @@ namespace Mapper_Api.Controllers
             _context = context;
         }
 
-        // GET: api/GolfCoursesNew
+        // GET: api/courses
         [HttpGet]
         public IEnumerable<GolfCourse> GetGolfCourses()
         {
             return _context.GolfCourses;
         }
 
-        // GET: api/GolfCoursesNew/5
+        // GET: api/courses/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGolfCourse([FromRoute] Guid id)
         {
@@ -56,7 +56,7 @@ namespace Mapper_Api.Controllers
             return Ok(golfCourse);
         }
 
-        // PUT: api/GolfCoursesNew/5
+        // PUT: api/courses/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGolfCourse([FromRoute] Guid id,
                 [FromBody] GolfCourse golfCourse)
@@ -81,7 +81,7 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // POST: api/GolfCoursesNew
+        // POST: api/courses
         [HttpPost]
         public async Task<IActionResult> PostGolfCourse(
                 [FromBody] GolfCourse golfCourse)
@@ -95,7 +95,7 @@ namespace Mapper_Api.Controllers
                     new {id = golfCourse.CourseId}, golfCourse);
         }
 
-        // DELETE: api/GolfCoursesNew/5
+        // DELETE: api/courses/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGolfCourse([FromRoute] Guid id)
         {

@@ -36,14 +36,6 @@ namespace Mapper_Api
             return _context.User;
         }
 
-        [Route("api/Users/Test")]
-        [HttpPost]
-        public async Task<IActionResult> Test([FromRoute] string email,
-                [FromRoute] string password)
-        {
-            return Ok($"{email} and {password}");
-        }
-
         // POST: api/Users/Match/
         [Route("api/Users/Match")]
         [HttpPost]
