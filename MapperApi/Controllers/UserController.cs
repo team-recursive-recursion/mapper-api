@@ -28,24 +28,16 @@ namespace Mapper_Api
             _context = context;
         }
 
-        // GET: api/Users
-        [Route("api/Users")]
+        // GET: api/users
+        [Route("api/users")]
         [HttpGet]
         public IEnumerable<User> GetUser()
         {
             return _context.User;
         }
 
-        [Route("api/Users/Test")]
-        [HttpPost]
-        public async Task<IActionResult> Test([FromRoute] string email,
-                [FromRoute] string password)
-        {
-            return Ok($"{email} and {password}");
-        }
-
         // POST: api/Users/Match/
-        [Route("api/Users/Match")]
+        [Route("api/users/match")]
         [HttpPost]
         public async Task<IActionResult> Match([FromBody] UserView uview)
         {
@@ -59,8 +51,8 @@ namespace Mapper_Api
             return BadRequest("Invalid username or password");
         }
 
-        // POST: api/Users/Create/
-        [Route("api/Users/Create")]
+        // POST: api/users/create/
+        [Route("api/users/create")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] User user)
         {

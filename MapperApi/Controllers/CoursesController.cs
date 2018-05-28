@@ -1,7 +1,7 @@
 ﻿/***
  * Filename: GolfCoursesNewController.cs
- * Author : ebendutoit
- * Class   : GolfCoursesController
+ * Author  : ebendutoit, tilleyd
+ * Class   : CoursesController
  *
  *      API entry point for Golf Courses
  ***/
@@ -17,24 +17,24 @@ using Microsoft.EntityFrameworkCore;
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/GolfCoursesNew")]
-    public class GolfCoursesNewController : Controller
+    [Route("api/courses")]
+    public class CoursesController : Controller
     {
         private readonly CourseDb _context;
 
-        public GolfCoursesNewController(CourseDb context)
+        public CoursesController(CourseDb context)
         {
             _context = context;
         }
 
-        // GET: api/GolfCoursesNew
+        // GET: api/courses
         [HttpGet]
         public IEnumerable<GolfCourse> GetGolfCourses()
         {
             return _context.GolfCourses;
         }
 
-        // GET: api/GolfCoursesNew/5
+        // GET: api/courses/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGolfCourse([FromRoute] Guid id)
         {
@@ -50,13 +50,13 @@ namespace Mapper_Api.Controllers
             await _context.Entry(golfCourse)
                     .Collection(b => b.CourseElements)
                     .Query()
-                    .Where(p => p.Hole == null)
+                    .Where(p => p.HoleId == null)
                     .LoadAsync();
 
             return Ok(golfCourse);
         }
 
-        // PUT: api/GolfCoursesNew/5
+        // PUT: api/courses/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGolfCourse([FromRoute] Guid id,
                 [FromBody] GolfCourse golfCourse)
@@ -81,7 +81,7 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // POST: api/GolfCoursesNew
+        // POST: api/courses
         [HttpPost]
         public async Task<IActionResult> PostGolfCourse(
                 [FromBody] GolfCourse golfCourse)
@@ -95,7 +95,7 @@ namespace Mapper_Api.Controllers
                     new {id = golfCourse.CourseId}, golfCourse);
         }
 
-        // DELETE: api/GolfCoursesNew/5
+        // DELETE: api/courses/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGolfCourse([FromRoute] Guid id)
         {
