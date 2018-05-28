@@ -1,6 +1,6 @@
 ﻿/***
  * Filename: CoursePolygonsController.cs
- * Author : ebendutoit
+ * Author  : ebendutoit, tilleyd
  * Class   : CoursePolygonController
  *
  *      API entrypoint fro polygons
@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Polygons")]
+    [Route("api/polygons")]
     public class CoursePolygonsController : Controller
     {
         private readonly CourseDb _context;
@@ -28,14 +28,14 @@ namespace Mapper_Api.Controllers
             _context = context;
         }
 
-        // GET: api/Polygons
+        // GET: api/polygons
         [HttpGet]
         public IEnumerable<CoursePolygon> GetCoursePolygons()
         {
             return _context.CoursePolygons;
         }
 
-        // GET: api/Polygons/5
+        // GET: api/polygons/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCoursePolygon([FromRoute] Guid id)
         {
@@ -50,7 +50,7 @@ namespace Mapper_Api.Controllers
             return Ok(coursePolygon);
         }
 
-        // PUT: api/Polygons/5
+        // PUT: api/polygons/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCoursePolygon([FromRoute] Guid id,
                 [FromBody] CoursePolygon coursePolygon)
@@ -75,7 +75,7 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Polygons
+        // POST: api/polygons
         [HttpPost]
         public async Task<IActionResult> PostCoursePolygon(
                 [FromBody] CoursePolygon coursePolygon)
@@ -94,7 +94,7 @@ namespace Mapper_Api.Controllers
                     new {id = coursePolygon.CourseElementId}, coursePolygon);
         }
 
-        // DELETE: api/Polygons/5
+        // DELETE: api/polygons/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCoursePolygon(
                 [FromRoute] Guid id)

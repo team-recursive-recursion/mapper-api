@@ -1,6 +1,6 @@
 ﻿/***
  * Filename: HolesController.cs
- * Author : ebendutoit
+ * Author  : ebendutoit, tilleyd
  * Class   : HolesController
  *        
  *      API entry point for Holes

@@ -1,7 +1,7 @@
 ﻿/***
  * Filename: GolfCoursesNewController.cs
- * Author : ebendutoit
- * Class   : GolfCoursesController
+ * Author  : ebendutoit, tilleyd
+ * Class   : CoursesController
  *
  *      API entry point for Golf Courses
  ***/
@@ -18,11 +18,11 @@ namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
     [Route("api/courses")]
-    public class GolfCoursesNewController : Controller
+    public class CoursesController : Controller
     {
         private readonly CourseDb _context;
 
-        public GolfCoursesNewController(CourseDb context)
+        public CoursesController(CourseDb context)
         {
             _context = context;
         }
@@ -50,7 +50,7 @@ namespace Mapper_Api.Controllers
             await _context.Entry(golfCourse)
                     .Collection(b => b.CourseElements)
                     .Query()
-                    .Where(p => p.Hole == null)
+                    .Where(p => p.HoleId == null)
                     .LoadAsync();
 
             return Ok(golfCourse);

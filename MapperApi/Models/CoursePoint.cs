@@ -11,7 +11,8 @@ namespace Mapper_Api.Models
         public enum PointTypes
         {
             PIN = 0,
-            HOLE = 1
+            HOLE = 1,
+            TEE = 2
         }
 
         public DateTime CreatedAt;
