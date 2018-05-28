@@ -8,9 +8,7 @@ namespace Mapper_Api.Models
         [Required] [Key] public Guid CourseElementId { get; set; }
 
         public Guid? HoleId { get; set; }
-        public Hole Hole { get; set; }
 
         public Guid CourseId { get; set; }
-        public GolfCourse GolfCourse { get; set; }
     }
 }

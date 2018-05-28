@@ -1,6 +1,6 @@
 ﻿/***
  * Filename: PointsController.cs
- * Author : ebendutoit
+ * Author  : ebendutoit, tilleyd
  * Class   : PointsController
  *
  *      Entrypoint for points from api
@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Points")]
+    [Route("api/points")]
     public class PointsController : Controller
     {
         private readonly CourseDb _context;
@@ -29,14 +29,14 @@ namespace Mapper_Api.Controllers
             _context = context;
         }
 
-        // GET: api/Points
+        // GET: api/points
         [HttpGet]
         public IEnumerable<Point> GetPoint()
         {
             return _context.Point;
         }
 
-        // GET: api/Points/5
+        // GET: api/points/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPoint([FromRoute] Guid id)
         {
@@ -51,7 +51,7 @@ namespace Mapper_Api.Controllers
             return Ok(point);
         }
 
-        // PUT: api/Points/5
+        // PUT: api/points/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPoint([FromRoute] Guid id,
                 [FromBody] Point point)
@@ -76,7 +76,7 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Points
+        // POST: api/points
         [HttpPost]
         public async Task<IActionResult> PostPoint([FromBody] Point point)
         {
@@ -89,7 +89,7 @@ namespace Mapper_Api.Controllers
                     point);
         }
 
-        // DELETE: api/Points/5
+        // DELETE: api/points/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePoint([FromRoute] Guid id)
         {
