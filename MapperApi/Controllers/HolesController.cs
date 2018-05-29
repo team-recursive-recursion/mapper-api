@@ -5,6 +5,7 @@
  *        
  *      API entry point for Holes
  ***/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,6 @@ using Microsoft.EntityFrameworkCore;
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/holes")]
     public class HolesController : Controller
     {
         private readonly CourseDb _context;
@@ -27,15 +27,51 @@ namespace Mapper_Api.Controllers
             _context = context;
         }
 
-        // GET: api/holes
+        // GET: api/courses/{id}/holes
+        [Route("api/courses/{cid}/holes")]
         [HttpGet]
-        public IEnumerable<Hole> GetHole()
+        public async Task<IActionResult> GetCourseHoles([FromRoute] Guid cid)
         {
-            return _context.Hole;
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            if (!GolfCourseExists(cid)) {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var course = await _context.GolfCourses
+                    .Include(m => m.Holes)
+                    .SingleOrDefaultAsync(m => m.CourseId == cid);
+
+            if (course == null) return NotFound();
+
+            return Ok(course.Holes);
         }
 
-        // GET: api/holes/{id}
-        [HttpGet("{id}")]
+        // POST: api/courses/{id}/holes
+        [Route("api/courses/{cid}/holes")]
+        [HttpPost]
+        public async Task<IActionResult> PostCourseHole([FromRoute] Guid cid,
+                [FromBody] Hole hole)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            if (!GolfCourseExists(cid)) {
+                return NotFound();
+            }
+
+            hole.CourseId = cid;
+
+            _context.Hole.Add(hole);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetHole", new {id = hole.HoleID}, hole);
+        }
+
+        // GET: api/courses/{id}/holes/{id}
+        [Route("api/holes/{id}")]
+        [HttpGet]
         public async Task<IActionResult> GetHole([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -49,8 +85,9 @@ namespace Mapper_Api.Controllers
             return Ok(hole);
         }
 
-        // PUT: api/holes/{id}
-        [HttpPut("{id}")]
+        // PUT: api/courses/{id}/holes/{id}
+        [Route("api/holes/{id}")]
+        [HttpPut]
         public async Task<IActionResult> PutHole([FromRoute] Guid id,
                 [FromBody] Hole hole)
         {
@@ -74,20 +111,9 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // POST: api/holes
-        [HttpPost]
-        public async Task<IActionResult> PostHole([FromBody] Hole hole)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            _context.Hole.Add(hole);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetHole", new {id = hole.HoleID}, hole);
-        }
-
-        // DELETE: api/holes/{id}
-        [HttpDelete("{id}")]
+        // DELETE: api/courses/{id}/holes/{id}
+        [Route("api/holes/{id}")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteHole([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -106,6 +132,11 @@ namespace Mapper_Api.Controllers
         private bool HoleExists(Guid id)
         {
             return _context.Hole.Any(e => e.HoleID == id);
+        }
+
+        private bool GolfCourseExists(Guid id)
+        {
+            return _context.GolfCourses.Any(e => e.CourseId == id);
         }
     }
 }

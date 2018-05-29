@@ -19,21 +19,41 @@ using Microsoft.EntityFrameworkCore;
 namespace Mapper_Api
 {
     [Produces("application/json")]
-    public class UserController : Controller
+    [Route("api/users")]
+    public class UsersController : Controller
     {
         private readonly CourseDb _context;
 
-        public UserController(CourseDb context)
+        public UsersController(CourseDb context)
         {
             _context = context;
         }
 
         // GET: api/users
-        [Route("api/users")]
         [HttpGet]
         public IEnumerable<User> GetUser()
         {
             return _context.User;
+        }
+
+        // GET: api/users/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetGolfCourse([FromRoute] Guid id)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+
+            var user = await _context.User
+                    .Include(m => m.Courses)
+                    .SingleOrDefaultAsync(m => m.UserID == id);
+
+            if (user == null) return NotFound();
+
+            await _context.Entry(user)
+                    .Collection(b => b.Courses)
+                    .LoadAsync();
+
+            return Ok(user);
         }
 
         // POST: api/Users/Match/
