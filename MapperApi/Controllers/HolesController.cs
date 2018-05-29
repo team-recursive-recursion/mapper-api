@@ -1,6 +1,6 @@
 ﻿/***
  * Filename: HolesController.cs
- * Author : ebendutoit
+ * Author  : ebendutoit, tilleyd
  * Class   : HolesController
  *        
  *      API entry point for Holes
@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Holes")]
+    [Route("api/holes")]
     public class HolesController : Controller
     {
         private readonly CourseDb _context;
@@ -27,14 +27,14 @@ namespace Mapper_Api.Controllers
             _context = context;
         }
 
-        // GET: api/Holes
+        // GET: api/holes
         [HttpGet]
         public IEnumerable<Hole> GetHole()
         {
             return _context.Hole;
         }
 
-        // GET: api/Holes/5
+        // GET: api/holes/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetHole([FromRoute] Guid id)
         {
@@ -49,7 +49,7 @@ namespace Mapper_Api.Controllers
             return Ok(hole);
         }
 
-        // PUT: api/Holes/5
+        // PUT: api/holes/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> PutHole([FromRoute] Guid id,
                 [FromBody] Hole hole)
@@ -74,7 +74,7 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Holes
+        // POST: api/holes
         [HttpPost]
         public async Task<IActionResult> PostHole([FromBody] Hole hole)
         {
@@ -86,7 +86,7 @@ namespace Mapper_Api.Controllers
             return CreatedAtAction("GetHole", new {id = hole.HoleID}, hole);
         }
 
-        // DELETE: api/Holes/5
+        // DELETE: api/holes/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteHole([FromRoute] Guid id)
         {

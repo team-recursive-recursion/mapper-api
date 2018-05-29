@@ -17,6 +17,7 @@ namespace Mapper_Api.Context
         }
 
         public DbSet<GolfCourse> GolfCourses { get; set; }
+        
         public DbSet<CoursePolygon> CoursePolygons { get; set; }
 
         public DbSet<Point> Point { get; set; }
