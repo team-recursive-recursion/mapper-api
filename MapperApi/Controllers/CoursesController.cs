@@ -17,7 +17,6 @@ using Microsoft.EntityFrameworkCore;
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/courses")]
     public class CoursesController : Controller
     {
         private readonly CourseDb _context;
@@ -27,16 +26,61 @@ namespace Mapper_Api.Controllers
             _context = context;
         }
 
-        // GET: api/courses
+        // GET: api/users/{id}/courses
+        [Route("api/users/{uid}/courses")]
         [HttpGet]
-        public IEnumerable<GolfCourse> GetGolfCourses()
+        public async Task<IActionResult> GetUserCourses([FromRoute] Guid uid)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            if (!UserExists(uid)) {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var user = await _context.User
+                    .Include(m => m.Courses)
+                    .SingleOrDefaultAsync(m => m.UserID == uid);
+
+            if (user == null) return NotFound();
+
+            return Ok(user.Courses);
+        }
+
+        // POST: api/users/{id}/courses
+        [Route("api/users/{uid}/courses")]
+        [HttpPost]
+        public async Task<IActionResult> PostUserCourse([FromRoute] Guid uid,
+                [FromBody] GolfCourse course)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            if (!UserExists(uid)) {
+                return NotFound();
+            }
+
+            course.UserId = uid;
+
+            _context.GolfCourses.Add(course);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetGolfCourse",
+                    new {id = course.CourseId}, course);
+        }
+
+        // GET: api/courses
+        [Route("api/courses")]
+        [HttpGet]
+        public IEnumerable<GolfCourse> GetCourses()
         {
             return _context.GolfCourses;
         }
 
         // GET: api/courses/{id}
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetGolfCourse([FromRoute] Guid id)
+        [Route("api/courses/{id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetCourse([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -57,8 +101,9 @@ namespace Mapper_Api.Controllers
         }
 
         // PUT: api/courses/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutGolfCourse([FromRoute] Guid id,
+        [Route("api/courses/{id}")]
+        [HttpPut]
+        public async Task<IActionResult> PutCourse([FromRoute] Guid id,
                 [FromBody] GolfCourse golfCourse)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -73,7 +118,7 @@ namespace Mapper_Api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!GolfCourseExists(id))
+                if (!CourseExists(id))
                     return NotFound();
                 throw;
             }
@@ -81,23 +126,10 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // POST: api/courses
-        [HttpPost]
-        public async Task<IActionResult> PostGolfCourse(
-                [FromBody] GolfCourse golfCourse)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            _context.GolfCourses.Add(golfCourse);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetGolfCourse",
-                    new {id = golfCourse.CourseId}, golfCourse);
-        }
-
         // DELETE: api/courses/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGolfCourse([FromRoute] Guid id)
+        [Route("api/courses/{id}")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteCourse([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -112,9 +144,14 @@ namespace Mapper_Api.Controllers
             return Ok(golfCourse);
         }
 
-        private bool GolfCourseExists(Guid id)
+        private bool CourseExists(Guid id)
         {
             return _context.GolfCourses.Any(e => e.CourseId == id);
+        }
+
+        private bool UserExists(Guid id)
+        {
+            return _context.User.Any(e => e.UserID == id);
         }
     }
 }
