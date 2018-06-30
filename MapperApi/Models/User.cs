@@ -12,6 +12,6 @@ namespace Mapper_Api.Models
         [Required] public string Surname { get; set; }
         [Required] public string Password { get; set; }
 
-        public List<GolfCourse> Courses { get; set; }
+        public List<Course> Courses { get; set; }
     }
 }

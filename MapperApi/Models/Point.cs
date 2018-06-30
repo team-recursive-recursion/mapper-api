@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Mapper_Api.Models
 {
-    public class Point : CourseElement
+    public class Point : Element
     {
         public enum PointTypes
         {
@@ -18,7 +18,7 @@ namespace Mapper_Api.Models
         public DateTime CreatedAt;
         public DateTime UpdatedAt;
 
-        [Required] public PointTypes Type { get; set; }
+        [Required] public PointTypes PointType { get; set; }
         [Required] public byte[] PointRaw { get; set; }
 
         [NotMapped]

@@ -33,7 +33,7 @@ namespace Mapper_Api.Controllers
         [HttpGet]
         public IEnumerable<Point> GetPoint()
         {
-            return _context.Point;
+            return _context.Points;
         }
 
         // GET: api/points/{id}
@@ -43,8 +43,8 @@ namespace Mapper_Api.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var point =
-                    await _context.Point.SingleOrDefaultAsync(m =>
-                            m.CourseElementId == id);
+                    await _context.Points.SingleOrDefaultAsync(m =>
+                            m.ElementId == id);
 
             if (point == null) return NotFound();
 
@@ -58,7 +58,7 @@ namespace Mapper_Api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (id != point.CourseElementId) return BadRequest();
+            if (id != point.ElementId) return BadRequest();
 
             _context.Entry(point).State = EntityState.Modified;
 
@@ -82,10 +82,10 @@ namespace Mapper_Api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            _context.Point.Add(point);
+            _context.Points.Add(point);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPoint", new {id = point.CourseElementId},
+            return CreatedAtAction("GetPoint", new {id = point.ElementId},
                     point);
         }
 
@@ -96,11 +96,11 @@ namespace Mapper_Api.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var point =
-                    await _context.Point.SingleOrDefaultAsync(m =>
-                            m.CourseElementId == id);
+                    await _context.Points.SingleOrDefaultAsync(m =>
+                            m.ElementId == id);
             if (point == null) return NotFound();
 
-            _context.Point.Remove(point);
+            _context.Points.Remove(point);
             await _context.SaveChangesAsync();
 
             return Ok(point);
@@ -108,7 +108,7 @@ namespace Mapper_Api.Controllers
 
         private bool PointExists(Guid id)
         {
-            return _context.Point.Any(e => e.CourseElementId == id);
+            return _context.Points.Any(e => e.ElementId == id);
         }
     }
 }

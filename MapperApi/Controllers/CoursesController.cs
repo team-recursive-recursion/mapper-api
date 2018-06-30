@@ -1,9 +1,9 @@
 ﻿/***
- * Filename: GolfCoursesNewController.cs
- * Author  : ebendutoit, tilleyd
+ * Filename: CoursesController.cs
+ * Author  : Eben du Toit, Duncan Tilley
  * Class   : CoursesController
  *
- *      API entry point for Golf Courses
+ *      API entry point for courses.
  ***/
 using System;
 using System.Collections.Generic;
@@ -39,7 +39,7 @@ namespace Mapper_Api.Controllers
 
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var user = await _context.User
+            var user = await _context.Users
                     .Include(m => m.Courses)
                     .SingleOrDefaultAsync(m => m.UserID == uid);
 
@@ -52,7 +52,7 @@ namespace Mapper_Api.Controllers
         [Route("api/users/{uid}/courses")]
         [HttpPost]
         public async Task<IActionResult> PostUserCourse([FromRoute] Guid uid,
-                [FromBody] GolfCourse course)
+                [FromBody] Course course)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -62,7 +62,7 @@ namespace Mapper_Api.Controllers
 
             course.UserId = uid;
 
-            _context.GolfCourses.Add(course);
+            _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetGolfCourse",
@@ -72,9 +72,9 @@ namespace Mapper_Api.Controllers
         // GET: api/courses
         [Route("api/courses")]
         [HttpGet]
-        public IEnumerable<GolfCourse> GetCourses()
+        public IEnumerable<Course> GetCourses()
         {
-            return _context.GolfCourses;
+            return _context.Courses;
         }
 
         // GET: api/courses/{id}
@@ -85,14 +85,14 @@ namespace Mapper_Api.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
 
-            var golfCourse = await _context.GolfCourses
+            var golfCourse = await _context.Courses
                     .Include(m => m.Holes)
                     .SingleOrDefaultAsync(m => m.CourseId == id);
 
             if (golfCourse == null) return NotFound();
 
             await _context.Entry(golfCourse)
-                    .Collection(b => b.CourseElements)
+                    .Collection(b => b.Elements)
                     .Query()
                     .Where(p => p.HoleId == null)
                     .LoadAsync();
@@ -104,7 +104,7 @@ namespace Mapper_Api.Controllers
         [Route("api/courses/{id}")]
         [HttpPut]
         public async Task<IActionResult> PutCourse([FromRoute] Guid id,
-                [FromBody] GolfCourse golfCourse)
+                [FromBody] Course golfCourse)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -133,12 +133,12 @@ namespace Mapper_Api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var golfCourse = await _context.GolfCourses
+            var golfCourse = await _context.Courses
                     .SingleOrDefaultAsync(m => m.CourseId == id);
 
             if (golfCourse == null) return NotFound();
 
-            _context.GolfCourses.Remove(golfCourse);
+            _context.Courses.Remove(golfCourse);
             await _context.SaveChangesAsync();
 
             return Ok(golfCourse);
@@ -146,12 +146,12 @@ namespace Mapper_Api.Controllers
 
         private bool CourseExists(Guid id)
         {
-            return _context.GolfCourses.Any(e => e.CourseId == id);
+            return _context.Courses.Any(e => e.CourseId == id);
         }
 
         private bool UserExists(Guid id)
         {
-            return _context.User.Any(e => e.UserID == id);
+            return _context.Users.Any(e => e.UserID == id);
         }
     }
 }

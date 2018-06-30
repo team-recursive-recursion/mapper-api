@@ -33,7 +33,7 @@ namespace Mapper_Api
         [HttpGet]
         public IEnumerable<User> GetUser()
         {
-            return _context.User;
+            return _context.Users;
         }
 
         // POST: api/users
@@ -45,7 +45,7 @@ namespace Mapper_Api
                 return BadRequest(ModelState);
             }
 
-            _context.User.Add(user);
+            _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return CreatedAtAction("Create", new {id = user.UserID}, user);
         }
@@ -59,7 +59,7 @@ namespace Mapper_Api
                 return BadRequest(ModelState);
             }
 
-            var user = await _context.User
+            var user = await _context.Users
                     .Include(m => m.Courses)
                     .SingleOrDefaultAsync(m => m.UserID == id);
 
@@ -79,7 +79,7 @@ namespace Mapper_Api
         [HttpPost]
         public async Task<IActionResult> Match([FromBody] UserView uview)
         {
-            var user = await _context.User
+            var user = await _context.Users
                     .SingleOrDefaultAsync(u => u.Email == uview.Email);
 
             if (user == null) {
@@ -94,12 +94,12 @@ namespace Mapper_Api
 
         private bool EmailExists(string email)
         {
-            return _context.User.Any(e => e.Email == email);
+            return _context.Users.Any(e => e.Email == email);
         }
 
         private bool UserExists(Guid id)
         {
-            return _context.User.Any(e => e.UserID == id);
+            return _context.Users.Any(e => e.UserID == id);
         }
     }
 }
