@@ -1,7 +1,7 @@
 ﻿/***
- * Filename: GolfCourseService.cs
+ * Filename: CourseService.cs
  * Author : ebendutoit
- * Class   : GolfCourseService
+ * Class   : CourseService
  *
  *      Implementation of gold course making use of repository pattern
  ***/
@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using GeoJSON.Net.Geometry;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
 using Newtonsoft.Json;
@@ -18,11 +17,11 @@ using Point = Mapper_Api.Models.Point;
 
 namespace Mapper_Api.Services
 {
-    public class GolfCourseService
+    public class CourseService
     {
         private readonly CourseDb _db;
 
-        public GolfCourseService(CourseDb courseDb)
+        public CourseService(CourseDb courseDb)
         {
             _db = courseDb;
         }
@@ -30,9 +29,9 @@ namespace Mapper_Api.Services
 /***
  * Course ------ CRUD ------
  */
-        public async Task<GolfCourse> CreateGolfCourse(string courseName)
+        public async Task<Course> CreateGolfCourse(string courseName)
         {
-            var course = new GolfCourse
+            var course = new Course
             {
                     CourseId = Guid.NewGuid(),
                     CourseName = courseName,
@@ -47,20 +46,20 @@ namespace Mapper_Api.Services
                 throw new ArgumentException(results.First().ErrorMessage,
                         results.First().MemberNames.FirstOrDefault());
 
-            _db.GolfCourses.Add(course);
+            _db.Courses.Add(course);
             await _db.SaveChangesAsync();
             return course;
         }
 
-        public IQueryable<GolfCourse> GetGolfCourses()
+        public IQueryable<Course> GetGolfCourses()
         {
-            return _db.GolfCourses;
+            return _db.Courses;
         }
 
-        public async Task<GolfCourse> UpdateGolfCourse(Guid courseId,
+        public async Task<Course> UpdateGolfCourse(Guid courseId,
                 string courseName)
         {
-            var course = _db.GolfCourses.Where(p => p.CourseId == courseId)
+            var course = _db.Courses.Where(p => p.CourseId == courseId)
                     .DefaultIfEmpty(null).First();
             if (course == null)
                 throw new ArgumentException("Not a valid course id");
@@ -73,14 +72,14 @@ namespace Mapper_Api.Services
                 throw new ArgumentException(results.First().ErrorMessage,
                         results.First().MemberNames.FirstOrDefault());
 
-            _db.GolfCourses.Update(course);
+            _db.Courses.Update(course);
             await _db.SaveChangesAsync();
             return course;
         }
 
-        public async Task<GolfCourse> RemoveGolfCourse(Guid courseId)
+        public async Task<Course> RemoveGolfCourse(Guid courseId)
         {
-            var course = _db.GolfCourses.Where(p => p.CourseId == courseId)
+            var course = _db.Courses.Where(p => p.CourseId == courseId)
                     .DefaultIfEmpty(null).First();
             if (course == null)
                 throw new ArgumentException("Not a valid course id");
@@ -92,7 +91,7 @@ namespace Mapper_Api.Services
                 throw new ArgumentException(results.First().ErrorMessage,
                         results.First().MemberNames.FirstOrDefault());
 
-            _db.GolfCourses.Remove(course);
+            _db.Courses.Remove(course);
             await _db.SaveChangesAsync();
             return course;
         }
@@ -104,22 +103,22 @@ namespace Mapper_Api.Services
 /***
  * Polygon ------ CRUD ------
  */
-        public async Task<CoursePolygon> CreatePolygon(Guid courseId,
+        public async Task<Polygon> CreatePolygon(Guid courseId,
                 Guid? holeId,
-                CoursePolygon.PolygonTypes polygonType,
+                Polygon.PolygonTypes polygonType,
                 string geoJsonString)
         {
             try
             {
                 var polygon =
-                        JsonConvert.DeserializeObject<Polygon>(geoJsonString);
+                        JsonConvert.DeserializeObject<GeoJSON.Net.Geometry.Polygon>(geoJsonString);
 
-                var coursePolygon = new CoursePolygon
+                var coursePolygon = new Polygon
                 {
                         CourseId = courseId,
                         HoleId = holeId,
                         GeoJson = geoJsonString,
-                        Type = polygonType
+                        PolygonType = polygonType
                 };
 
                 var validationContext = new ValidationContext(coursePolygon);
@@ -130,7 +129,7 @@ namespace Mapper_Api.Services
                     throw new ArgumentException(results.First().ErrorMessage,
                             results.First().MemberNames.FirstOrDefault());
 
-                _db.CoursePolygons.Add(coursePolygon);
+                _db.Polygons.Add(coursePolygon);
 
                 await _db.SaveChangesAsync();
                 return coursePolygon;
@@ -146,31 +145,31 @@ namespace Mapper_Api.Services
             }
         }
 
-        public IQueryable<CoursePolygon> GetGolfPolygons()
+        public IQueryable<Polygon> GetGolfPolygons()
         {
-            return _db.CoursePolygons;
+            return _db.Polygons;
         }
 
-        public Task<CoursePolygon> UpdatePolygon(Guid polygonID,
-                CoursePolygon.PolygonTypes polygonType)
+        public Task<Polygon> UpdatePolygon(Guid polygonID,
+                Polygon.PolygonTypes polygonType)
         {
             return UpdatePolygon(polygonID, null, polygonType);
         }
 
-        public Task<CoursePolygon> UpdatePolygon(Guid polygonID,
+        public Task<Polygon> UpdatePolygon(Guid polygonID,
                 string geoJSONString)
         {
             return UpdatePolygon(polygonID, geoJSONString, null);
         }
 
-        public async Task<CoursePolygon> UpdatePolygon(Guid polygonID,
+        public async Task<Polygon> UpdatePolygon(Guid polygonID,
                 string geoJSONString,
-                CoursePolygon.PolygonTypes? polygonType)
+                Polygon.PolygonTypes? polygonType)
         {
             var coursePolygon =
-                    _db.CoursePolygons
+                    _db.Polygons
                             .Where(polygon =>
-                                    polygon.CourseElementId == polygonID)
+                                    polygon.ElementId == polygonID)
                             .DefaultIfEmpty(null).First();
             if (coursePolygon == null)
                 throw new ArgumentException(
@@ -182,8 +181,8 @@ namespace Mapper_Api.Services
                     coursePolygon.GeoJson = geoJSONString;
 
                 if (polygonType != null)
-                    coursePolygon.Type =
-                            (CoursePolygon.PolygonTypes) polygonType;
+                    coursePolygon.PolygonType =
+                            (Polygon.PolygonTypes) polygonType;
 
                 var validationContext = new ValidationContext(coursePolygon);
                 var results = new List<ValidationResult>();
@@ -192,7 +191,7 @@ namespace Mapper_Api.Services
                     throw new ArgumentException(results.First().ErrorMessage,
                             results.First().MemberNames.FirstOrDefault());
 
-                _db.CoursePolygons.Update(coursePolygon);
+                _db.Polygons.Update(coursePolygon);
                 await _db.SaveChangesAsync();
                 return coursePolygon;
             }
@@ -206,9 +205,9 @@ namespace Mapper_Api.Services
             }
         }
 
-        public async Task<CoursePolygon> RemovePolygon(Guid creatorId,
+        public async Task<Polygon> RemovePolygon(Guid creatorId,
                 Guid courseId,
-                CoursePolygon.PolygonTypes polygonType)
+                Polygon.PolygonTypes polygonType)
         {
             throw new NotImplementedException("Remove Polygon");
         }

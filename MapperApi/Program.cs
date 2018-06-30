@@ -47,7 +47,7 @@ namespace Mapper_Api
             var serviceProvider = new ServiceCollection()
                     .AddLogging()
                     .AddDbContext<CourseDb>()
-                    .AddScoped<GolfCourseService>()
+                    .AddScoped<CourseService>()
                     .BuildServiceProvider();
         }
     }

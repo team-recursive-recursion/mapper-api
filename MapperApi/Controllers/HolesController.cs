@@ -2,7 +2,7 @@
  * Filename: HolesController.cs
  * Author  : ebendutoit, tilleyd
  * Class   : HolesController
- *        
+ *
  *      API entry point for Holes
  ***/
 
@@ -32,19 +32,21 @@ namespace Mapper_Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCourseHoles([FromRoute] Guid cid)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            if (!GolfCourseExists(cid)) {
-                return NotFound();
+            if (!ModelState.IsValid) {
+                return BadRequest(ModelState);
             }
 
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!CourseExists(cid)) {
+                return NotFound("The course does not exist");
+            }
 
-            var course = await _context.GolfCourses
+            var course = await _context.Courses
                     .Include(m => m.Holes)
                     .SingleOrDefaultAsync(m => m.CourseId == cid);
 
-            if (course == null) return NotFound();
+            if (course == null) {
+                return NotFound("The course does not exist");
+            }
 
             return Ok(course.Holes);
         }
@@ -55,37 +57,41 @@ namespace Mapper_Api.Controllers
         public async Task<IActionResult> PostCourseHole([FromRoute] Guid cid,
                 [FromBody] Hole hole)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
 
-            if (!GolfCourseExists(cid)) {
-                return NotFound();
+            if (!CourseExists(cid)) {
+                return NotFound("The course does not exist");
             }
 
             hole.CourseId = cid;
 
-            _context.Hole.Add(hole);
+            _context.Holes.Add(hole);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetHole", new {id = hole.HoleID}, hole);
+            return CreatedAtAction("GetHole", new {id = hole.HoleId}, hole);
         }
 
-        // GET: api/courses/{id}/holes/{id}
+        // GET: api/holes/{id}
         [Route("api/holes/{id}")]
         [HttpGet]
         public async Task<IActionResult> GetHole([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
 
-            var hole = await _context.Hole
-                    .Include(h => h.CourseElements)
-                    .SingleOrDefaultAsync(m => m.HoleID == id);
+            var hole = await _context.Holes
+                    .Include(h => h.Elements)
+                    .SingleOrDefaultAsync(m => m.HoleId == id);
 
             if (hole == null) return NotFound();
 
             return Ok(hole);
         }
 
-        // PUT: api/courses/{id}/holes/{id}
+        // PUT: api/holes/{id}
         [Route("api/holes/{id}")]
         [HttpPut]
         public async Task<IActionResult> PutHole([FromRoute] Guid id,
@@ -93,7 +99,7 @@ namespace Mapper_Api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (id != hole.HoleID) return BadRequest();
+            if (id != hole.HoleId) return BadRequest();
 
             _context.Entry(hole).State = EntityState.Modified;
 
@@ -111,19 +117,19 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // DELETE: api/courses/{id}/holes/{id}
+        // DELETE: api/holes/{id}
         [Route("api/holes/{id}")]
         [HttpDelete]
         public async Task<IActionResult> DeleteHole([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var hole = await _context.Hole
-                    .SingleOrDefaultAsync(m => m.HoleID == id);
+            var hole = await _context.Holes
+                    .SingleOrDefaultAsync(m => m.HoleId == id);
 
             if (hole == null) return NotFound();
 
-            _context.Hole.Remove(hole);
+            _context.Holes.Remove(hole);
             await _context.SaveChangesAsync();
 
             return Ok(hole);
@@ -131,12 +137,12 @@ namespace Mapper_Api.Controllers
 
         private bool HoleExists(Guid id)
         {
-            return _context.Hole.Any(e => e.HoleID == id);
+            return _context.Holes.Any(e => e.HoleId == id);
         }
 
-        private bool GolfCourseExists(Guid id)
+        private bool CourseExists(Guid id)
         {
-            return _context.GolfCourses.Any(e => e.CourseId == id);
+            return _context.Courses.Any(e => e.CourseId == id);
         }
     }
 }
