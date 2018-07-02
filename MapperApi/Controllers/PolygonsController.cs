@@ -1,9 +1,9 @@
 ﻿/***
- * Filename: PointsController.cs
+ * Filename: PolygonsController.cs
  * Author  : Eben du Toit, Duncan Tilley
- * Class   : PointsController
+ * Class   : PolygonsController
  *
- *      API endpoint for points.
+ *      API endpoint for polygons.
  ***/
 
 using System;
@@ -18,19 +18,19 @@ using Microsoft.EntityFrameworkCore;
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    public class PointsController : Controller
+    public class PolygonsController : Controller
     {
         private readonly CourseDb _context;
 
-        public PointsController(CourseDb context)
+        public PolygonsController(CourseDb context)
         {
             _context = context;
         }
 
-        // GET: api/courses/{id}/points
-        [Route("api/courses/{cid}/points")]
+        // GET: api/courses/{id}/polygons
+        [Route("api/courses/{cid}/polygons")]
         [HttpGet]
-        public async Task<IActionResult> GetCoursePoints(
+        public async Task<IActionResult> GetCoursePolygons(
                 [FromRoute] Guid cid)
         {
             if (!ModelState.IsValid) {
@@ -49,18 +49,18 @@ namespace Mapper_Api.Controllers
                 return NotFound("The course does not exist");
             }
 
-            var points = course.Elements.Where(m =>
-                    m.ElementType == Element.ElementTypes.POINT &&
+            var polygons = course.Elements.Where(m =>
+                    m.ElementType == Element.ElementTypes.POLYGON &&
                     m.HoleId == null);
 
-            return Ok(points);
+            return Ok(polygons);
         }
 
-        // POST: api/courses/{id}/points
-        [Route("api/courses/{cid}/points")]
+        // POST: api/courses/{id}/polygons
+        [Route("api/courses/{cid}/polygons")]
         [HttpPost]
-        public async Task<IActionResult> PostCoursePoint([FromRoute] Guid cid,
-                [FromBody] Point point)
+        public async Task<IActionResult> PostCoursePolygon([FromRoute] Guid cid,
+                [FromBody] Polygon polygon)
         {
             if (!ModelState.IsValid) {
                 var errors = ModelState.Select(x => x.Value.Errors)
@@ -73,21 +73,21 @@ namespace Mapper_Api.Controllers
                 return NotFound("The course does not exist");
             }
 
-            point.ElementType = Element.ElementTypes.POINT;
-            point.CourseId = cid;
-            point.HoleId = null;
+            polygon.ElementType = Element.ElementTypes.POLYGON;
+            polygon.CourseId = cid;
+            polygon.HoleId = null;
 
-            _context.Points.Add(point);
+            _context.Polygons.Add(polygon);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCoursePoint",
-                    new {id = point.ElementId}, point);
+            return CreatedAtAction("GetCoursePolygon",
+                    new {id = polygon.ElementId}, polygon);
         }
 
-        // GET: api/holes/{id}/points
-        [Route("api/holes/{hid}/points")]
+        // GET: api/holes/{id}/polygons
+        [Route("api/holes/{hid}/polygons")]
         [HttpGet]
-        public async Task<IActionResult> GetHolePoints(
+        public async Task<IActionResult> GetHolePolygons(
                 [FromRoute] Guid hid)
         {
             if (!ModelState.IsValid) {
@@ -106,17 +106,17 @@ namespace Mapper_Api.Controllers
                 return NotFound("The hole does not exist");
             }
 
-            var points = hole.Elements.Where(m =>
-                    m.ElementType == Element.ElementTypes.POINT);
+            var polygons = hole.Elements.Where(m =>
+                    m.ElementType == Element.ElementTypes.POLYGON);
 
-            return Ok(points);
+            return Ok(polygons);
         }
 
-        // POST: api/holes/{id}/points
-        [Route("api/holes/{hid}/points")]
+        // POST: api/holes/{id}/polygons
+        [Route("api/holes/{hid}/polygons")]
         [HttpPost]
-        public async Task<IActionResult> PostHolePoint([FromRoute] Guid hid,
-                [FromBody] Point point)
+        public async Task<IActionResult> PostHolePolygon([FromRoute] Guid hid,
+                [FromBody] Polygon polygon)
         {
             if (!ModelState.IsValid) {
                 var errors = ModelState.Select(x => x.Value.Errors)
@@ -137,57 +137,57 @@ namespace Mapper_Api.Controllers
                 return NotFound("The hole does not exist");
             }
 
-            point.ElementType = Element.ElementTypes.POINT;
-            point.HoleId = hid;
-            point.CourseId = hole.CourseId;
+            polygon.ElementType = Element.ElementTypes.POLYGON;
+            polygon.HoleId = hid;
+            polygon.CourseId = hole.CourseId;
 
-            _context.Points.Add(point);
+            _context.Polygons.Add(polygon);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCoursePoint",
-                    new {id = point.ElementId}, point);
+            return CreatedAtAction("GetCoursePolygon",
+                    new {id = polygon.ElementId}, polygon);
         }
 
-        // GET: api/points/{id}
-        [Route("api/points/{id}")]
+        // GET: api/polygons/{id}
+        [Route("api/polygons/{id}")]
         [HttpGet]
-        public async Task<IActionResult> GetPoint([FromRoute] Guid id)
+        public async Task<IActionResult> GetPolygon([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
 
-            var point =
-                    await _context.Points.SingleOrDefaultAsync(m =>
+            var polygon =
+                    await _context.Polygons.SingleOrDefaultAsync(m =>
                             m.ElementId == id);
 
-            if (point == null) {
-                return NotFound("The point does not exist");
+            if (polygon == null) {
+                return NotFound("The polygon does not exist");
             }
 
-            return Ok(point);
+            return Ok(polygon);
         }
 
-        // PUT: api/points/{id}
-        [Route("api/points/{id}")]
+        // PUT: api/polygons/{id}
+        [Route("api/polygons/{id}")]
         [HttpPut]
-        public async Task<IActionResult> PutPoint([FromRoute] Guid id,
-                [FromBody] Point point)
+        public async Task<IActionResult> PutPolygon([FromRoute] Guid id,
+                [FromBody] Polygon polygon)
         {
             if (!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
 
-            if (id != point.ElementId) {
+            if (id != polygon.ElementId) {
                 return BadRequest();
             }
 
-            _context.Entry(point).State = EntityState.Modified;
+            _context.Entry(polygon).State = EntityState.Modified;
 
             try {
                 await _context.SaveChangesAsync();
             } catch (DbUpdateConcurrencyException) {
-                if (!PointExists(id)) {
+                if (!PolygonExists(id)) {
                     return NotFound();
                 }
                 throw;
@@ -196,30 +196,30 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // DELETE: api/points/{id}
-        [Route("api/points/{id}")]
+        // DELETE: api/polygons/{id}
+        [Route("api/polygons/{id}")]
         [HttpDelete]
-        public async Task<IActionResult> DeletePoint(
+        public async Task<IActionResult> DeletePolygon(
                 [FromRoute] Guid id)
         {
             if (!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
 
-            var point =
-                    await _context.Points.SingleOrDefaultAsync(m =>
+            var polygon =
+                    await _context.Polygons.SingleOrDefaultAsync(m =>
                             m.ElementId == id);
-            if (point == null) return NotFound();
+            if (polygon == null) return NotFound();
 
-            _context.Points.Remove(point);
+            _context.Polygons.Remove(polygon);
             await _context.SaveChangesAsync();
 
-            return Ok(point);
+            return Ok(polygon);
         }
 
-        private bool PointExists(Guid id)
+        private bool PolygonExists(Guid id)
         {
-            return _context.Points.Any(e => e.ElementId == id);
+            return _context.Polygons.Any(e => e.ElementId == id);
         }
 
         private bool CourseExists(Guid id)

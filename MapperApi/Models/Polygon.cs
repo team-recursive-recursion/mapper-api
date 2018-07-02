@@ -2,12 +2,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using GeoJSON.Net.Contrib.Wkb;
-using GeoJSON.Net.Geometry;
 using Newtonsoft.Json;
 
 namespace Mapper_Api.Models
 {
-    public class CoursePolygon : CourseElement
+    public class Polygon : Element
     {
         public enum PolygonTypes
         {
@@ -18,7 +17,7 @@ namespace Mapper_Api.Models
             WATERHAZARD = 4
         }
 
-        [Required] public PolygonTypes Type { get; set; }
+        [Required] public PolygonTypes PolygonType { get; set; }
         [Required] public byte[] PolygonRaw { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -28,10 +27,11 @@ namespace Mapper_Api.Models
         {
             get =>
                     JsonConvert.SerializeObject(
-                            PolygonRaw.ToGeoJSONObject<Polygon>());
+                            PolygonRaw.ToGeoJSONObject<GeoJSON.Net.Geometry.
+                                    Polygon>());
             set =>
-                    PolygonRaw = JsonConvert.DeserializeObject<Polygon>(value)
-                            .ToWkb();
+                    PolygonRaw = JsonConvert.DeserializeObject<GeoJSON.Net.
+                            Geometry.Polygon>(value).ToWkb();
         }
     }
 }

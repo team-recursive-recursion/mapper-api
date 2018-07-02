@@ -5,7 +5,7 @@ using Xunit;
 
 namespace TestSuite.API.CousreService
 {
-    public class GolfCourseTest : BaseCourseTest
+    public class CourseTest : BaseCourseTest
     {
         [Fact]
         public async Task CreateCourses_Input_Success()
@@ -14,7 +14,7 @@ namespace TestSuite.API.CousreService
             var courseName = "My New Golf Course";
 
             //act
-            var golfCourse = await golfCourseService.CreateGolfCourse(courseName);
+            var golfCourse = await courseService.CreateGolfCourse(courseName);
 
             //assert
             Assert.Equal(courseName, golfCourse.CourseName);
@@ -30,9 +30,9 @@ namespace TestSuite.API.CousreService
             //arrange (inline)
             //act
             var exception =
-                await Assert.ThrowsAsync<ArgumentException>(() => golfCourseService.CreateGolfCourse(courseName));
+                await Assert.ThrowsAsync<ArgumentException>(() => courseService.CreateGolfCourse(courseName));
             //assert
-            Assert.Equal(nameof(GolfCourse.CourseName), exception.ParamName);
+            Assert.Equal(nameof(Course.CourseName), exception.ParamName);
         }
 
         [Fact]
@@ -43,9 +43,9 @@ namespace TestSuite.API.CousreService
             var newCourseName = "My New Golf Course";
 
             //act
-            var golfCourse = await golfCourseService.CreateGolfCourse(courseName);
+            var golfCourse = await courseService.CreateGolfCourse(courseName);
             Assert.Equal(courseName, golfCourse.CourseName);
-            var updatedGolfCourse = await golfCourseService.UpdateGolfCourse(golfCourse.CourseId, newCourseName);
+            var updatedGolfCourse = await courseService.UpdateGolfCourse(golfCourse.CourseId, newCourseName);
 
             // assert
             Assert.Equal(newCourseName, updatedGolfCourse.CourseName);
@@ -57,13 +57,13 @@ namespace TestSuite.API.CousreService
             //arrange
 
             //act
-            var golfCourse = await golfCourseService.CreateGolfCourse("test");
+            var golfCourse = await courseService.CreateGolfCourse("test");
             Assert.Equal("test", golfCourse.CourseName);
-            var course = await golfCourseService.RemoveGolfCourse(golfCourse.CourseId);
+            var course = await courseService.RemoveGolfCourse(golfCourse.CourseId);
 
             //assert
             var exception = await Assert.ThrowsAsync<ArgumentException>(
-                () => golfCourseService.UpdateGolfCourse(course.CourseId, "updateTest")
+                () => courseService.UpdateGolfCourse(course.CourseId, "updateTest")
             );
             //assert
             Assert.Equal("Not a valid course id", exception.Message);

@@ -8,7 +8,7 @@ namespace TestSuite.API
     public class BaseCourseTest
     {
         // Testable
-        protected GolfCourseService golfCourseService;
+        protected CourseService courseService;
 
         protected CourseDb db;
 
@@ -20,7 +20,7 @@ namespace TestSuite.API
 
             var context = new CourseDb(options);
 
-            golfCourseService = new GolfCourseService(context);
+            courseService = new CourseService(context);
         }
     }
 }

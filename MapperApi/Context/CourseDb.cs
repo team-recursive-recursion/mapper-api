@@ -1,9 +1,9 @@
 ﻿/***
  * Filename: CourseDb.cs
- * Author : ebendutoit
+ * Author  : Eben Du Toit, Duncan Tilley
  * Class   : CourseDb
  *
- *      Database context for API 
+ *      Database context for API.
  ***/
 using Mapper_Api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -16,33 +16,33 @@ namespace Mapper_Api.Context
         {
         }
 
-        public DbSet<GolfCourse> GolfCourses { get; set; }
-        
-        public DbSet<CoursePolygon> CoursePolygons { get; set; }
+        public DbSet<Course> Courses { get; set; }
 
-        public DbSet<Point> Point { get; set; }
+        public DbSet<Polygon> Polygons { get; set; }
 
-        public DbSet<CourseElement> CourseElement { get; set; }
+        public DbSet<Point> Points { get; set; }
 
-        public DbSet<Hole> Hole { get; set; }
+        public DbSet<Element> Elements { get; set; }
 
-        public DbSet<User> User { get; set; }
+        public DbSet<Hole> Holes { get; set; }
+
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<GolfCourse>()
+            modelBuilder.Entity<Course>()
                     .Property(b => b.CreatedAt)
                     .HasDefaultValueSql("now()");
 
-            modelBuilder.Entity<GolfCourse>()
+            modelBuilder.Entity<Course>()
                     .Property(b => b.UpdatedAt)
                     .HasDefaultValueSql("now()");
 
-            modelBuilder.Entity<CoursePolygon>()
+            modelBuilder.Entity<Polygon>()
                     .Property(b => b.CreatedAt)
                     .HasDefaultValueSql("now()");
 
-            modelBuilder.Entity<CoursePolygon>()
+            modelBuilder.Entity<Polygon>()
                     .Property(b => b.UpdatedAt)
                     .HasDefaultValueSql("now()");
 
