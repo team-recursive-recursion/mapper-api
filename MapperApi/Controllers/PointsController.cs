@@ -50,7 +50,8 @@ namespace Mapper_Api.Controllers
             }
 
             var points = course.Elements.Where(m =>
-                    m.ElementType == Element.ElementTypes.POINT);
+                    m.ElementType == Element.ElementTypes.POINT &&
+                    m.HoleId == null);
 
             return Ok(points);
         }
@@ -74,6 +75,7 @@ namespace Mapper_Api.Controllers
 
             point.ElementType = Element.ElementTypes.POINT;
             point.CourseId = cid;
+            point.HoleId = null;
 
             _context.Points.Add(point);
             await _context.SaveChangesAsync();
