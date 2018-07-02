@@ -21,6 +21,8 @@ namespace Mapper_Api.Models
         [Required] public PointTypes PointType { get; set; }
         [Required] public byte[] PointRaw { get; set; }
 
+        public String Info { get; set; }
+
         [NotMapped]
         public string GeoJson
         {
