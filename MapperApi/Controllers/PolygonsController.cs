@@ -50,7 +50,8 @@ namespace Mapper_Api.Controllers
             }
 
             var polygons = course.Elements.Where(m =>
-                    m.ElementType == Element.ElementTypes.POLYGON);
+                    m.ElementType == Element.ElementTypes.POLYGON &&
+                    m.HoleId == null);
 
             return Ok(polygons);
         }
@@ -74,6 +75,7 @@ namespace Mapper_Api.Controllers
 
             polygon.ElementType = Element.ElementTypes.POLYGON;
             polygon.CourseId = cid;
+            polygon.HoleId = null;
 
             _context.Polygons.Add(polygon);
             await _context.SaveChangesAsync();
