@@ -51,7 +51,7 @@ namespace Mapper_Api
                         new CorsAuthorizationFilterFactory(
                                 "CorsPolicy"));
             });
-            services.AddScoped<GolfCourseService>();
+            services.AddScoped<CourseService>();
             var connectionString =
                     Configuration.GetConnectionString("MapperContext");
             services.AddEntityFrameworkNpgsql()
