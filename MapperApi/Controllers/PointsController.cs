@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Mapper_Api.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,7 +52,15 @@ namespace Mapper_Api.Controllers
 
             var points = course.Elements.Where(m =>
                     m.ElementType == Element.ElementTypes.POINT &&
-                    m.HoleId == null);
+                    m.HoleId == null).Cast<Point>()
+                    .Select( c => new PointViewModel(){
+                        CourseId = c.CourseId, 
+                        ElementId = c.ElementId, 
+                        ElementType = c.ElementType, 
+                        GeoJson = c.GeoJson, 
+                        PointType = c.PointType, 
+                        Info = c.Info
+                    });
 
             return Ok(points);
         }
@@ -107,7 +116,15 @@ namespace Mapper_Api.Controllers
             }
 
             var points = hole.Elements.Where(m =>
-                    m.ElementType == Element.ElementTypes.POINT);
+                    m.ElementType == Element.ElementTypes.POINT).Cast<Point>()
+                    .Select( c => new PointViewModel(){
+                        CourseId = c.CourseId, 
+                        ElementId = c.ElementId, 
+                        ElementType = c.ElementType, 
+                        GeoJson = c.GeoJson, 
+                        PointType = c.PointType, 
+                        Info = c.Info
+                    });
 
             return Ok(points);
         }
@@ -158,7 +175,16 @@ namespace Mapper_Api.Controllers
             }
 
             var point =
-                    await _context.Points.SingleOrDefaultAsync(m =>
+                    await _context.Points.Cast<Point>()
+                    .Select( c => new PointViewModel(){
+                        CourseId = c.CourseId, 
+                        ElementId = c.ElementId, 
+                        ElementType = c.ElementType, 
+                        GeoJson = c.GeoJson, 
+                        PointType = c.PointType, 
+                        Info = c.Info
+                    })
+                    .SingleOrDefaultAsync(m =>
                             m.ElementId == id);
 
             if (point == null) {

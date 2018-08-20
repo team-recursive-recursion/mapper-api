@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Mapper_Api.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -84,6 +85,31 @@ namespace Mapper_Api.Controllers
 
             var hole = await _context.Holes
                     .Include(h => h.Elements)
+                    .Select(c => new HoleViewModel(){
+                        CourseId = c.CourseId, 
+                        HoleId = c.HoleId, 
+                        Name = c.Name,
+                        Elements = c.Elements.Where( p => p.ElementType == Element.ElementTypes.POINT)
+                        .Cast<Point>()
+                        .Select(d => new PointViewModel(){
+                            CourseId = d.CourseId, 
+                            HoleId = d.HoleId,
+                            ElementId = d.ElementId,
+                            ElementType = d.ElementType, 
+                            GeoJson = d.GeoJson, 
+                            Info = d.Info
+                        } as ElementViewModel).Concat(
+                            c.Elements.Where(q => q.ElementType == Element.ElementTypes.POLYGON)
+                            .Cast<Polygon>()
+                            .Select(d => new PointViewModel(){
+                                CourseId = d.CourseId, 
+                                ElementId = d.ElementId,
+                                HoleId = d.HoleId,
+                                ElementType = d.ElementType, 
+                                GeoJson = d.GeoJson,  
+                            } as ElementViewModel)
+                        ).ToList(),
+                    })
                     .SingleOrDefaultAsync(m => m.HoleId == id);
 
             if (hole == null) return NotFound();

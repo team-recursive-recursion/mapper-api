@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Mapper_Api.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,7 +52,15 @@ namespace Mapper_Api.Controllers
 
             var polygons = course.Elements.Where(m =>
                     m.ElementType == Element.ElementTypes.POLYGON &&
-                    m.HoleId == null);
+                    m.HoleId == null).Cast<Polygon>()
+                    .Select( c => new PolygonViewModel(){
+                        CourseId = c.CourseId, 
+                        ElementId = c.ElementId, 
+                        ElementType = c.ElementType, 
+                        GeoJson = c.GeoJson, 
+                        PolygonType = c.PolygonType, 
+                    });
+
 
             return Ok(polygons);
         }
@@ -107,7 +116,15 @@ namespace Mapper_Api.Controllers
             }
 
             var polygons = hole.Elements.Where(m =>
-                    m.ElementType == Element.ElementTypes.POLYGON);
+                    m.ElementType == Element.ElementTypes.POLYGON)
+                    .Cast<Polygon>()
+                    .Select( c => new PolygonViewModel(){
+                        CourseId = c.CourseId, 
+                        ElementId = c.ElementId, 
+                        ElementType = c.ElementType, 
+                        GeoJson = c.GeoJson, 
+                        PolygonType = c.PolygonType, 
+                    });
 
             return Ok(polygons);
         }
@@ -157,8 +174,15 @@ namespace Mapper_Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var polygon =
-                    await _context.Polygons.SingleOrDefaultAsync(m =>
+            PolygonViewModel polygon =
+                    await _context.Polygons.Cast<Polygon>()
+                    .Select( c => new PolygonViewModel(){
+                        CourseId = c.CourseId, 
+                        ElementId = c.ElementId, 
+                        ElementType = c.ElementType, 
+                        GeoJson = c.GeoJson, 
+                        PolygonType = c.PolygonType, 
+                    }).SingleOrDefaultAsync(m =>
                             m.ElementId == id);
 
             if (polygon == null) {

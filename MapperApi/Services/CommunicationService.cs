@@ -36,26 +36,42 @@ namespace Mapper_Api.Services
         private async Task<ArraySegment<byte>> generateResponse(byte[] input)
         {
             string query = Encoding.ASCII.GetString(input);
-            // List<Message> messages = interpretInput(query);
-            var result = JsonConvert.SerializeObject(await WeatherService.GetWeatherInLatLng(10f,10f));
+            var result = JsonConvert.SerializeObject(interpretInput(query));
             return new ArraySegment<Byte>(Encoding.ASCII.GetBytes(result.ToString()));
         }
 
-        private static List<Message> interpretInput(string query)
+        private async Task<List<Message>> interpretInput(string query)
         {
-            var inputList = (List<Message>)JsonConvert.DeserializeObject(query);
-            var newList  = new List<Message>();
-            return inputList;
+            var newList = new List<Message>();
+                var inputList = (List<Message>)JsonConvert.DeserializeObject(query);
+                foreach (var item in inputList)
+                {
+                    
+                newList.Add(new Message()
+                {
+                    MessageType = Message.Type.INFORMATION,
+                    Description = "--------",
+                    Payload = item.Payload
+                });
+                }
+            newList.Add(new Message()
+            {
+                MessageType = Message.Type.INFORMATION,
+                Description = "Weather",
+                Payload = await WeatherService.GetWeatherInLatLng(10f, 10f)
+            });
+            return newList;
         }
 
-        public class Message {
+        public class Message
+        {
             public enum Type
             {
                 WARNING, INFORMATION, LOCATION
             }
-            public Type MessageType { get; set; } 
-            public string Description { get; set; } 
-            public string Payload { get; set; } 
+            public Type MessageType { get; set; }
+            public string Description { get; set; }
+            public string Payload { get; set; }
             public Message MyMessage { get; set; }
         }
     }

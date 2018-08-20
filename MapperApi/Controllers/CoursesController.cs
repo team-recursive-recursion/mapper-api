@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Mapper_Api.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -84,18 +85,35 @@ namespace Mapper_Api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-
             var golfCourse = await _context.Courses
                     .Include(m => m.Holes)
+                    .Select(c => new CourseViewModel(){
+                        CourseId = c.CourseId, 
+                        CourseName = c.CourseName, 
+                        Elements = c.Elements.Where( p => p.ElementType == Element.ElementTypes.POINT)
+                        .Cast<Point>()
+                        .Select(d => new PointViewModel(){
+                            CourseId = d.CourseId, 
+                            ElementId = d.ElementId,
+                            ElementType = d.ElementType, 
+                            GeoJson = d.GeoJson, 
+                            Info = d.Info
+                        } as ElementViewModel).Concat(
+                            c.Elements.Where(q => q.ElementType == Element.ElementTypes.POLYGON)
+                            .Cast<Polygon>()
+                            .Select(d => new PointViewModel(){
+                                CourseId = d.CourseId, 
+                                ElementId = d.ElementId,
+                                ElementType = d.ElementType, 
+                                GeoJson = d.GeoJson,  
+                            } as ElementViewModel)
+                        ).ToList(),
+                        UserId = c.UserId, 
+                        Holes = c.Holes
+                    })
                     .SingleOrDefaultAsync(m => m.CourseId == id);
 
             if (golfCourse == null) return NotFound();
-
-            await _context.Entry(golfCourse)
-                    .Collection(b => b.Elements)
-                    .Query()
-                    .Where(p => p.HoleId == null)
-                    .LoadAsync();
 
             return Ok(golfCourse);
         }
