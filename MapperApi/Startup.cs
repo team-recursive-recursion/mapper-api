@@ -6,10 +6,15 @@
  *      Configuration for pipeline and middleware per request / service
  ***/
 
+using System;
+using System.Net.WebSockets;
+using System.Threading;
+using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +44,6 @@ namespace Mapper_Api
                                 .AllowAnyHeader()
                                 .AllowCredentials());
             });
-
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling =
@@ -57,6 +61,7 @@ namespace Mapper_Api
             services.AddEntityFrameworkNpgsql()
                     .AddDbContext<CourseDb>(options =>
                             options.UseNpgsql(connectionString));
+                            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,6 +72,12 @@ namespace Mapper_Api
             else
                 app.UseExceptionHandler("/Home/Error");
 
+            var webSocketOptions = new WebSocketOptions()
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(120),
+                ReceiveBufferSize = 4 * 1024
+            };
+            app.UseWebSockets(webSocketOptions);
             app.UseCors("CorsPolicy");
             app.UseStaticFiles();
             app.UseMvc(routes =>
@@ -75,6 +86,26 @@ namespace Mapper_Api
                         "default",
                         "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.Use(async (context, next) =>
+                {
+                    if (context.Request.Path == "/ws")
+                    {
+                        if (context.WebSockets.IsWebSocketRequest)
+                        {
+                            WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                            await RealTimeCommunication.Echo(context, webSocket);
+                        }
+                        else
+                        {
+                            context.Response.StatusCode = 400;
+                        }
+                    }
+                    else
+                    {
+                        await next();
+                    }
+                });
         }
     }
 }
