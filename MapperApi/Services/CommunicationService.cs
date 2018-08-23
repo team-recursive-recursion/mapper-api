@@ -43,17 +43,20 @@ namespace Mapper_Api.Services
         private async Task<List<Message>> interpretInput(string query)
         {
             var newList = new List<Message>();
-                var inputList = (List<Message>)JsonConvert.DeserializeObject(query);
-                foreach (var item in inputList)
-                {
-                    
+            var inputData = JsonConvert.DeserializeObject<List<Message>>(query);
+            foreach (var item in inputData)
+            {
+                // Example input for testing note array of objects
+                // todo: make single object and no object acceptable using try catch try throw
+                //[{"MessageType":1,"Description":"My custom payload","Payload":"My message has ------- some data"}]
+                //
                 newList.Add(new Message()
                 {
                     MessageType = Message.Type.INFORMATION,
                     Description = "--------",
-                    Payload = item.Payload
+                    Payload = $"{item.Payload}"
                 });
-                }
+            }
             newList.Add(new Message()
             {
                 MessageType = Message.Type.INFORMATION,
