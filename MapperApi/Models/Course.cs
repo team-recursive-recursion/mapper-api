@@ -10,6 +10,7 @@ namespace Mapper_Api.Models
         [Required] public string CourseName { get; set; }
         [Required] public DateTime CreatedAt { get; set; }
         [Required] public DateTime UpdatedAt { get; set; }
+        public string Info { get; set; }
 
         [Required] public Guid UserId { get; set; }
 
