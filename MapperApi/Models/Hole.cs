@@ -8,6 +8,7 @@ namespace Mapper_Api.Models
     {
         [Key] public Guid HoleId { get; set; }
         [Required] public string Name { get; set; }
+        public string Info { get; set; }
 
         [Required] public Guid CourseId { get; set; }
 
