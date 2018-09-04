@@ -97,16 +97,18 @@ namespace Mapper_Api.Controllers
                             ElementId = d.ElementId,
                             ElementType = d.ElementType, 
                             GeoJson = d.GeoJson, 
-                            Info = d.Info
+                            Info = d.Info,
+                            PointType = d.PointType
                         } as ElementViewModel).Concat(
                             c.Elements.Where(q => q.ElementType == Element.ElementTypes.POLYGON)
                             .Cast<Polygon>()
-                            .Select(d => new PointViewModel(){
+                            .Select(d => new PolygonViewModel(){
                                 CourseId = d.CourseId, 
                                 ElementId = d.ElementId,
                                 HoleId = d.HoleId,
                                 ElementType = d.ElementType, 
                                 GeoJson = d.GeoJson,  
+                                PolygonType = d.PolygonType
                             } as ElementViewModel)
                         ).ToList(),
                     })

@@ -87,28 +87,33 @@ namespace Mapper_Api.Controllers
 
             var golfCourse = await _context.Courses
                     .Include(m => m.Holes)
-                    .Select(c => new CourseViewModel(){
-                        CourseId = c.CourseId, 
-                        CourseName = c.CourseName, 
-                        Elements = c.Elements.Where( p => p.ElementType == Element.ElementTypes.POINT)
+                    .Select(c => new CourseViewModel()
+                    {
+                        CourseId = c.CourseId,
+                        CourseName = c.CourseName,
+                        Elements = c.Elements.Where(p => p.ElementType == Element.ElementTypes.POINT)
                         .Cast<Point>()
-                        .Select(d => new PointViewModel(){
-                            CourseId = d.CourseId, 
+                        .Select(d => new PointViewModel() {
+                            CourseId = d.CourseId,
                             ElementId = d.ElementId,
-                            ElementType = d.ElementType, 
-                            GeoJson = d.GeoJson, 
-                            Info = d.Info
-                        } as ElementViewModel).Concat(
+                            ElementType = d.ElementType,
+                            GeoJson = d.GeoJson,
+                            Info = d.Info,
+                            PointType = d.PointType
+                        } as ElementViewModel
+                        ).Concat(
                             c.Elements.Where(q => q.ElementType == Element.ElementTypes.POLYGON)
                             .Cast<Polygon>()
-                            .Select(d => new PointViewModel(){
-                                CourseId = d.CourseId, 
+                            .Select(d => new PolygonViewModel() {
+                                CourseId = d.CourseId,
                                 ElementId = d.ElementId,
-                                ElementType = d.ElementType, 
-                                GeoJson = d.GeoJson,  
-                            } as ElementViewModel)
+                                ElementType = d.ElementType,
+                                GeoJson = d.GeoJson,
+                                PolygonType = d.PolygonType
+                            } as ElementViewModel
+                            )
                         ).ToList(),
-                        UserId = c.UserId, 
+                        UserId = c.UserId,
                         Holes = c.Holes
                     })
                     .SingleOrDefaultAsync(m => m.CourseId == id);
