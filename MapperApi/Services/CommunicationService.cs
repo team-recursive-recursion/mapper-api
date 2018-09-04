@@ -43,26 +43,58 @@ namespace Mapper_Api.Services
         private async Task<List<Message>> interpretInput(string query)
         {
             var newList = new List<Message>();
-            var inputData = JsonConvert.DeserializeObject<List<Message>>(query);
-            foreach (var item in inputData)
+            try
             {
-                // Example input for testing note array of objects
-                // todo: make single object and no object acceptable using try catch try throw
-                //[{"MessageType":1,"Description":"My custom payload","Payload":"My message has ------- some data"}]
-                //
+                var inputData = JsonConvert.DeserializeObject<LiveLocationMessage>(query);
+                if (inputData.UserID != null)
+                {
+                    newList.Add(new Message()
+                    {
+                        MessageType = Message.Type.INFORMATION,
+                        Description = "-- Its name is --",
+                        Payload = "It exists"
+                    });
+                }
+                else
+                {
+                    if (inputData.Device == LiveLocationMessage.DeviceType.MONITOR)
+                    {
+                        newList.Add(new Message()
+                        {
+                            MessageType = Message.Type.INFORMATION,
+                            Description = "-- Its name is --",
+                            Payload = "Monitor"
+                        });
+                    }
+                    if (inputData.Device == LiveLocationMessage.DeviceType.APPLICATION)
+                    {
+                        newList.Add(new Message()
+                        {
+                            MessageType = Message.Type.INFORMATION,
+                            Description = "-- Its name is --",
+                            Payload = "Application"
+                        });
+                    }
+                    if (inputData.Device == null && inputData.UserID == Guid.Empty)
+                    {
+                        newList.Add(new Message()
+                        {
+                            MessageType = Message.Type.INFORMATION,
+                            Description = "-- Its name is --",
+                            Payload = "Error"
+                        });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
                 newList.Add(new Message()
                 {
                     MessageType = Message.Type.INFORMATION,
-                    Description = "--------",
-                    Payload = $"{item.Payload}"
+                    Description = "-- Its name is --",
+                    Payload = "Error"
                 });
             }
-            newList.Add(new Message()
-            {
-                MessageType = Message.Type.INFORMATION,
-                Description = "Weather",
-                Payload = await WeatherService.GetWeatherInLatLng(10f, 10f)
-            });
             return newList;
         }
         public class Message
