@@ -1,9 +1,9 @@
 ﻿/***
- * Filename: GolfCoursesNewController.cs
- * Author  : ebendutoit, tilleyd
+ * Filename: CoursesController.cs
+ * Author  : Eben du Toit, Duncan Tilley
  * Class   : CoursesController
  *
- *      API entry point for Golf Courses
+ *      API entry point for courses.
  ***/
 using System;
 using System.Collections.Generic;
@@ -11,13 +11,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Mapper_Api.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/courses")]
     public class CoursesController : Controller
     {
         private readonly CourseDb _context;
@@ -27,39 +27,109 @@ namespace Mapper_Api.Controllers
             _context = context;
         }
 
-        // GET: api/courses
+        // GET: api/users/{id}/courses
+        [Route("api/users/{uid}/courses")]
         [HttpGet]
-        public IEnumerable<GolfCourse> GetGolfCourses()
-        {
-            return _context.GolfCourses;
-        }
-
-        // GET: api/courses/{id}
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetGolfCourse([FromRoute] Guid id)
+        public async Task<IActionResult> GetUserCourses([FromRoute] Guid uid)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
+            if (!UserExists(uid)) {
+                return NotFound();
+            }
 
-            var golfCourse = await _context.GolfCourses
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var user = await _context.Users
+                    .Include(m => m.Courses)
+                    .SingleOrDefaultAsync(m => m.UserID == uid);
+
+            if (user == null) return NotFound();
+
+            return Ok(user.Courses);
+        }
+
+        // POST: api/users/{id}/courses
+        [Route("api/users/{uid}/courses")]
+        [HttpPost]
+        public async Task<IActionResult> PostUserCourse([FromRoute] Guid uid,
+                [FromBody] Course course)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            if (!UserExists(uid)) {
+                return NotFound();
+            }
+
+            course.UserId = uid;
+
+            _context.Courses.Add(course);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetGolfCourse",
+                    new {id = course.CourseId}, course);
+        }
+
+        // GET: api/courses
+        [Route("api/courses")]
+        [HttpGet]
+        public IEnumerable<Course> GetCourses()
+        {
+            return _context.Courses;
+        }
+
+        // GET: api/courses/{id}
+        [Route("api/courses/{id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetCourse([FromRoute] Guid id)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var golfCourse = await _context.Courses
                     .Include(m => m.Holes)
+                    .Select(c => new CourseViewModel()
+                    {
+                        CourseId = c.CourseId,
+                        CourseName = c.CourseName,
+                        Elements = c.Elements.Where(p => p.ElementType == Element.ElementTypes.POINT && p.HoleId == null)
+                        .Cast<Point>()
+                        .Select(d => new PointViewModel() {
+                            CourseId = d.CourseId,
+                            ElementId = d.ElementId,
+                            ElementType = d.ElementType,
+                            GeoJson = d.GeoJson,
+                            Info = d.Info,
+                            PointType = d.PointType, 
+                            HoleId = d.HoleId
+                        } as ElementViewModel
+                        ).Concat(
+                            c.Elements.Where(q => q.ElementType == Element.ElementTypes.POLYGON && q.HoleId == null)
+                            .Cast<Polygon>()
+                            .Select(d => new PolygonViewModel() {
+                                CourseId = d.CourseId,
+                                ElementId = d.ElementId,
+                                ElementType = d.ElementType,
+                                GeoJson = d.GeoJson,
+                                PolygonType = d.PolygonType,
+                                HoleId = d.HoleId
+                            } as ElementViewModel
+                            )
+                        ).ToList(),
+                        UserId = c.UserId,
+                        Holes = c.Holes
+                    })
                     .SingleOrDefaultAsync(m => m.CourseId == id);
 
             if (golfCourse == null) return NotFound();
-
-            await _context.Entry(golfCourse)
-                    .Collection(b => b.CourseElements)
-                    .Query()
-                    .Where(p => p.HoleId == null)
-                    .LoadAsync();
 
             return Ok(golfCourse);
         }
 
         // PUT: api/courses/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutGolfCourse([FromRoute] Guid id,
-                [FromBody] GolfCourse golfCourse)
+        [Route("api/courses/{id}")]
+        [HttpPut]
+        public async Task<IActionResult> PutCourse([FromRoute] Guid id,
+                [FromBody] Course golfCourse)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -73,7 +143,7 @@ namespace Mapper_Api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!GolfCourseExists(id))
+                if (!CourseExists(id))
                     return NotFound();
                 throw;
             }
@@ -81,40 +151,32 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // POST: api/courses
-        [HttpPost]
-        public async Task<IActionResult> PostGolfCourse(
-                [FromBody] GolfCourse golfCourse)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            _context.GolfCourses.Add(golfCourse);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetGolfCourse",
-                    new {id = golfCourse.CourseId}, golfCourse);
-        }
-
         // DELETE: api/courses/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGolfCourse([FromRoute] Guid id)
+        [Route("api/courses/{id}")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteCourse([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var golfCourse = await _context.GolfCourses
+            var golfCourse = await _context.Courses
                     .SingleOrDefaultAsync(m => m.CourseId == id);
 
             if (golfCourse == null) return NotFound();
 
-            _context.GolfCourses.Remove(golfCourse);
+            _context.Courses.Remove(golfCourse);
             await _context.SaveChangesAsync();
 
             return Ok(golfCourse);
         }
 
-        private bool GolfCourseExists(Guid id)
+        private bool CourseExists(Guid id)
         {
-            return _context.GolfCourses.Any(e => e.CourseId == id);
+            return _context.Courses.Any(e => e.CourseId == id);
+        }
+
+        private bool UserExists(Guid id)
+        {
+            return _context.Users.Any(e => e.UserID == id);
         }
     }
 }

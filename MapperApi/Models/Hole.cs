@@ -6,11 +6,12 @@ namespace Mapper_Api.Models
 {
     public class Hole
     {
-        [Key] public Guid HoleID { get; set; }
+        [Key] public Guid HoleId { get; set; }
         [Required] public string Name { get; set; }
+        public string Info { get; set; }
 
         [Required] public Guid CourseId { get; set; }
 
-        public List<CourseElement> CourseElements { get; set; }
+        public List<Element> Elements { get; set; }
     }
 }

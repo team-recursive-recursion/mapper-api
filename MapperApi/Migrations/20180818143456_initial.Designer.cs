@@ -13,9 +13,10 @@ using System;
 namespace MapperApi.Migrations
 {
     [DbContext(typeof(CourseDb))]
-    partial class CourseDbModelSnapshot : ModelSnapshot
+    [Migration("20180818143456_initial")]
+    partial class initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
