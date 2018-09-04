@@ -116,7 +116,8 @@ namespace Mapper_Api.Controllers
                             )
                         ).ToList(),
                         UserId = c.UserId,
-                        Holes = c.Holes
+                        Holes = c.Holes, 
+                        Info = c.Info
                     })
                     .SingleOrDefaultAsync(m => m.CourseId == id);
 
