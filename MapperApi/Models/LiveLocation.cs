@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 
 public class LiveLocation
 {
-    public DateTime CreatedAt;
+    public DateTime CreatedAt { get; set; }
 
-    public Guid? UserID;
+    public Guid? UserID { get; set; }
 
     [Required]
     public byte[] PointRaw { get; set; }
