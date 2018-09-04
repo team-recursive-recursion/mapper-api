@@ -59,6 +59,7 @@ namespace Mapper_Api.Controllers
                         ElementType = c.ElementType, 
                         GeoJson = c.GeoJson, 
                         PolygonType = c.PolygonType, 
+                        HoleId = c.HoleId
                     });
 
 
@@ -124,6 +125,7 @@ namespace Mapper_Api.Controllers
                         ElementType = c.ElementType, 
                         GeoJson = c.GeoJson, 
                         PolygonType = c.PolygonType, 
+                        HoleId = c.HoleId
                     });
 
             return Ok(polygons);
@@ -182,6 +184,7 @@ namespace Mapper_Api.Controllers
                         ElementType = c.ElementType, 
                         GeoJson = c.GeoJson, 
                         PolygonType = c.PolygonType, 
+                        HoleId = c.HoleId
                     }).SingleOrDefaultAsync(m =>
                             m.ElementId == id);
 

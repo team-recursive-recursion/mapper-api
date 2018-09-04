@@ -17,8 +17,8 @@ namespace Mapper_Api.Services
         {
             this.WeatherService = WeatherService;
         }
-
-        public async Task Echo(HttpContext context, WebSocket webSocket)
+        
+        public async Task SocketHandler(HttpContext context, WebSocket webSocket)
         {
             var buffer = new byte[1024 * 4];
             WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
@@ -26,14 +26,14 @@ namespace Mapper_Api.Services
             {
                 byte[] data = new byte[result.Count];
                 Array.Copy(buffer, data, result.Count);
-                var response = await generateResponse(data);
+                var response = await GenerateResponse(data);
                 await webSocket.SendAsync(response, result.MessageType, result.EndOfMessage, CancellationToken.None);
                 result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
             }
             await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
         }
 
-        private async Task<ArraySegment<byte>> generateResponse(byte[] input)
+        private async Task<ArraySegment<byte>> GenerateResponse(byte[] input)
         {
             string query = Encoding.ASCII.GetString(input);
             var result = JsonConvert.SerializeObject(interpretInput(query));
@@ -65,7 +65,6 @@ namespace Mapper_Api.Services
             });
             return newList;
         }
-
         public class Message
         {
             public enum Type
