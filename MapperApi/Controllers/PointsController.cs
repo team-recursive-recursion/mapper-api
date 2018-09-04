@@ -59,7 +59,8 @@ namespace Mapper_Api.Controllers
                         ElementType = c.ElementType, 
                         GeoJson = c.GeoJson, 
                         PointType = c.PointType, 
-                        Info = c.Info
+                        Info = c.Info, 
+                        HoleId = c.HoleId
                     });
 
             return Ok(points);
@@ -123,7 +124,8 @@ namespace Mapper_Api.Controllers
                         ElementType = c.ElementType, 
                         GeoJson = c.GeoJson, 
                         PointType = c.PointType, 
-                        Info = c.Info
+                        Info = c.Info, 
+                        HoleId = c.HoleId
                     });
 
             return Ok(points);
@@ -182,7 +184,8 @@ namespace Mapper_Api.Controllers
                         ElementType = c.ElementType, 
                         GeoJson = c.GeoJson, 
                         PointType = c.PointType, 
-                        Info = c.Info
+                        Info = c.Info, 
+                        HoleId = c.HoleId
                     })
                     .SingleOrDefaultAsync(m =>
                             m.ElementId == id);

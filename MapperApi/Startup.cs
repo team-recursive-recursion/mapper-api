@@ -100,7 +100,7 @@ namespace Mapper_Api
                         if (context.WebSockets.IsWebSocketRequest)
                         {
                             WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                            await CommunicationService.Echo(context, webSocket);
+                            await CommunicationService.SocketHandler(context, webSocket);
                         }
                         else
                         {

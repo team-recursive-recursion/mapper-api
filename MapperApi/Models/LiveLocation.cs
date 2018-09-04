@@ -11,7 +11,6 @@ public class LiveLocation
 
     public Guid? UserID { get; set; }
 
-    [Required]
     public byte[] PointRaw { get; set; }
 
     [NotMapped]
