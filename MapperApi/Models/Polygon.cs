@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using GeoJSON.Net.Contrib.Wkb;
+using Mapper_Api.ViewModels;
 using Newtonsoft.Json;
 
 namespace Mapper_Api.Models
@@ -33,5 +34,6 @@ namespace Mapper_Api.Models
                     PolygonRaw = JsonConvert.DeserializeObject<GeoJSON.Net.
                             Geometry.Polygon>(value).ToWkb();
         }
+
     }
 }

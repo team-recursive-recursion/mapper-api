@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Mapper_Api.ViewModels
 {
-    public class PolygonViewModel : Element
+    public class PolygonViewModel : ElementViewModel
     {
         public Polygon.PolygonTypes PolygonType { get; set; }
         public byte[] PolygonRaw { get; set; }
@@ -16,12 +16,10 @@ namespace Mapper_Api.ViewModels
 
         public string GeoJson { get; set; }
 
-        public static implicit operator PolygonViewModel(Polygon model)
+        public static implicit operator PolygonViewModel(Polygon v) => new PolygonViewModel()
         {
-            return new PolygonViewModel (){
-                GeoJson = model.GeoJson, 
-                PolygonType = model.PolygonType, 
-            };
-        }
+            GeoJson = v.GeoJson,
+            PolygonType = v.PolygonType,
+        };
     }
 }

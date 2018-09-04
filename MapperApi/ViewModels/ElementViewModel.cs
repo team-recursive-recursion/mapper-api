@@ -12,14 +12,8 @@ namespace Mapper_Api.ViewModels
         public Element.ElementTypes ElementType { get; set; }
         public Guid? HoleId { get; set; }
         public Guid CourseId { get; set; }
-        public static implicit operator ElementViewModel(Element v) => new PointViewModel()
-        {
-            HoleId = v.HoleId,
-            CourseId = v.CourseId,
-            ElementId = v.ElementId,
-            ElementType = v.ElementType
-        };
 
+     
     }
 
 }
