@@ -89,7 +89,7 @@ namespace Mapper_Api.Controllers
                         CourseId = c.CourseId, 
                         HoleId = c.HoleId, 
                         Name = c.Name,
-                        Elements = c.Elements.Where( p => p.ElementType == Element.ElementTypes.POINT)
+                        Elements = c.Elements.Where( p => p.ElementType == Element.ElementTypes.POINT && p.HoleId == id)
                         .Cast<Point>()
                         .Select(d => new PointViewModel(){
                             CourseId = d.CourseId, 
@@ -100,7 +100,7 @@ namespace Mapper_Api.Controllers
                             Info = d.Info,
                             PointType = d.PointType
                         } as ElementViewModel).Concat(
-                            c.Elements.Where(q => q.ElementType == Element.ElementTypes.POLYGON)
+                            c.Elements.Where(q => q.ElementType == Element.ElementTypes.POLYGON && q.HoleId == id)
                             .Cast<Polygon>()
                             .Select(d => new PolygonViewModel(){
                                 CourseId = d.CourseId, 
