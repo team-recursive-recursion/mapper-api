@@ -6,6 +6,7 @@
  *      Process user location.
  ***/
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -28,7 +29,7 @@ namespace Mapper_Api.Services
             _db = courseDb;
         }
 
-        public async Task<List<Course>> sortCourseByPosition(double lat, double lon, int limit){
+        public async Task<IEnumerable<Course>> sortCourseByPosition(Double? lat, Double? lon, int limit){
             string query = @"SELECT cs.* FROM public.""Courses"" cs LEFT JOIN 
             (SELECT *, ST_DistanceSphere(ST_geomFromWkb((el.""PolygonRaw"")), 
              ST_geomFromGeoJson('{{""type"":""Point"",""coordinates"":[ Param1 , Param2 ]}}'))

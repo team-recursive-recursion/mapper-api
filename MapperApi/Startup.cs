@@ -61,6 +61,8 @@ namespace Mapper_Api
             services.AddEntityFrameworkNpgsql()
                     .AddDbContext<CourseDb>(options =>
                             options.UseNpgsql(connectionString));
+                            
+            services.AddScoped<LocationService>();
 
         }
 
