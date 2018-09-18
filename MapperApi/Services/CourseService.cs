@@ -139,9 +139,8 @@ namespace Mapper_Api.Services
                 throw new ArgumentException(e.Message);
             }
             catch (NullReferenceException e)
-
             {
-                throw new ArgumentException("Required argument not set");
+                throw new ArgumentException("Required argument not set", e.Message);
             }
         }
 
@@ -201,16 +200,16 @@ namespace Mapper_Api.Services
             }
             catch (NullReferenceException e)
             {
-                throw new ArgumentException("Required argument not set");
+                throw new ArgumentException("Required argument not set", e.Message);
             }
         }
 
-        public async Task<Polygon> RemovePolygon(Guid creatorId,
-                Guid courseId,
-                Polygon.PolygonTypes polygonType)
-        {
-            throw new NotImplementedException("Remove Polygon");
-        }
+        // public async Task<Polygon> RemovePolygon(Guid creatorId,
+        //         Guid courseId,
+        //         Polygon.PolygonTypes polygonType)
+        // {
+        //     throw new NotImplementedException("Remove Polygon");
+        // }
 /***
  * Polygon ------ CRUD ------
  */
@@ -218,23 +217,23 @@ namespace Mapper_Api.Services
 /***
  * Create Point ------ CRUD ------
  */
-        public async Task<Point> CreatePoint(Guid creatorId, Guid courseId,
-                Point.PointTypes pointType)
-        {
-            throw new NotImplementedException("Create Point");
-        }
+        // public async Task<Point> CreatePoint(Guid creatorId, Guid courseId,
+        //         Point.PointTypes pointType)
+        // {
+        //     throw new NotImplementedException("Create Point");
+        // }
 
-        public async Task<Point> UpdatePoint(Guid creatorId, Guid courseId,
-                Point.PointTypes pointType)
-        {
-            throw new NotImplementedException("Update Point");
-        }
+        // public async Task<Point> UpdatePoint(Guid creatorId, Guid courseId,
+        //         Point.PointTypes pointType)
+        // {
+        //     throw new NotImplementedException("Update Point");
+        // }
 
-        public async Task<Point> RemovePoint(Guid creatorId, Guid courseId,
-                Point.PointTypes pointType)
-        {
-            throw new NotImplementedException("Remove Point");
-        }
+        // public async Task<Point> RemovePoint(Guid creatorId, Guid courseId,
+        //         Point.PointTypes pointType)
+        // {
+        //     throw new NotImplementedException("Remove Point");
+        // }
 
 /***
  * Create Point ------ CRUD ------

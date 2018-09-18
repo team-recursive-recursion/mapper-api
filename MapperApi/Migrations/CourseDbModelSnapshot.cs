@@ -22,6 +22,33 @@ namespace MapperApi.Migrations
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011");
 
+            modelBuilder.Entity("LiveLocation", b =>
+                {
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("UserID");
+
+                    b.Property<byte[]>("PointRaw");
+
+                    b.HasKey("CreatedAt", "UserID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("LiveLocation");
+                });
+
+            modelBuilder.Entity("LiveUser", b =>
+                {
+                    b.Property<Guid>("UserID")
+                        .ValueGeneratedOnAdd();
+
+                    b.HasKey("UserID");
+
+                    b.ToTable("LiveUser");
+                });
+
             modelBuilder.Entity("Mapper_Api.Models.Course", b =>
                 {
                     b.Property<Guid>("CourseId")
@@ -33,6 +60,8 @@ namespace MapperApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Info");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -79,6 +108,8 @@ namespace MapperApi.Migrations
 
                     b.Property<Guid>("CourseId");
 
+                    b.Property<string>("Info");
+
                     b.Property<string>("Name")
                         .IsRequired();
 
@@ -105,6 +136,8 @@ namespace MapperApi.Migrations
 
                     b.Property<string>("Surname")
                         .IsRequired();
+
+                    b.Property<string>("Token");
 
                     b.HasKey("UserID");
 
@@ -150,6 +183,14 @@ namespace MapperApi.Migrations
                     b.ToTable("Polygon");
 
                     b.HasDiscriminator().HasValue("Polygon");
+                });
+
+            modelBuilder.Entity("LiveLocation", b =>
+                {
+                    b.HasOne("LiveUser")
+                        .WithMany("Locations")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Mapper_Api.Models.Course", b =>
