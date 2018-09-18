@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
 using Mapper_Api.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -69,6 +70,7 @@ namespace Mapper_Api.Controllers
         // POST: api/courses/{id}/polygons
         [Route("api/courses/{cid}/polygons")]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> PostCoursePolygon([FromRoute] Guid cid,
                 [FromBody] Polygon polygon)
         {
@@ -134,6 +136,7 @@ namespace Mapper_Api.Controllers
         // POST: api/holes/{id}/polygons
         [Route("api/holes/{hid}/polygons")]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> PostHolePolygon([FromRoute] Guid hid,
                 [FromBody] Polygon polygon)
         {
@@ -198,6 +201,7 @@ namespace Mapper_Api.Controllers
         // PUT: api/polygons/{id}
         [Route("api/polygons/{id}")]
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> PutPolygon([FromRoute] Guid id,
                 [FromBody] Polygon polygon)
         {
@@ -226,6 +230,7 @@ namespace Mapper_Api.Controllers
         // DELETE: api/polygons/{id}
         [Route("api/polygons/{id}")]
         [HttpDelete]
+        [Authorize]
         public async Task<IActionResult> DeletePolygon(
                 [FromRoute] Guid id)
         {

@@ -13,6 +13,7 @@ using Mapper_Api.Context;
 using Mapper_Api.Models;
 using Mapper_Api.Services;
 using Mapper_Api.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -53,8 +54,10 @@ namespace Mapper_Api.Controllers
         }
 
         // POST: api/users/{id}/courses
+
         [Route("api/users/{uid}/courses")]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> PostUserCourse([FromRoute] Guid uid,
                 [FromBody] Course course)
         {
@@ -137,6 +140,7 @@ namespace Mapper_Api.Controllers
         // PUT: api/courses/{id}
         [Route("api/courses/{id}")]
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> PutCourse([FromRoute] Guid id,
                 [FromBody] Course golfCourse)
         {
@@ -163,6 +167,7 @@ namespace Mapper_Api.Controllers
         // DELETE: api/courses/{id}
         [Route("api/courses/{id}")]
         [HttpDelete]
+        [Authorize]
         public async Task<IActionResult> DeleteCourse([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);

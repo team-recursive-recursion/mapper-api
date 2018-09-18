@@ -15,5 +15,4 @@ namespace Mapper_Api.ViewModels
         public List<ElementViewModel> Elements { get; set; }
 
     }
-
 }
