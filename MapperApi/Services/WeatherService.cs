@@ -12,8 +12,9 @@ namespace Mapper_Api.Services
     public class WeatherService
     {
         string AppKey;
-        public WeatherService(string appKey)
+       public WeatherService()
         {
+            string appKey = "643fa9db96b5c946db296ff59f39ed50";
             this.AppKey = appKey;
         }
 

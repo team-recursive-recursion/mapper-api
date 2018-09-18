@@ -28,9 +28,9 @@ namespace Mapper_Api.Context
 
         public DbSet<User> Users { get; set; }
 
-        // public DbSet<User> LiveLocation { get; set; }
+        public DbSet<LiveLocation> LiveLocation { get; set; }
 
-        // public DbSet<User> LiveUser { get; set; }
+        public DbSet<LiveUser> LiveUser { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -50,9 +50,14 @@ namespace Mapper_Api.Context
                     .Property(b => b.UpdatedAt)
                     .HasDefaultValueSql("now()");
 
-        //     modelBuilder.Entity<LiveLocation>()
-        //             .Property(b => b.CreatedAt)
-        //             .HasDefaultValueSql("now()");
+
+            modelBuilder.Entity<LiveLocation>()
+                    .Property(b => b.CreatedAt)
+                    .HasDefaultValueSql("now()");
+
+            modelBuilder.Entity<LiveLocation>().HasKey(ll => new {
+                ll.CreatedAt, 
+                ll.UserID});
 
             modelBuilder.Entity<User>()
                     .HasAlternateKey(c => c.Email)
