@@ -107,7 +107,8 @@ namespace Mapper_Api.Controllers
                             ElementType = d.ElementType,
                             GeoJson = d.GeoJson,
                             Info = d.Info,
-                            PointType = d.PointType
+                            PointType = d.PointType, 
+                            HoleId = d.HoleId
                         } as ElementViewModel
                         ).Concat(
                             c.Elements.Where(q => q.ElementType == Element.ElementTypes.POLYGON && q.HoleId == null)
@@ -117,12 +118,14 @@ namespace Mapper_Api.Controllers
                                 ElementId = d.ElementId,
                                 ElementType = d.ElementType,
                                 GeoJson = d.GeoJson,
-                                PolygonType = d.PolygonType
+                                PolygonType = d.PolygonType,
+                                HoleId = d.HoleId
                             } as ElementViewModel
                             )
                         ).ToList(),
                         UserId = c.UserId,
-                        Holes = c.Holes
+                        Holes = c.Holes, 
+                        Info = c.Info
                     })
                     .SingleOrDefaultAsync(m => m.CourseId == id);
 

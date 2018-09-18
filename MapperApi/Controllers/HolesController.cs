@@ -89,6 +89,7 @@ namespace Mapper_Api.Controllers
                         CourseId = c.CourseId, 
                         HoleId = c.HoleId, 
                         Name = c.Name,
+                        Info = c.Info, 
                         Elements = c.Elements.Where( p => p.ElementType == Element.ElementTypes.POINT && p.HoleId == id)
                         .Cast<Point>()
                         .Select(d => new PointViewModel(){

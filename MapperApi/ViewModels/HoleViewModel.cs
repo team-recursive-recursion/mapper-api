@@ -11,7 +11,9 @@ namespace Mapper_Api.ViewModels
         public Guid HoleId { get; set; }
         public string Name { get; set; }
         public Guid CourseId { get; set; }
+        public string Info { get; set; }
         public List<ElementViewModel> Elements { get; set; }
 
     }
+
 }

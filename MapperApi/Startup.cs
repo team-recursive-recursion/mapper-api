@@ -64,16 +64,16 @@ namespace Mapper_Api
                             
             services.AddScoped<LocationService>();
 
+            // get a key at https://home.openweathermap.org/api_keys
+            // todo: remove key and use app settings json
+            // string appKey = "643fa9db96b5c946db296ff59f39ed50";
+            services.AddScoped<WeatherService>();
+            services.AddTransient<CommunicationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            // get a key at https://home.openweathermap.org/api_keys
-            // todo: remove key and use app settings json
-            string appKey = "643fa9db96b5c946db296ff59f39ed50";
-            WeatherService weatherService = new WeatherService(appKey);
-            CommunicationService CommunicationService = new CommunicationService(weatherService);
 
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
@@ -102,7 +102,7 @@ namespace Mapper_Api
                         if (context.WebSockets.IsWebSocketRequest)
                         {
                             WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                            await CommunicationService.Echo(context, webSocket);
+                            await  context.RequestServices.GetService<CommunicationService>().SocketHandler(context, webSocket);
                         }
                         else
                         {
