@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MapperApi.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -31,6 +31,7 @@ namespace MapperApi.Migrations
                     CourseId = table.Column<Guid>(nullable: false),
                     CourseName = table.Column<string>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false, defaultValueSql: "now()"),
+                    Info = table.Column<string>(nullable: true),
                     UpdatedAt = table.Column<DateTime>(nullable: false, defaultValueSql: "now()"),
                     UserId = table.Column<Guid>(nullable: false)
                 },
@@ -51,6 +52,7 @@ namespace MapperApi.Migrations
                 {
                     HoleId = table.Column<Guid>(nullable: false),
                     CourseId = table.Column<Guid>(nullable: false),
+                    Info = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>

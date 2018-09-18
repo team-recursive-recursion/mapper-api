@@ -13,8 +13,8 @@ using System;
 namespace MapperApi.Migrations
 {
     [DbContext(typeof(CourseDb))]
-    [Migration("20180818143456_initial")]
-    partial class initial
+    [Migration("20180829133715_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,6 +34,8 @@ namespace MapperApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Info");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -79,6 +81,8 @@ namespace MapperApi.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<Guid>("CourseId");
+
+                    b.Property<string>("Info");
 
                     b.Property<string>("Name")
                         .IsRequired();

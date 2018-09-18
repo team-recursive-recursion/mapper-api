@@ -34,6 +34,8 @@ namespace MapperApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("now()");
 
+                    b.Property<string>("Info");
+
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("now()");
@@ -78,6 +80,8 @@ namespace MapperApi.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<Guid>("CourseId");
+
+                    b.Property<string>("Info");
 
                     b.Property<string>("Name")
                         .IsRequired();

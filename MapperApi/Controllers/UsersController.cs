@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Mapper_Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +35,7 @@ namespace Mapper_Api
         public IEnumerable<User> GetUser()
         {
             return _context.Users;
+            
         }
 
         // POST: api/users
