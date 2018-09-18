@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
 using Mapper_Api.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -69,6 +70,7 @@ namespace Mapper_Api.Controllers
         // POST: api/courses/{id}/points
         [Route("api/courses/{cid}/points")]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> PostCoursePoint([FromRoute] Guid cid,
                 [FromBody] Point point)
         {
@@ -134,6 +136,7 @@ namespace Mapper_Api.Controllers
         // POST: api/holes/{id}/points
         [Route("api/holes/{hid}/points")]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> PostHolePoint([FromRoute] Guid hid,
                 [FromBody] Point point)
         {
@@ -200,6 +203,7 @@ namespace Mapper_Api.Controllers
         // PUT: api/points/{id}
         [Route("api/points/{id}")]
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> PutPoint([FromRoute] Guid id,
                 [FromBody] Point point)
         {
@@ -228,6 +232,7 @@ namespace Mapper_Api.Controllers
         // DELETE: api/points/{id}
         [Route("api/points/{id}")]
         [HttpDelete]
+        [Authorize]
         public async Task<IActionResult> DeletePoint(
                 [FromRoute] Guid id)
         {

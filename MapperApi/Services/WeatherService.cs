@@ -12,7 +12,7 @@ namespace Mapper_Api.Services
     public class WeatherService
     {
         string AppKey;
-       public WeatherService()
+        public WeatherService()
         {
             string appKey = "643fa9db96b5c946db296ff59f39ed50";
             this.AppKey = appKey;
@@ -21,8 +21,8 @@ namespace Mapper_Api.Services
         public async Task<string> GetWeatherInLatLng(double Lat, double Lng)
         {
             // todo override
-            double 
-            lat = -25.768926, 
+            double
+            lat = -25.768926,
             lng = 28.242805;
 
             string baseUrl = $"http://api.openweathermap.org/data/2.5/weather?lat={lat.ToString()}&lon={lng.ToString()}&appid={this.AppKey}";

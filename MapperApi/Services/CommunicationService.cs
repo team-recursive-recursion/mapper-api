@@ -39,7 +39,7 @@ namespace Mapper_Api.Services
         private async Task<ArraySegment<byte>> GenerateResponse(byte[] input)
         {
             string query = Encoding.ASCII.GetString(input);
-            var result = JsonConvert.SerializeObject(interpretInput(query));
+            var result = JsonConvert.SerializeObject(await interpretInput(query));
             return new ArraySegment<Byte>(Encoding.ASCII.GetBytes(result.ToString()));
         }
 
@@ -120,8 +120,8 @@ namespace Mapper_Api.Services
             {
                 newList.Add(new LiveLocationMessage()
                 {
-                    // Description = "-- Its name is --",
-                    // Payload = "Error"
+                    UserID = Guid.Empty, 
+                    Location = e.Message
                 });
             }
             return newList;
