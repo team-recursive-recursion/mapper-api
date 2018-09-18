@@ -38,6 +38,7 @@ namespace Mapper_Api
         public IEnumerable<User> GetUser()
         {
             return _context.Users;
+            
         }
 
         // POST: api/users

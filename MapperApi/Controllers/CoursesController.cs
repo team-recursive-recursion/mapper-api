@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Mapper_Api.Services;
 using Mapper_Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,10 +23,12 @@ namespace Mapper_Api.Controllers
     public class CoursesController : Controller
     {
         private readonly CourseDb _context;
+        private LocationService locationService;
 
-        public CoursesController(CourseDb context)
+        public CoursesController(CourseDb context, LocationService locationService)
         {
             _context = context;
+            this.locationService =  locationService;
         }
 
         // GET: api/users/{id}/courses
@@ -73,12 +76,17 @@ namespace Mapper_Api.Controllers
                     new {id = course.CourseId}, course);
         }
 
+
         // GET: api/courses
         [Route("api/courses")]
         [HttpGet]
-        public IEnumerable<Course> GetCourses()
+        public async Task<IEnumerable<Course>> GetCoursesAsync(Double? lat, Double? lon, int limit = 10)
         {
-            return _context.Courses;
+            if(lat == null || lon == null ){
+                return _context.Courses;
+            }else{
+                return await locationService.sortCourseByPosition(lat, lon, limit);     
+            }
         }
 
         // GET: api/courses/{id}

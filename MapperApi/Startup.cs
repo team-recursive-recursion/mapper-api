@@ -89,6 +89,8 @@ namespace Mapper_Api
             services.AddEntityFrameworkNpgsql()
                     .AddDbContext<CourseDb>(options =>
                             options.UseNpgsql(connectionString));
+                            
+            services.AddScoped<LocationService>();
 
             // get a key at https://home.openweathermap.org/api_keys
             // todo: remove key and use app settings json
