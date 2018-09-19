@@ -50,7 +50,6 @@ namespace Mapper_Api.Context
                     .Property(b => b.UpdatedAt)
                     .HasDefaultValueSql("now()");
 
-
             modelBuilder.Entity<LiveLocation>()
                     .Property(b => b.CreatedAt)
                     .HasDefaultValueSql("now()");

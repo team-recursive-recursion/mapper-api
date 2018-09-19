@@ -137,6 +137,8 @@ namespace MapperApi.Migrations
                     b.Property<string>("Surname")
                         .IsRequired();
 
+                    b.Property<string>("Token");
+
                     b.HasKey("UserID");
 
                     b.HasAlternateKey("Email")

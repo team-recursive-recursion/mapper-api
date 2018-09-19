@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
 using Mapper_Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,11 +23,13 @@ namespace Mapper_Api
     [Produces("application/json")]
     public class UsersController : Controller
     {
+        private IUserService _userService;
         private readonly CourseDb _context;
 
-        public UsersController(CourseDb context)
+        public UsersController(CourseDb context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
         // GET: api/users
@@ -49,6 +52,7 @@ namespace Mapper_Api
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+            user.Password = null;
             return CreatedAtAction("Create", new {id = user.UserID}, user);
         }
 
@@ -68,6 +72,7 @@ namespace Mapper_Api
             if (user == null) {
                 return NotFound();
             }
+            user.Password = null;
 
             await _context.Entry(user)
                     .Collection(b => b.Courses)
@@ -76,24 +81,18 @@ namespace Mapper_Api
             return Ok(user);
         }
 
-        // POST: api/users/match/
+        [AllowAnonymous]
         [Route("api/users/match")]
-        [HttpPost]
-        public async Task<IActionResult> Match([FromBody] UserView uview)
+        [HttpPost()]
+        public IActionResult Authenticate([FromBody]User userParam)
         {
-            var user = await _context.Users
-                    .SingleOrDefaultAsync(u => u.Email == uview.Email);
+            var user = _userService.Authenticate(userParam.Email, userParam.Password);
 
-            if (user == null) {
-                return NotFound("Invalid username or password");
-            }
+            if (user == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
 
-            if (user.Password == uview.Password) {
-                return Ok(user);
-            }
-            return NotFound("Invalid username or password");
+            return Ok(user);
         }
-
         private bool EmailExists(string email)
         {
             return _context.Users.Any(e => e.Email == email);

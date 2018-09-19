@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
 using Mapper_Api.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -55,6 +56,7 @@ namespace Mapper_Api.Controllers
         // POST: api/courses/{id}/holes
         [Route("api/courses/{cid}/holes")]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> PostCourseHole([FromRoute] Guid cid,
                 [FromBody] Hole hole)
         {
@@ -123,6 +125,7 @@ namespace Mapper_Api.Controllers
         // PUT: api/holes/{id}
         [Route("api/holes/{id}")]
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> PutHole([FromRoute] Guid id,
                 [FromBody] Hole hole)
         {
@@ -149,6 +152,7 @@ namespace Mapper_Api.Controllers
         // DELETE: api/holes/{id}
         [Route("api/holes/{id}")]
         [HttpDelete]
+        [Authorize]
         public async Task<IActionResult> DeleteHole([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
