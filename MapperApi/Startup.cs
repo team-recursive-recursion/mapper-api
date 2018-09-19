@@ -53,6 +53,7 @@ namespace Mapper_Api
             {
                 options.SerializerSettings.ReferenceLoopHandling =
                         ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             });
             services.Configure<MvcOptions>(options =>
             {

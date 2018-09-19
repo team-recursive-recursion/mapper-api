@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -34,14 +33,16 @@ namespace Mapper_Api.Services
             {
                 throw new ArgumentException("Invalid user provided");
             }
-            zone.UserId = user.UserID;
             try
             {
+                zone.UserId = user.UserID;
+                zone.ParentZoneID = null;
+                zone.ZoneID = Guid.NewGuid();
                 context.Zones.Add(zone);
                 await context.SaveChangesAsync();
                 return zone;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new ArgumentException("Invalid Zone provided");
             }
@@ -57,10 +58,9 @@ namespace Mapper_Api.Services
             {
                 return await context.Zones
                 .Where(z =>
-                    z.ParentZoneID == Guid.Empty &&
+                    z.ParentZoneID == null &&
                     z.UserId == user.UserID
-                )
-                .ToListAsync();
+                ).ToListAsync();
             }
             else
             {
@@ -69,7 +69,7 @@ namespace Mapper_Api.Services
         }
         public async Task<List<Zone>> GetZonesAsync()
         {
-            return await context.Zones.Where(zn => zn.ParentZoneID == Guid.Empty).ToListAsync();
+            return await context.Zones.Where(zn => zn.ParentZoneID == null).ToListAsync();
         }
         public async Task<Zone> GetZoneAsync(Zone zone)
         {
@@ -91,22 +91,85 @@ namespace Mapper_Api.Services
             }
             try
             {
-                context.Entry(zone).State = EntityState.Modified;
+                Zone oldZone = await context.Zones.Where(z => z.ZoneID == zone.ZoneID).FirstOrDefaultAsync();
+                if (zone.ZoneName != null)
+                    oldZone.ZoneName = zone.ZoneName;
+                if (zone.Info != null)
+                    oldZone.Info = zone.Info;
+                if (zone.UserId != null && zone.UserId != Guid.Empty)
+                    oldZone.UserId = zone.UserId;
+                if (zone.ParentZoneID != null)
+                    throw new ArgumentException("Zones need to be reallocated through the link endpoint");
+                if (zone.Elements != null)
+                    throw new ArgumentException("Elements needs to be changed through the element endpoint");
+
+                context.Zones.Update(oldZone);
                 await context.SaveChangesAsync();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new ArgumentException("invalid zone update");
             }
 
         }
 
-        //         public Task<Zone> LinkZone(Zone parent, Zone child)
+        public async Task<Zone> LinkZoneAsync(Zone parent, Zone child, User user)
+        {
+            if (!context.Zones.Any(zn => zn.ZoneID == parent.ZoneID))
+            {
+                throw new ArgumentException("Invalid parent zone");
+            }
+
+            try
+            {
+                if (context.Zones.Any(zn => zn.ZoneID == child.ZoneID))
+                {
+                    child = await context.Zones.Where(zn => zn.ZoneID == parent.ZoneID)
+                        .SingleOrDefaultAsync();
+                    child.ParentZoneID = parent.ZoneID;
+                    child.UserId = user.UserID;
+                    context.Zones.Update(child);
+                }
+                else
+                {
+                    child.ZoneID = Guid.NewGuid();
+                    child.UserId = user.UserID;
+                    child.ParentZoneID = parent.ZoneID;
+                    context.Zones.Add(child);
+                }
+                await context.SaveChangesAsync();
+                return child;
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException("Invalid zone");
+            }
+
+        }
+
+        public async Task<List<Zone>> GetZonesInZone(Zone parent)
+        {
+            if (context.Zones.Any(zn => zn.ZoneID == parent.ZoneID))
+            {
+                try
+                {
+                    return await context.Zones.Where(zn => zn.ZoneID == parent.ZoneID)
+                        .Include(z => z.InnerZones)
+                        .ToListAsync();
+                }
+                catch (Exception)
+                {
+                    throw new ArgumentException("Invalid parent zone");
+                }
+            }
+            throw new AggregateException("Invalid parent zone");
+        }
+
         public async Task<Zone> DeleteZoneAsync(Zone zone)
         {
             if (context.Zones.Any(zn => zn.ZoneID == zone.ZoneID))
             {
-                zone = await context.Zones.SingleOrDefaultAsync( zn => zn.ZoneID == zone.ZoneID);
+                zone = await context.Zones.SingleOrDefaultAsync(zn => zn.ZoneID == zone.ZoneID);
                 context.Zones.Remove(zone);
                 await context.SaveChangesAsync();
                 return zone;

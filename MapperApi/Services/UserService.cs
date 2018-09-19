@@ -66,16 +66,13 @@ namespace Mapper_Api.Services
                 user.UserID = Guid.NewGuid();
                 _ZoneDB.Add(user);
                 await _ZoneDB.SaveChangesAsync();
+                user.Password = null;
+                user.Email = null;
                 return user;
             } else {
                 throw new ArgumentException("User Email should be unique");
             }
-            user.Password = null;
-            user.Zones = null;
-            user.Token = null;
-            return user;
         }
-
 
     }
 }

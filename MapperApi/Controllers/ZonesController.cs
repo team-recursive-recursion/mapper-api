@@ -14,6 +14,7 @@ using Mapper_Api.Models;
 using Mapper_Api.Services;
 using Mapper_Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -74,9 +75,11 @@ namespace Mapper_Api.Controllers
             return Ok(await _context.GetZonesAsync());
         }
 
+        // GET: api/holes/{id}
         // GET: api/Zones/{id}
         [Route("api/Zones/{ZoneID}")]
         [Route("api/Courses/{ZoneID}")]
+        [Route("api/Holes/{ZoneID}")]
         [HttpGet]
         public async Task<IActionResult> GetZone([FromRoute] Zone zone)
         {
@@ -93,6 +96,7 @@ namespace Mapper_Api.Controllers
         // PUT: api/Zones/{id}
         [Route("api/Zones/{ZoneID}")]
         [Route("api/Course/{ZoneID}")]
+        [Route("api/Holes/{ZoneID}")]
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> PutZone([FromRoute] Guid id,
@@ -113,6 +117,7 @@ namespace Mapper_Api.Controllers
         // DELETE: api/Zones/{id}
         [Route("api/Course/{ZoneID}")]
         [Route("api/Zones/{ZoneID}")]
+        [Route("api/Holes/{ZoneID}")]
         [HttpDelete]
         [Authorize]
         public async Task<IActionResult> DeleteZone([FromRoute] Zone zone)
@@ -120,6 +125,39 @@ namespace Mapper_Api.Controllers
             try
             {
                 return Ok(await _context.DeleteZoneAsync(zone));
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
+        }
+
+        // POST: api/courses/{id}/holes
+        [Route("api/zones/{ZoneID}/zones")]
+        [Route("api/courses/{ZoneID}/holes")]
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> LinkZoneAsync([FromRoute]Zone parent, [FromBody]Zone child)
+        {
+            try
+            {
+                return Ok(await _context.LinkZoneAsync(parent, child, new User() { 
+                        UserID = Guid.Parse(User.Identity.Name) 
+                    }));
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
+        }
+
+        [Route("api/courses/{ZoneID}/holes")]
+        [HttpGet]
+        public async Task<IActionResult> GetZonesInZoneAsync([FromRoute]Zone parent)
+        {
+            try
+            {
+                return Ok(await _context.GetZonesInZone(parent));
             }
             catch (ArgumentException e)
             {

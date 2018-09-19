@@ -8,7 +8,8 @@ namespace Mapper_Api.Services
     public interface IZoneService
     {
         Task<Zone> CreateZoneAsync(Zone zone, User user);
-        // Task<Zone> LinkZoneAsync(Zone parent, Zone child);
+        Task<Zone> LinkZoneAsync(Zone parent, Zone child, User user);
+        Task<List<Zone>> GetZonesInZone(Zone parent);
         Task<List<Zone>> GetUserZonesAsync(User user);
         Task<List<Zone>> GetZonesAsync();
         Task<Zone> GetZoneAsync(Zone zone);

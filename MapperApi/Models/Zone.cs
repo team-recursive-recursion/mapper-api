@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Mapper_Api.Models
 {
@@ -14,7 +15,8 @@ namespace Mapper_Api.Models
 
         // Optional
         public string Info { get; set; }
-        public Guid ParentZoneID { get; set; }
+        public Guid? ParentZoneID { get; set; }
+        public virtual Zone ParentZone { get; set; }
 
         // Relations
         public List<Zone> InnerZones { get; set; }
