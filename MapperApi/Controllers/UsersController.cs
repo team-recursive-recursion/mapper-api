@@ -48,19 +48,6 @@ namespace Mapper_Api
             return CreatedAtAction("Create", new {id = user.UserID}, user);
         }
 
-        // GET: api/users/{id}
-        [Route("api/users/{UserID}")]
-        [HttpGet]
-        public async Task<IActionResult> GetGolfCourse([FromRoute]User user)
-        {
-            try {
-                user = await _zoneService.GetUserZonesAsync(user);
-            }catch (ArgumentException e){
-                return BadRequest( new {error = e.Message});
-            }
-            return Ok(user);
-        }
-
         [AllowAnonymous]
         [Route("api/users/match")]
         [HttpPost()]

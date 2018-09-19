@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Mapper_Api.Services;
 using Mapper_Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,166 +22,109 @@ namespace Mapper_Api.Controllers
     [Produces("application/json")]
     public class ZonesController : Controller
     {
-        private readonly ZoneDB _context;
+        private readonly IZoneService _context;
 
-        public ZonesController(ZoneDB context)
+        public ZonesController(IZoneService zoneService)
         {
-            _context = context;
+            _context = zoneService;
         }
 
+        // GET: api/users/{id}
+        [Route("api/users/{UserID}")]
         // GET: api/users/{id}/Zones
-        [Route("api/users/{uid}/Zones")]
+        [Route("api/users/{UserID}/Courses")]
         [HttpGet]
-        public async Task<IActionResult> GetUserZones([FromRoute] Guid uid)
+        public async Task<IActionResult> GetGolfCourse([FromRoute]User user)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            if (!UserExists(uid)) {
-                return NotFound();
+            try
+            {
+                return Ok(await _context.GetUserZonesAsync(user));
             }
-
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var user = await _context.Users
-                    .Include(m => m.Zones)
-                    .SingleOrDefaultAsync(m => m.UserID == uid);
-
-            if (user == null) return NotFound();
-
-            return Ok(user.Zones);
+            catch (ArgumentException e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
         }
 
         // POST: api/users/{id}/Zones
-
-        [Route("api/users/{uid}/Zones")]
+        [Route("api/users/{UserID}/Zones")]
+        [Route("api/users/{UserID}/Courses")]
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> PostUserZone([FromRoute] Guid uid,
+        public async Task<IActionResult> PostUserZone([FromRoute] User user,
                 [FromBody] Zone Zone)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                return Ok(await _context.CreateZoneAsync(Zone, user));
 
-            if (!UserExists(uid)) {
-                return NotFound();
             }
-
-            Zone.UserId = uid;
-
-            _context.Zones.Add(Zone);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetGolfZone",
-                    new {id = Zone.ZoneID}, Zone);
+            catch (ArgumentException e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
         }
 
         // GET: api/Zones
         [Route("api/Zones")]
+        [Route("api/Courses")]
         [HttpGet]
-        public IEnumerable<Zone>GetZones()
+        public async Task<IActionResult> GetZones()
         {
-            return _context.Zones;
+            return Ok(await _context.GetZonesAsync());
         }
 
         // GET: api/Zones/{id}
-        [Route("api/Zones/{id}")]
+        [Route("api/Zones/{ZoneID}")]
+        [Route("api/Courses/{ZoneID}")]
         [HttpGet]
-        public async Task<IActionResult> GetZone([FromRoute] Guid id)
+        public async Task<IActionResult> GetZone([FromRoute] Zone zone)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var golfZone = await _context.Zones
-                    .Include(m => m.InnerZones)
-                    .Select(c => new CourseViewModel()
-                    {
-                        ZoneID = c.ZoneID,
-                        ZoneName = c.ZoneName,
-                        Elements = c.Elements.Where(p => p.ElementType == Element.ElementTypes.POINT && p.ZoneID == null)
-                        .Cast<Point>()
-                        .Select(d => new PointViewModel() {
-                            ZoneID = d.ZoneID,
-                            ElementID = d.ElementId,
-                            ElementType = d.ElementType,
-                            GeoJson = d.GeoJson,
-                            Info = d.Info,
-                            PointType = d.PointType, 
-                        } as ElementViewModel
-                        ).Concat(
-                            c.Elements.Where(q => q.ElementType == Element.ElementTypes.POLYGON && q.ZoneID == null)
-                            .Cast<Polygon>()
-                            .Select(d => new PolygonViewModel() {
-                                ZoneID = d.ZoneID,
-                                ElementID = d.ElementId,
-                                ElementType = d.ElementType,
-                                GeoJson = d.GeoJson,
-                                PolygonType = d.PolygonType,
-                            } as ElementViewModel
-                            )
-                        ).ToList(),
-                        UserId = c.UserId,
-                        InnerZones = c.InnerZones, 
-                        Info = c.Info
-                    })
-                    .SingleOrDefaultAsync(m => m.ZoneID == id);
-
-            if (golfZone == null) return NotFound();
-
-            return Ok(golfZone);
+            try
+            {
+                return Ok(await _context.GetZoneAsync(zone));
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
         }
 
         // PUT: api/Zones/{id}
-        [Route("api/Zones/{id}")]
+        [Route("api/Zones/{ZoneID}")]
+        [Route("api/Course/{ZoneID}")]
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> PutZone([FromRoute] Guid id,
-                [FromBody] Zone golfZone)
+                [FromBody] Zone zone)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            if (id != golfZone.ZoneID) return BadRequest();
-
-            _context.Entry(golfZone).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _context.UpdateZoneAsync(zone);
+                return NoContent();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (ArgumentException e)
             {
-                if (!ZoneExists(id))
-                    return NotFound();
-                throw;
+                return BadRequest(new { error = e.Message });
             }
 
-            return NoContent();
         }
 
         // DELETE: api/Zones/{id}
-        [Route("api/Zones/{id}")]
+        [Route("api/Course/{ZoneID}")]
+        [Route("api/Zones/{ZoneID}")]
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> DeleteZone([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteZone([FromRoute] Zone zone)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var golfZone = await _context.Zones
-                    .SingleOrDefaultAsync(m => m.ZoneID == id);
-
-            if (golfZone == null) return NotFound();
-
-            _context.Zones.Remove(golfZone);
-            await _context.SaveChangesAsync();
-
-            return Ok(golfZone);
-        }
-
-        private bool ZoneExists(Guid id)
-        {
-            return _context.Zones.Any(e => e.ZoneID == id);
-        }
-
-        private bool UserExists(Guid id)
-        {
-            return _context.Users.Any(e => e.UserID == id);
+            try
+            {
+                return Ok(await _context.DeleteZoneAsync(zone));
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
         }
     }
 }

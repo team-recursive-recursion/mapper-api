@@ -17,6 +17,8 @@ namespace Mapper_Api.Models
         [Required] [Key] public Guid ElementId { get; set; }
         [Required] public Guid ZoneID { get; set; }
         [Required] public ElementTypes ElementType { get; set; }
+        [NonSerialized]
+        [Required] public byte[] Raw;
 
         // Optional
         public String Info { get; set; }
@@ -27,17 +29,16 @@ namespace Mapper_Api.Models
     public class Polygon : Element
     {
         [Required] public int PolygonType { get; set; }
-        [Required] public byte[] PolygonRaw { get; set; }
 
         [NotMapped]
         public string GeoJson
         {
             get =>
                     JsonConvert.SerializeObject(
-                            PolygonRaw.ToGeoJSONObject<GeoJSON.Net.Geometry.
+                            Raw.ToGeoJSONObject<GeoJSON.Net.Geometry.
                                     Polygon>());
             set =>
-                    PolygonRaw = JsonConvert.DeserializeObject<GeoJSON.Net.
+                    Raw = JsonConvert.DeserializeObject<GeoJSON.Net.
                             Geometry.Polygon>(value).ToWkb();
         }
 
@@ -47,16 +48,15 @@ namespace Mapper_Api.Models
     {
 
         [Required] public int PointType { get; set; }
-        [Required] public byte[] PointRaw { get; set; }
 
         [NotMapped]
         public string GeoJson
         {
             get =>
-                    JsonConvert.SerializeObject(PointRaw
+                    JsonConvert.SerializeObject(Raw
                             .ToGeoJSONObject<GeoJSON.Net.Geometry.Point>());
             set =>
-                    PointRaw = JsonConvert
+                    Raw = JsonConvert
                             .DeserializeObject<GeoJSON.Net.Geometry.Point>(
                                     value).ToWkb();
         }
