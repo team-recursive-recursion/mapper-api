@@ -22,56 +22,55 @@ namespace Mapper_Api.Controllers
     [Produces("application/json")]
     public class PolygonsController : Controller
     {
-        private readonly CourseDb _context;
+        private readonly ZoneDB _context;
 
-        public PolygonsController(CourseDb context)
+        public PolygonsController(ZoneDB context)
         {
             _context = context;
         }
 
-        // GET: api/courses/{id}/polygons
-        [Route("api/courses/{cid}/polygons")]
+        // GET: api/Zones/{id}/polygons
+        [Route("api/Zones/{cid}/polygons")]
         [HttpGet]
-        public async Task<IActionResult> GetCoursePolygons(
+        public async Task<IActionResult> GetZonePolygons(
                 [FromRoute] Guid cid)
         {
             if (!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
 
-            if (!CourseExists(cid)) {
-                return NotFound("The course does not exist");
+            if (!ZoneExists(cid)) {
+                return NotFound("The Zone does not exist");
             }
 
-            var course = await _context.Courses
+            var Zone = await _context.Zones
                     .Include(m => m.Elements)
-                    .SingleOrDefaultAsync(m => m.CourseId == cid);
+                    .SingleOrDefaultAsync(m => m.ZoneID == cid);
 
-            if (course == null) {
-                return NotFound("The course does not exist");
+            if (Zone == null) {
+                return NotFound("The Zone does not exist");
             }
 
-            var polygons = course.Elements.Where(m =>
+            var polygons = Zone.Elements.Where(m =>
                     m.ElementType == Element.ElementTypes.POLYGON &&
-                    m.HoleId == null).Cast<Polygon>()
+                    m.ZoneID == null).Cast<Polygon>()
                     .Select( c => new PolygonViewModel(){
-                        CourseId = c.CourseId, 
-                        ElementId = c.ElementId, 
+                        ZoneID = c.ZoneID, 
+                        ElementID = c.ElementId, 
                         ElementType = c.ElementType, 
                         GeoJson = c.GeoJson, 
                         PolygonType = c.PolygonType, 
-                        HoleId = c.HoleId
                     });
 
 
             return Ok(polygons);
         }
 
-        // POST: api/courses/{id}/polygons
-        [Route("api/courses/{cid}/polygons")]
+        // POST: api/Zones/{id}/polygons
+        [Route("api/Zones/{cid}/polygons")]
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> PostCoursePolygon([FromRoute] Guid cid,
+        public async Task<IActionResult> PostZonePolygon([FromRoute] Guid cid,
                 [FromBody] Polygon polygon)
         {
             if (!ModelState.IsValid) {
@@ -81,92 +80,17 @@ namespace Mapper_Api.Controllers
                 return BadRequest(errors);
             }
 
-            if (!CourseExists(cid)) {
-                return NotFound("The course does not exist");
+            if (!ZoneExists(cid)) {
+                return NotFound("The Zone does not exist");
             }
 
             polygon.ElementType = Element.ElementTypes.POLYGON;
-            polygon.CourseId = cid;
-            polygon.HoleId = null;
+            polygon.ZoneID = cid;
 
             _context.Polygons.Add(polygon);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCoursePolygon",
-                    new {id = polygon.ElementId}, polygon);
-        }
-
-        // GET: api/holes/{id}/polygons
-        [Route("api/holes/{hid}/polygons")]
-        [HttpGet]
-        public async Task<IActionResult> GetHolePolygons(
-                [FromRoute] Guid hid)
-        {
-            if (!ModelState.IsValid) {
-                return BadRequest(ModelState);
-            }
-
-            if (!HoleExists(hid)) {
-                return NotFound("The hole does not exist");
-            }
-
-            var hole = await _context.Holes
-                    .Include(m => m.Elements)
-                    .SingleOrDefaultAsync(m => m.HoleId == hid);
-
-            if (hole == null) {
-                return NotFound("The hole does not exist");
-            }
-
-            var polygons = hole.Elements.Where(m =>
-                    m.ElementType == Element.ElementTypes.POLYGON)
-                    .Cast<Polygon>()
-                    .Select( c => new PolygonViewModel(){
-                        CourseId = c.CourseId, 
-                        ElementId = c.ElementId, 
-                        ElementType = c.ElementType, 
-                        GeoJson = c.GeoJson, 
-                        PolygonType = c.PolygonType, 
-                        HoleId = c.HoleId
-                    });
-
-            return Ok(polygons);
-        }
-
-        // POST: api/holes/{id}/polygons
-        [Route("api/holes/{hid}/polygons")]
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> PostHolePolygon([FromRoute] Guid hid,
-                [FromBody] Polygon polygon)
-        {
-            if (!ModelState.IsValid) {
-                var errors = ModelState.Select(x => x.Value.Errors)
-                        .Where(y => y.Count > 0)
-                        .ToList();
-                return BadRequest(errors);
-            }
-
-            if (!HoleExists(hid)) {
-                return NotFound("The hole does not exist");
-            }
-
-            var hole = await _context.Holes
-                    .Include(m => m.Elements)
-                    .SingleOrDefaultAsync(m => m.HoleId == hid);
-
-            if (hole == null) {
-                return NotFound("The hole does not exist");
-            }
-
-            polygon.ElementType = Element.ElementTypes.POLYGON;
-            polygon.HoleId = hid;
-            polygon.CourseId = hole.CourseId;
-
-            _context.Polygons.Add(polygon);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCoursePolygon",
+            return CreatedAtAction("GetZonePolygon",
                     new {id = polygon.ElementId}, polygon);
         }
 
@@ -182,14 +106,13 @@ namespace Mapper_Api.Controllers
             PolygonViewModel polygon =
                     await _context.Polygons.Cast<Polygon>()
                     .Select( c => new PolygonViewModel(){
-                        CourseId = c.CourseId, 
-                        ElementId = c.ElementId, 
+                        ZoneID = c.ZoneID, 
+                        ElementID = c.ElementId, 
                         ElementType = c.ElementType, 
                         GeoJson = c.GeoJson, 
                         PolygonType = c.PolygonType, 
-                        HoleId = c.HoleId
                     }).SingleOrDefaultAsync(m =>
-                            m.ElementId == id);
+                            m.ElementID == id);
 
             if (polygon == null) {
                 return NotFound("The polygon does not exist");
@@ -254,14 +177,10 @@ namespace Mapper_Api.Controllers
             return _context.Polygons.Any(e => e.ElementId == id);
         }
 
-        private bool CourseExists(Guid id)
+        private bool ZoneExists(Guid id)
         {
-            return _context.Courses.Any(e => e.CourseId == id);
+            return _context.Zones.Any(e => e.ZoneID == id);
         }
 
-        private bool HoleExists(Guid id)
-        {
-            return _context.Holes.Any(e => e.HoleId == id);
-        }
     }
 }

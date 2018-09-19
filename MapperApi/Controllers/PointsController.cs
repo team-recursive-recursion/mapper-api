@@ -22,56 +22,55 @@ namespace Mapper_Api.Controllers
     [Produces("application/json")]
     public class PointsController : Controller
     {
-        private readonly CourseDb _context;
+        private readonly ZoneDB _context;
 
-        public PointsController(CourseDb context)
+        public PointsController(ZoneDB context)
         {
             _context = context;
         }
 
-        // GET: api/courses/{id}/points
-        [Route("api/courses/{cid}/points")]
+        // GET: api/Zones/{id}/points
+        [Route("api/Zones/{cid}/points")]
         [HttpGet]
-        public async Task<IActionResult> GetCoursePoints(
+        public async Task<IActionResult> GetZonePoints(
                 [FromRoute] Guid cid)
         {
             if (!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
 
-            if (!CourseExists(cid)) {
-                return NotFound("The course does not exist");
+            if (!ZoneExists(cid)) {
+                return NotFound("The Zone does not exist");
             }
 
-            var course = await _context.Courses
+            var Zone = await _context.Zones
                     .Include(m => m.Elements)
-                    .SingleOrDefaultAsync(m => m.CourseId == cid);
+                    .SingleOrDefaultAsync(m => m.ZoneID == cid);
 
-            if (course == null) {
-                return NotFound("The course does not exist");
+            if (Zone == null) {
+                return NotFound("The Zone does not exist");
             }
 
-            var points = course.Elements.Where(m =>
+            var points = Zone.Elements.Where(m =>
                     m.ElementType == Element.ElementTypes.POINT &&
-                    m.HoleId == null).Cast<Point>()
+                    m.ZoneID == null).Cast<Point>()
                     .Select( c => new PointViewModel(){
-                        CourseId = c.CourseId, 
-                        ElementId = c.ElementId, 
+                        ZoneID = c.ZoneID, 
+                        ElementID = c.ElementId, 
                         ElementType = c.ElementType, 
                         GeoJson = c.GeoJson, 
                         PointType = c.PointType, 
-                        Info = c.Info, 
-                        HoleId = c.HoleId
+                        Info = c.Info
                     });
 
             return Ok(points);
         }
 
-        // POST: api/courses/{id}/points
-        [Route("api/courses/{cid}/points")]
+        // POST: api/Zones/{id}/points
+        [Route("api/Zones/{cid}/points")]
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> PostCoursePoint([FromRoute] Guid cid,
+        public async Task<IActionResult> PostZonePoint([FromRoute] Guid cid,
                 [FromBody] Point point)
         {
             if (!ModelState.IsValid) {
@@ -81,94 +80,21 @@ namespace Mapper_Api.Controllers
                 return BadRequest(errors);
             }
 
-            if (!CourseExists(cid)) {
-                return NotFound("The course does not exist");
+            if (!ZoneExists(cid)) {
+                return NotFound("The Zone does not exist");
             }
 
             point.ElementType = Element.ElementTypes.POINT;
-            point.CourseId = cid;
-            point.HoleId = null;
+            point.ZoneID = cid;
+            point.ZoneID = Guid.Empty;
 
             _context.Points.Add(point);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCoursePoint",
+            return CreatedAtAction("GetZonePoint",
                     new {id = point.ElementId}, point);
         }
 
-        // GET: api/holes/{id}/points
-        [Route("api/holes/{hid}/points")]
-        [HttpGet]
-        public async Task<IActionResult> GetHolePoints(
-                [FromRoute] Guid hid)
-        {
-            if (!ModelState.IsValid) {
-                return BadRequest(ModelState);
-            }
-
-            if (!HoleExists(hid)) {
-                return NotFound("The hole does not exist");
-            }
-
-            var hole = await _context.Holes
-                    .Include(m => m.Elements)
-                    .SingleOrDefaultAsync(m => m.HoleId == hid);
-
-            if (hole == null) {
-                return NotFound("The hole does not exist");
-            }
-
-            var points = hole.Elements.Where(m =>
-                    m.ElementType == Element.ElementTypes.POINT).Cast<Point>()
-                    .Select( c => new PointViewModel(){
-                        CourseId = c.CourseId, 
-                        ElementId = c.ElementId, 
-                        ElementType = c.ElementType, 
-                        GeoJson = c.GeoJson, 
-                        PointType = c.PointType, 
-                        Info = c.Info, 
-                        HoleId = c.HoleId
-                    });
-
-            return Ok(points);
-        }
-
-        // POST: api/holes/{id}/points
-        [Route("api/holes/{hid}/points")]
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> PostHolePoint([FromRoute] Guid hid,
-                [FromBody] Point point)
-        {
-            if (!ModelState.IsValid) {
-                var errors = ModelState.Select(x => x.Value.Errors)
-                        .Where(y => y.Count > 0)
-                        .ToList();
-                return BadRequest(errors);
-            }
-
-            if (!HoleExists(hid)) {
-                return NotFound("The hole does not exist");
-            }
-
-            var hole = await _context.Holes
-                    .Include(m => m.Elements)
-                    .SingleOrDefaultAsync(m => m.HoleId == hid);
-
-            if (hole == null) {
-                return NotFound("The hole does not exist");
-            }
-
-            point.ElementType = Element.ElementTypes.POINT;
-            point.HoleId = hid;
-            point.CourseId = hole.CourseId;
-
-            _context.Points.Add(point);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCoursePoint",
-                    new {id = point.ElementId}, point);
-        }
 
         // GET: api/points/{id}
         [Route("api/points/{id}")]
@@ -182,16 +108,15 @@ namespace Mapper_Api.Controllers
             var point =
                     await _context.Points.Cast<Point>()
                     .Select( c => new PointViewModel(){
-                        CourseId = c.CourseId, 
-                        ElementId = c.ElementId, 
+                        ElementID = c.ElementId, 
                         ElementType = c.ElementType, 
                         GeoJson = c.GeoJson, 
                         PointType = c.PointType, 
                         Info = c.Info, 
-                        HoleId = c.HoleId
+                        ZoneID = c.ZoneID
                     })
                     .SingleOrDefaultAsync(m =>
-                            m.ElementId == id);
+                            m.ElementID == id);
 
             if (point == null) {
                 return NotFound("The point does not exist");
@@ -256,14 +181,10 @@ namespace Mapper_Api.Controllers
             return _context.Points.Any(e => e.ElementId == id);
         }
 
-        private bool CourseExists(Guid id)
+        private bool ZoneExists(Guid id)
         {
-            return _context.Courses.Any(e => e.CourseId == id);
+            return _context.Zones.Any(e => e.ZoneID == id);
         }
 
-        private bool HoleExists(Guid id)
-        {
-            return _context.Holes.Any(e => e.HoleId == id);
-        }
     }
 }

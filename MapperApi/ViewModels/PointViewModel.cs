@@ -8,7 +8,7 @@ namespace Mapper_Api.ViewModels
 {
     public class PointViewModel : ElementViewModel
     {
-        public Point.PointTypes PointType { get; set; }
+        public int PointType { get; set; }
         public String Info { get; set; }
         public string GeoJson { get; set; }
 

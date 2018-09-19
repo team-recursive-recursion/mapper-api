@@ -24,20 +24,12 @@ namespace Mapper_Api
     public class UsersController : Controller
     {
         private IUserService _userService;
-        private readonly CourseDb _context;
+        private readonly IZoneService _zoneService;
 
-        public UsersController(CourseDb context, IUserService userService)
+        public UsersController(IUserService userService, IZoneService zoneServiceI)
         {
-            _context = context;
+            _zoneService = zoneServiceI;
             _userService = userService;
-        }
-
-        // GET: api/users
-        [Route("api/users")]
-        [HttpGet]
-        public IEnumerable<User> GetUser()
-        {
-            return _context.Users;
         }
 
         // POST: api/users
@@ -48,35 +40,24 @@ namespace Mapper_Api
             if (!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            user.Password = null;
+            try{
+                user = await _userService.CreateUserAsync(user);
+            } catch (ArgumentException e ){
+                return BadRequest(new {error = e.Message});
+            }
             return CreatedAtAction("Create", new {id = user.UserID}, user);
         }
 
         // GET: api/users/{id}
-        [Route("api/users/{id}")]
+        [Route("api/users/{UserID}")]
         [HttpGet]
-        public async Task<IActionResult> GetGolfCourse([FromRoute] Guid id)
+        public async Task<IActionResult> GetGolfCourse([FromRoute]User user)
         {
-            if (!ModelState.IsValid) {
-                return BadRequest(ModelState);
+            try {
+                user = await _zoneService.GetUserZonesAsync(user);
+            }catch (ArgumentException e){
+                return BadRequest( new {error = e.Message});
             }
-
-            var user = await _context.Users
-                    .Include(m => m.Courses)
-                    .SingleOrDefaultAsync(m => m.UserID == id);
-
-            if (user == null) {
-                return NotFound();
-            }
-            user.Password = null;
-
-            await _context.Entry(user)
-                    .Collection(b => b.Courses)
-                    .LoadAsync();
-
             return Ok(user);
         }
 
@@ -91,15 +72,6 @@ namespace Mapper_Api
                 return BadRequest(new { message = "Username or password is incorrect" });
 
             return Ok(user);
-        }
-        private bool EmailExists(string email)
-        {
-            return _context.Users.Any(e => e.Email == email);
-        }
-
-        private bool UserExists(Guid id)
-        {
-            return _context.Users.Any(e => e.UserID == id);
         }
     }
 }

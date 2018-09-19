@@ -1,9 +1,9 @@
 ﻿/***
- * Filename: CoursesController.cs
+ * Filename: ZonesController.cs
  * Author  : Eben du Toit, Duncan Tilley
- * Class   : CoursesController
+ * Class   : ZonesController
  *
- *      API entry point for courses.
+ *      API entry point for Zones.
  ***/
 using System;
 using System.Collections.Generic;
@@ -19,19 +19,19 @@ using Microsoft.EntityFrameworkCore;
 namespace Mapper_Api.Controllers
 {
     [Produces("application/json")]
-    public class CoursesController : Controller
+    public class ZonesController : Controller
     {
-        private readonly CourseDb _context;
+        private readonly ZoneDB _context;
 
-        public CoursesController(CourseDb context)
+        public ZonesController(ZoneDB context)
         {
             _context = context;
         }
 
-        // GET: api/users/{id}/courses
-        [Route("api/users/{uid}/courses")]
+        // GET: api/users/{id}/Zones
+        [Route("api/users/{uid}/Zones")]
         [HttpGet]
-        public async Task<IActionResult> GetUserCourses([FromRoute] Guid uid)
+        public async Task<IActionResult> GetUserZones([FromRoute] Guid uid)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -42,21 +42,21 @@ namespace Mapper_Api.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var user = await _context.Users
-                    .Include(m => m.Courses)
+                    .Include(m => m.Zones)
                     .SingleOrDefaultAsync(m => m.UserID == uid);
 
             if (user == null) return NotFound();
 
-            return Ok(user.Courses);
+            return Ok(user.Zones);
         }
 
-        // POST: api/users/{id}/courses
+        // POST: api/users/{id}/Zones
 
-        [Route("api/users/{uid}/courses")]
+        [Route("api/users/{uid}/Zones")]
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> PostUserCourse([FromRoute] Guid uid,
-                [FromBody] Course course)
+        public async Task<IActionResult> PostUserZone([FromRoute] Guid uid,
+                [FromBody] Zone Zone)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -64,83 +64,81 @@ namespace Mapper_Api.Controllers
                 return NotFound();
             }
 
-            course.UserId = uid;
+            Zone.UserId = uid;
 
-            _context.Courses.Add(course);
+            _context.Zones.Add(Zone);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetGolfCourse",
-                    new {id = course.CourseId}, course);
+            return CreatedAtAction("GetGolfZone",
+                    new {id = Zone.ZoneID}, Zone);
         }
 
-        // GET: api/courses
-        [Route("api/courses")]
+        // GET: api/Zones
+        [Route("api/Zones")]
         [HttpGet]
-        public IEnumerable<Course> GetCourses()
+        public IEnumerable<Zone>GetZones()
         {
-            return _context.Courses;
+            return _context.Zones;
         }
 
-        // GET: api/courses/{id}
-        [Route("api/courses/{id}")]
+        // GET: api/Zones/{id}
+        [Route("api/Zones/{id}")]
         [HttpGet]
-        public async Task<IActionResult> GetCourse([FromRoute] Guid id)
+        public async Task<IActionResult> GetZone([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var golfCourse = await _context.Courses
-                    .Include(m => m.Holes)
+            var golfZone = await _context.Zones
+                    .Include(m => m.InnerZones)
                     .Select(c => new CourseViewModel()
                     {
-                        CourseId = c.CourseId,
-                        CourseName = c.CourseName,
-                        Elements = c.Elements.Where(p => p.ElementType == Element.ElementTypes.POINT && p.HoleId == null)
+                        ZoneID = c.ZoneID,
+                        ZoneName = c.ZoneName,
+                        Elements = c.Elements.Where(p => p.ElementType == Element.ElementTypes.POINT && p.ZoneID == null)
                         .Cast<Point>()
                         .Select(d => new PointViewModel() {
-                            CourseId = d.CourseId,
-                            ElementId = d.ElementId,
+                            ZoneID = d.ZoneID,
+                            ElementID = d.ElementId,
                             ElementType = d.ElementType,
                             GeoJson = d.GeoJson,
                             Info = d.Info,
                             PointType = d.PointType, 
-                            HoleId = d.HoleId
                         } as ElementViewModel
                         ).Concat(
-                            c.Elements.Where(q => q.ElementType == Element.ElementTypes.POLYGON && q.HoleId == null)
+                            c.Elements.Where(q => q.ElementType == Element.ElementTypes.POLYGON && q.ZoneID == null)
                             .Cast<Polygon>()
                             .Select(d => new PolygonViewModel() {
-                                CourseId = d.CourseId,
-                                ElementId = d.ElementId,
+                                ZoneID = d.ZoneID,
+                                ElementID = d.ElementId,
                                 ElementType = d.ElementType,
                                 GeoJson = d.GeoJson,
                                 PolygonType = d.PolygonType,
-                                HoleId = d.HoleId
                             } as ElementViewModel
                             )
                         ).ToList(),
                         UserId = c.UserId,
-                        Holes = c.Holes, 
+                        InnerZones = c.InnerZones, 
                         Info = c.Info
                     })
-                    .SingleOrDefaultAsync(m => m.CourseId == id);
+                    .SingleOrDefaultAsync(m => m.ZoneID == id);
 
-            if (golfCourse == null) return NotFound();
+            if (golfZone == null) return NotFound();
 
-            return Ok(golfCourse);
+            return Ok(golfZone);
         }
 
-        // PUT: api/courses/{id}
-        [Route("api/courses/{id}")]
+        // PUT: api/Zones/{id}
+        [Route("api/Zones/{id}")]
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> PutCourse([FromRoute] Guid id,
-                [FromBody] Course golfCourse)
+        public async Task<IActionResult> PutZone([FromRoute] Guid id,
+                [FromBody] Zone golfZone)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (id != golfCourse.CourseId) return BadRequest();
+            if (id != golfZone.ZoneID) return BadRequest();
 
-            _context.Entry(golfCourse).State = EntityState.Modified;
+            _context.Entry(golfZone).State = EntityState.Modified;
 
             try
             {
@@ -148,7 +146,7 @@ namespace Mapper_Api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CourseExists(id))
+                if (!ZoneExists(id))
                     return NotFound();
                 throw;
             }
@@ -156,28 +154,28 @@ namespace Mapper_Api.Controllers
             return NoContent();
         }
 
-        // DELETE: api/courses/{id}
-        [Route("api/courses/{id}")]
+        // DELETE: api/Zones/{id}
+        [Route("api/Zones/{id}")]
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> DeleteCourse([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteZone([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var golfCourse = await _context.Courses
-                    .SingleOrDefaultAsync(m => m.CourseId == id);
+            var golfZone = await _context.Zones
+                    .SingleOrDefaultAsync(m => m.ZoneID == id);
 
-            if (golfCourse == null) return NotFound();
+            if (golfZone == null) return NotFound();
 
-            _context.Courses.Remove(golfCourse);
+            _context.Zones.Remove(golfZone);
             await _context.SaveChangesAsync();
 
-            return Ok(golfCourse);
+            return Ok(golfZone);
         }
 
-        private bool CourseExists(Guid id)
+        private bool ZoneExists(Guid id)
         {
-            return _context.Courses.Any(e => e.CourseId == id);
+            return _context.Zones.Any(e => e.ZoneID == id);
         }
 
         private bool UserExists(Guid id)

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
+using Mapper_Api.Models;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
@@ -14,10 +15,10 @@ namespace Mapper_Api.Services
     public class CommunicationService
     {
         WeatherService WeatherService;
-        CourseDb CourseDb;
-        public CommunicationService(WeatherService WeatherService, CourseDb CourseDB)
+        ZoneDB ZoneDB;
+        public CommunicationService(WeatherService WeatherService, ZoneDB ZoneDB)
         {
-            this.CourseDb = CourseDB;
+            this.ZoneDB = ZoneDB;
             this.WeatherService = WeatherService;
         }
         
@@ -52,7 +53,7 @@ namespace Mapper_Api.Services
                 LiveUser liveUser = null;
                 if (inputData.UserID != null)
                 {
-                    liveUser = CourseDb.LiveUser.Where(c => c.UserID == inputData.UserID).SingleOrDefault();
+                    liveUser = ZoneDB.LiveUser.Where(c => c.UserID == inputData.UserID).SingleOrDefault();
                 }
 
                 if (liveUser == null)
@@ -62,19 +63,19 @@ namespace Mapper_Api.Services
                         UserID = new Guid()
                     };
 
-                    CourseDb.LiveUser.Add(liveUser);
+                    ZoneDB.LiveUser.Add(liveUser);
                 }
                 string additionalInfo = "";
 
                 if (inputData.Location != null){
-                    CourseDb.LiveLocation.Add(new LiveLocation {
+                    ZoneDB.LiveLocation.Add(new LiveLocation {
                         UserID = liveUser.UserID, 
                         GeoJson = inputData.Location
                     });
                     additionalInfo += inputData.Location;
                 }
 
-                await CourseDb.SaveChangesAsync();
+                await ZoneDB.SaveChangesAsync();
 
                 if (inputData.UserID != null)
                 {

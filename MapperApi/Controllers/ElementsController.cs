@@ -20,9 +20,9 @@ namespace Mapper_Api.Controllers
     [Produces("application/json")]
     public class ElementsController : Controller
     {
-        private readonly CourseDb _context;
+        private readonly ZoneDB _context;
 
-        public ElementsController(CourseDb context)
+        public ElementsController(ZoneDB context)
         {
             _context = context;
         }
@@ -37,19 +37,19 @@ namespace Mapper_Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!CourseExists(cid)) {
+            if (!ZoneExists(cid)) {
                 return NotFound("The course does not exist");
             }
 
-            var course = await _context.Courses
+            var course = await _context.Zones
                     .Include(m => m.Elements)
-                    .SingleOrDefaultAsync(m => m.CourseId == cid);
+                    .SingleOrDefaultAsync(m => m.ZoneID == cid);
 
             if (course == null) {
                 return NotFound("The course does not exist");
             }
 
-            var elements = course.Elements.Where(m => m.HoleId == null);
+            var elements = course.Elements.Where(m => m.ZoneID == null);
 
             return Ok(elements);
         }
@@ -64,13 +64,13 @@ namespace Mapper_Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!HoleExists(hid)) {
+            if (!ZoneExists(hid)) {
                 return NotFound("The hole does not exist");
             }
 
-            var hole = await _context.Holes
+            var hole = await _context.Zones
                     .Include(m => m.Elements)
-                    .SingleOrDefaultAsync(m => m.HoleId == hid);
+                    .SingleOrDefaultAsync(m => m.ZoneID == hid);
 
             if (hole == null) {
                 return NotFound("The hole does not exist");
@@ -79,14 +79,9 @@ namespace Mapper_Api.Controllers
             return Ok(hole.Elements);
         }
 
-        private bool CourseExists(Guid id)
+        private bool ZoneExists(Guid id)
         {
-            return _context.Courses.Any(e => e.CourseId == id);
-        }
-
-        private bool HoleExists(Guid id)
-        {
-            return _context.Holes.Any(e => e.HoleId == id);
+            return _context.Zones.Any(e => e.ZoneID == id);
         }
     }
 }

@@ -83,11 +83,10 @@ namespace Mapper_Api
                     ValidateAudience = false
                 };
             });
-            services.AddScoped<CourseService>();
             var connectionString =
                     Configuration.GetConnectionString("MapperContext");
             services.AddEntityFrameworkNpgsql()
-                    .AddDbContext<CourseDb>(options =>
+                    .AddDbContext<ZoneDB>(options =>
                             options.UseNpgsql(connectionString));
 
             // get a key at https://home.openweathermap.org/api_keys
@@ -96,6 +95,7 @@ namespace Mapper_Api
             services.AddScoped<WeatherService>();
             services.AddTransient<CommunicationService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IZoneService, ZoneService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

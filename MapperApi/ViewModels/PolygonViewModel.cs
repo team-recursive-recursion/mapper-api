@@ -9,7 +9,7 @@ namespace Mapper_Api.ViewModels
 {
     public class PolygonViewModel : ElementViewModel
     {
-        public Polygon.PolygonTypes PolygonType { get; set; }
+        public int PolygonType { get; set; }
         public byte[] PolygonRaw { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

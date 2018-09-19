@@ -1,7 +1,7 @@
 ﻿/***
- * Filename: CourseDb.cs
+ * Filename: ZoneDB.cs
  * Author  : Eben Du Toit, Duncan Tilley
- * Class   : CourseDb
+ * Class   : ZoneDB
  *
  *      Database context for API.
  ***/
@@ -10,43 +10,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mapper_Api.Context
 {
-    public class CourseDb : DbContext
+    public class ZoneDB : DbContext
     {
-        public CourseDb(DbContextOptions<CourseDb> options) : base(options)
-        {
-        }
+        public ZoneDB(DbContextOptions<ZoneDB> options) : base(options) { }
 
-        public DbSet<Course> Courses { get; set; }
-
+        // Content
+        public DbSet<Zone> Zones { get; set; }
+        public DbSet<Element> Elements { get; set; }
         public DbSet<Polygon> Polygons { get; set; }
-
         public DbSet<Point> Points { get; set; }
 
-        public DbSet<Element> Elements { get; set; }
-
-        public DbSet<Hole> Holes { get; set; }
-
-        public DbSet<User> Users { get; set; }
-
+        // Content Users
         public DbSet<LiveLocation> LiveLocation { get; set; }
-
         public DbSet<LiveUser> LiveUser { get; set; }
+
+        // Content creators
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Course>()
+            modelBuilder.Entity<Zone>()
             .Property(b => b.CreatedAt)
                 .HasDefaultValueSql("now()");
 
-            modelBuilder.Entity<Course>()
+            modelBuilder.Entity<Zone>()
                     .Property(b => b.UpdatedAt)
                     .HasDefaultValueSql("now()");
 
-            modelBuilder.Entity<Polygon>()
+            modelBuilder.Entity<Element>()
                     .Property(b => b.CreatedAt)
                     .HasDefaultValueSql("now()");
 
-            modelBuilder.Entity<Polygon>()
+            modelBuilder.Entity<Element>()
                     .Property(b => b.UpdatedAt)
                     .HasDefaultValueSql("now()");
 
@@ -54,9 +49,11 @@ namespace Mapper_Api.Context
                     .Property(b => b.CreatedAt)
                     .HasDefaultValueSql("now()");
 
-            modelBuilder.Entity<LiveLocation>().HasKey(ll => new {
-                ll.CreatedAt, 
-                ll.UserID});
+            modelBuilder.Entity<LiveLocation>().HasKey(ll => new
+            {
+                ll.CreatedAt,
+                ll.UserID
+            });
 
             modelBuilder.Entity<User>()
                     .HasAlternateKey(c => c.Email)

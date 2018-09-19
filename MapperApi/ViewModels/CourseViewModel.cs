@@ -7,15 +7,15 @@ namespace Mapper_Api.ViewModels
 {
     public class CourseViewModel
     {
-        public Guid CourseId { get; set; }
-        public string CourseName { get; set; }
+        public Guid ZoneID { get; set; }
+        public string ZoneName { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
         public Guid UserId { get; set; }
         public string Info { get; set; }
 
-        public List<Hole> Holes { get; set; }
+        public List<Zone> InnerZones { get; set; }
         public List<ElementViewModel> Elements { get; set; }
     }
 }
