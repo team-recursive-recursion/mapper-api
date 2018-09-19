@@ -13,7 +13,7 @@ using System;
 namespace MapperApi.Migrations
 {
     [DbContext(typeof(CourseDb))]
-    [Migration("20180829133715_Initial")]
+    [Migration("20180918184646_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
