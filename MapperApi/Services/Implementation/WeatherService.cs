@@ -9,7 +9,8 @@ using Newtonsoft.Json;
 
 namespace Mapper_Api.Services
 {
-    public class WeatherService
+
+    public class WeatherService : IWeatherService
     {
         string AppKey;
         public WeatherService()

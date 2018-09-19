@@ -12,16 +12,16 @@ using Newtonsoft.Json;
 
 namespace Mapper_Api.Services
 {
-    public class CommunicationService
+    public class CommunicationService : ICommunicationService
     {
-        WeatherService WeatherService;
+        IWeatherService WeatherService;
         ZoneDB ZoneDB;
-        public CommunicationService(WeatherService WeatherService, ZoneDB ZoneDB)
+        public CommunicationService(IWeatherService WeatherService, ZoneDB ZoneDB)
         {
             this.ZoneDB = ZoneDB;
             this.WeatherService = WeatherService;
         }
-        
+
         public async Task SocketHandler(HttpContext context, WebSocket webSocket)
         {
             var buffer = new byte[1024 * 4];
@@ -67,9 +67,11 @@ namespace Mapper_Api.Services
                 }
                 string additionalInfo = "";
 
-                if (inputData.Location != null){
-                    ZoneDB.LiveLocation.Add(new LiveLocation {
-                        UserID = liveUser.UserID, 
+                if (inputData.Location != null)
+                {
+                    ZoneDB.LiveLocation.Add(new LiveLocation
+                    {
+                        UserID = liveUser.UserID,
                         GeoJson = inputData.Location
                     });
                     additionalInfo += inputData.Location;
@@ -82,31 +84,12 @@ namespace Mapper_Api.Services
                     newList.Add(new LiveLocationMessage()
                     {
                         UserID = liveUser.UserID,
-                        Device = inputData.Device,
                         Location = @"User Sent us info already yay " + additionalInfo
                     });
                 }
                 else
                 {
-                    if (inputData.Device == LiveLocationMessage.DeviceType.MONITOR)
-                    {
-                        newList.Add(new LiveLocationMessage()
-                        {
-                            UserID = liveUser.UserID,
-                            Device = inputData.Device,
-                            Location = " User Created as MONITOR "
-                        });
-                    }
-                    if (inputData.Device == LiveLocationMessage.DeviceType.APPLICATION)
-                    {
-                        newList.Add(new LiveLocationMessage()
-                        {
-                            UserID = liveUser.UserID,
-                            Device = inputData.Device,
-                            Location = "User Created as APPLICATION"
-                        });
-                    }
-                    if (inputData.Device == null && inputData.UserID == Guid.Empty)
+                    if (inputData.UserID == Guid.Empty)
                     {
                         newList.Add(new LiveLocationMessage()
                         {
@@ -116,12 +99,11 @@ namespace Mapper_Api.Services
                     }
                 }
             }
-
             catch (Exception e)
             {
                 newList.Add(new LiveLocationMessage()
                 {
-                    UserID = Guid.Empty, 
+                    UserID = Guid.Empty,
                     Location = e.Message
                 });
             }

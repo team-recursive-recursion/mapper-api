@@ -84,20 +84,22 @@ namespace Mapper_Api
                     ValidateAudience = false
                 };
             });
+
             var connectionString =
                     Configuration.GetConnectionString("MapperContext");
+
             services.AddEntityFrameworkNpgsql()
                     .AddDbContext<ZoneDB>(options =>
                             options.UseNpgsql(connectionString));
 
-            // get a key at https://home.openweathermap.org/api_keys
-            // todo: remove key and use app settings json
-            // string appKey = "643fa9db96b5c946db296ff59f39ed50";
-            services.AddScoped<WeatherService>();
             services.AddTransient<CommunicationService>();
+            services.AddScoped<IWeatherService, WeatherService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IZoneService, ZoneService>();
         }
+        // get a key at https://home.openweathermap.org/api_keys
+        // todo: remove key and use app settings json
+        // string appKey = "643fa9db96b5c946db296ff59f39ed50";
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -130,7 +132,7 @@ namespace Mapper_Api
                         if (context.WebSockets.IsWebSocketRequest)
                         {
                             WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                            await  context.RequestServices.GetService<CommunicationService>().SocketHandler(context, webSocket);
+                            await context.RequestServices.GetService<CommunicationService>().SocketHandler(context, webSocket);
                         }
                         else
                         {

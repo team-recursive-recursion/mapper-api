@@ -13,11 +13,6 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Mapper_Api.Services
 {
-    public interface IUserService
-    {
-        User Authenticate(string username, string password);
-        Task<User> CreateUserAsync(User user);
-    }
 
     public class UserService : IUserService
     {

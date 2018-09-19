@@ -37,15 +37,19 @@ namespace Mapper_Api
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] User user)
         {
-            if (!ModelState.IsValid) {
+            if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
             }
-            try{
+            try
+            {
                 user = await _userService.CreateUserAsync(user);
-            } catch (ArgumentException e ){
-                return BadRequest(new {error = e.Message});
             }
-            return CreatedAtAction("Create", new {id = user.UserID}, user);
+            catch (ArgumentException e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
+            return CreatedAtAction("Create", new { id = user.UserID }, user);
         }
 
         [AllowAnonymous]
