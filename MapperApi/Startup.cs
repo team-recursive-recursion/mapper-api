@@ -96,6 +96,7 @@ namespace Mapper_Api
             services.AddScoped<IWeatherService, WeatherService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IZoneService, ZoneService>();
+            services.AddScoped<IElementService, ElementService>();
         }
         // get a key at https://home.openweathermap.org/api_keys
         // todo: remove key and use app settings json

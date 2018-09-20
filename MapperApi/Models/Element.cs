@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Mapper_Api.Models
 {
-    public class Element
+    public abstract class Element
     {
         public enum ElementTypes
         {
@@ -16,22 +16,22 @@ namespace Mapper_Api.Models
 
         [Required] [Key] public Guid? ElementId { get; set; }
         [Required] public Guid? ZoneID { get; set; }
+        [Required] public Zone Zone { get; set; }
         [Required] public ElementTypes? ElementType { get; set; }
         [NonSerialized]
         [Required] public byte[] Raw;
-
+        [Required]
+        public int? ClassType {get; set;}
+        [NotMapped]
+        public virtual string GeoJson {get; set;}
         // Optional
         public String Info { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        [Required]
-        public int ClassType {get; set;}
-        public virtual string GeoJson {get; set;}
     }
 
     public class Polygon : Element
     {
-        [NotMapped]
         public override string GeoJson
         {
             get =>
@@ -45,7 +45,6 @@ namespace Mapper_Api.Models
 
     public class Point : Element
     {
-        [NotMapped]
         public override string GeoJson
         {
             get =>

@@ -24,26 +24,26 @@ namespace Mapper_Api.Services
                 try
                 {
                     element.ZoneID = zone.ZoneID;
+                    element.ElementId = Guid.NewGuid();
                     if (element.ElementType != null)
                     {
                         switch (element.ElementType)
                         {
                             case Element.ElementTypes.POINT:
-                                context.Points.Add(element as Point);
-
-                                break;
+                                context.Points.Add((Point)element);
+                                await context.SaveChangesAsync();
+                                return element;
                             case Element.ElementTypes.POLYGON:
-                                context.Polygons.Add(element as Polygon);
-                                break;
+                                context.Polygons.Add((Polygon)element);
+                                await context.SaveChangesAsync();
+                                return element;
                         }
-                        await context.SaveChangesAsync();
-                        return element;
                     }
                     throw new ArgumentException("Invalid element provided");
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    throw new ArgumentException("Invalid element provided");
+                    throw new ArgumentException("Invalid element provided", e.Message);
                 }
             }
             throw new ArgumentException("Invalid zone provided");
@@ -71,9 +71,10 @@ namespace Mapper_Api.Services
         {
             try
             {
-                if ((element = await context.Elements
-                .Where(e => e.ElementId == element.ElementId)
-                .SingleOrDefaultAsync()) != null)
+                element = await context.Elements
+                    .Where(e => e.ElementId == element.ElementId)
+                    .SingleOrDefaultAsync();
+                if (element != null)
                 {
                     return element;
                 }

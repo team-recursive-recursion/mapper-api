@@ -38,7 +38,13 @@ namespace Mapper_Api.Context
                     .WithMany(b => b.InnerZones)
                     .HasForeignKey(q => q.ParentZoneID)
                     .OnDelete(DeleteBehavior.Cascade);
-                    
+
+            modelBuilder.Entity<Element>()
+                    .HasOne<Zone>(z => z.Zone)
+                    .WithMany(b => b.Elements)
+                    .HasForeignKey(q => q.ZoneID)
+                    .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Zone>()
                     .Property(b => b.UpdatedAt)
                     .HasDefaultValueSql("now()");
