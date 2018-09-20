@@ -4,9 +4,6 @@
 			"path": "MapperApi"
 		},
 		{
-			"path": "/Volumes/FLASH/Dev/UNI/COS301/web-app/WebApplication"
-		},
-		{
 			"path": "Test/TestSuite"
 		}
 	],
@@ -148,7 +145,36 @@
 			"WebApplication/**/*.Server/ModelManifest.xml": true,
 			"WebApplication/**/_Pvt_Extensions": true,
 			"WebApplication/.paket/paket.exe": true,
-			"WebApplication/**/.fake/": true
+			"WebApplication/**/.fake/": true,
+			"MapperApi/**/*.swp": true,
+			"MapperApi/**/*.*~": true,
+			"MapperApi/**/project.lock.json": true,
+			"MapperApi/**/.DS_Store": true,
+			"MapperApi/**/*.pyc": true,
+			"MapperApi/**/nupkg/": true,
+			"MapperApi/**/.vscode": true,
+			"MapperApi/**/*.suo": true,
+			"MapperApi/**/*.user": true,
+			"MapperApi/**/*.userosscache": true,
+			"MapperApi/**/*.sln.docstates": true,
+			"MapperApi/**/MapperAPI/bin/": true,
+			"MapperApi/**/MapperAPI/obj/": true,
+			"MapperApi/**/[Dd]ebug/": true,
+			"MapperApi/**/[Dd]ebugPublic/": true,
+			"MapperApi/**/[Rr]elease/": true,
+			"MapperApi/**/[Rr]eleases/": true,
+			"MapperApi/**/x64/": true,
+			"MapperApi/**/x86/": true,
+			"MapperApi/**/build/": true,
+			"MapperApi/**/bld/": true,
+			"MapperApi/**/[Bb]in/": true,
+			"MapperApi/**/[Oo]bj/": true,
+			"MapperApi/**/msbuild.log": true,
+			"MapperApi/**/msbuild.err": true,
+			"MapperApi/**/msbuild.wrn": true,
+			"MapperApi/**/.vs/": true,
+			"MapperApi/**/MapperApi/Migrations/": true,
+			"MapperApi/**/COS301.code-workspace": true
 		}
 	}
 }

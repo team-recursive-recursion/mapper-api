@@ -36,7 +36,7 @@ namespace Mapper_Api.Controllers
         [Route("api/holes/{ZoneID}/elements")]
         [Route("api/zones/{ZoneID}/elements")]
         [HttpGet]
-        public async Task<IActionResult> GetCourseElements([FromRoute] Zone zone)
+        public async Task<IActionResult> GetZoneElements([FromRoute] Zone zone)
         {
             try
             {
@@ -49,10 +49,23 @@ namespace Mapper_Api.Controllers
         }
 
         // GET: api/Zones/{id}/points
-        [Route("api/Zones/{ZoneID}/{ElementTypes}")]
-        // todo : [Route("api/Zones/{cid}/polygons")]
+        [Route("api/Zones/{ZoneID}/polygons")]
         [HttpGet]
-        public async Task<IActionResult> GetZoneTyped([FromRoute] Zone zone, [FromRoute] Element element)
+        public async Task<IActionResult> GetZonePolygons([FromRoute] Zone zone, [FromRoute] Polygon element)
+        {
+            try
+            {
+                return Ok(await elementService.GetElementsAsync(zone, element));
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
+        }
+
+        [Route("api/Zones/{ZoneID}/points")]
+        [HttpGet]
+        public async Task<IActionResult> GetZonePoints([FromRoute] Zone zone, [FromRoute] Point element)
         {
             try
             {
@@ -74,7 +87,8 @@ namespace Mapper_Api.Controllers
         {
             try
             {
-                return Ok(await elementService.CreateElementAsync(zone, element));
+                return CreatedAtRoute("api/elements/{ElementID}",
+                    await elementService.CreateElementAsync(zone, element));
             }
             catch (ArgumentException e)
             {
@@ -92,14 +106,16 @@ namespace Mapper_Api.Controllers
         {
             try
             {
-                return Ok(await elementService.CreateElementAsync(zone, element));
+                return CreatedAtRoute("api/elements/{ElementID}",
+                    await elementService.CreateElementAsync(zone, element));
             }
             catch (ArgumentException e)
             {
                 return BadRequest(new { error = e.Message });
             }
         }
-        // GET: api/points/{id}
+        [Route("api/polygons/{ElementID}")]
+        [Route("api/elements/{ElementID}")]
         [Route("api/points/{ElementID}")]
         [HttpGet]
         public async Task<IActionResult> GetElement([FromRoute] Element element)
@@ -116,6 +132,7 @@ namespace Mapper_Api.Controllers
 
         // GET: api/points/{id}
         [Route("api/polygons/{ElementID}")]
+        [Route("api/elements/{ElementID}")]
         [Route("api/points/{ElementID}")]
         [HttpPut]
         [Authorize]
@@ -132,11 +149,12 @@ namespace Mapper_Api.Controllers
         }
 
         // DELETE: api/points/{id}
-        [Route("api/polygons/{id}")]
-        [Route("api/points/{id}")]
+        [Route("api/polygons/{ElementID}")]
+        [Route("api/elements/{ElementID}")]
+        [Route("api/points/{ElementID}")]
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> DeletePoint([FromRoute] Element element)
+        public async Task<IActionResult> DeleteElement([FromRoute] Element element)
         {
             try
             {
