@@ -87,34 +87,6 @@ namespace Mapper_Api.Controllers
 
             var hole = await _context.Holes
                     .Include(h => h.Elements)
-                    .Select(c => new HoleViewModel(){
-                        CourseId = c.CourseId, 
-                        HoleId = c.HoleId, 
-                        Name = c.Name,
-                        Info = c.Info, 
-                        Elements = c.Elements.Where( p => p.ElementType == Element.ElementTypes.POINT && p.HoleId == id)
-                        .Cast<Point>()
-                        .Select(d => new PointViewModel(){
-                            CourseId = d.CourseId, 
-                            HoleId = d.HoleId,
-                            ElementId = d.ElementId,
-                            ElementType = d.ElementType, 
-                            GeoJson = d.GeoJson, 
-                            Info = d.Info,
-                            PointType = d.PointType
-                        } as ElementViewModel).Concat(
-                            c.Elements.Where(q => q.ElementType == Element.ElementTypes.POLYGON && q.HoleId == id)
-                            .Cast<Polygon>()
-                            .Select(d => new PolygonViewModel(){
-                                CourseId = d.CourseId, 
-                                ElementId = d.ElementId,
-                                HoleId = d.HoleId,
-                                ElementType = d.ElementType, 
-                                GeoJson = d.GeoJson,  
-                                PolygonType = d.PolygonType
-                            } as ElementViewModel)
-                        ).ToList(),
-                    })
                     .SingleOrDefaultAsync(m => m.HoleId == id);
 
             if (hole == null) return NotFound();
