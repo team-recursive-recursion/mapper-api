@@ -14,9 +14,9 @@ namespace Mapper_Api.Models
             POINT = 1
         }
 
-        [Required] [Key] public Guid ElementId { get; set; }
-        [Required] public Guid ZoneID { get; set; }
-        [Required] public ElementTypes ElementType { get; set; }
+        [Required] [Key] public Guid? ElementId { get; set; }
+        [Required] public Guid? ZoneID { get; set; }
+        [Required] public ElementTypes? ElementType { get; set; }
         [NonSerialized]
         [Required] public byte[] Raw;
 
@@ -24,33 +24,29 @@ namespace Mapper_Api.Models
         public String Info { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        [Required]
+        public int ClassType {get; set;}
+        public virtual string GeoJson {get; set;}
     }
 
     public class Polygon : Element
     {
-        [Required] public int PolygonType { get; set; }
-
         [NotMapped]
-        public string GeoJson
+        public override string GeoJson
         {
             get =>
                     JsonConvert.SerializeObject(
-                            Raw.ToGeoJSONObject<GeoJSON.Net.Geometry.
-                                    Polygon>());
+                            Raw.ToGeoJSONObject<GeoJSON.Net.Geometry.Polygon>());
             set =>
-                    Raw = JsonConvert.DeserializeObject<GeoJSON.Net.
-                            Geometry.Polygon>(value).ToWkb();
+                    Raw = JsonConvert
+                    .DeserializeObject<GeoJSON.Net.Geometry.Polygon>(value).ToWkb();
         }
-
     }
 
     public class Point : Element
     {
-
-        [Required] public int PointType { get; set; }
-
         [NotMapped]
-        public string GeoJson
+        public override string GeoJson
         {
             get =>
                     JsonConvert.SerializeObject(Raw

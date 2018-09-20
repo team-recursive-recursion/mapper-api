@@ -31,8 +31,8 @@ namespace Mapper_Api.Controllers
         }
 
         // GET: api/users/{id}
-        [Route("api/users/{UserID}")]
         // GET: api/users/{id}/Zones
+        [Route("api/users/{UserID}")]
         [Route("api/users/{UserID}/Courses")]
         [HttpGet]
         public async Task<IActionResult> GetGolfCourse([FromRoute]User user)
@@ -52,8 +52,7 @@ namespace Mapper_Api.Controllers
         [Route("api/users/{UserID}/Courses")]
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> PostUserZone([FromRoute] User user,
-                [FromBody] Zone Zone)
+        public async Task<IActionResult> PostUserZone([FromRoute] User user, [FromBody] Zone Zone)
         {
             try
             {
@@ -99,8 +98,7 @@ namespace Mapper_Api.Controllers
         [Route("api/Holes/{ZoneID}")]
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> PutZone([FromRoute] Guid id,
-                [FromBody] Zone zone)
+        public async Task<IActionResult> PutZone([FromRoute] Guid id, [FromBody] Zone zone)
         {
             try
             {
@@ -141,9 +139,10 @@ namespace Mapper_Api.Controllers
         {
             try
             {
-                return Ok(await _context.LinkZoneAsync(parent, child, new User() { 
-                        UserID = Guid.Parse(User.Identity.Name) 
-                    }));
+                return Ok(await _context.LinkZoneAsync(parent, child, new User()
+                {
+                    UserID = Guid.Parse(User.Identity.Name)
+                }));
             }
             catch (ArgumentException e)
             {
