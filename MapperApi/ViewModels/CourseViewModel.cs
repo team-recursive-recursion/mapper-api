@@ -13,6 +13,7 @@ namespace Mapper_Api.ViewModels
         public DateTime UpdatedAt { get; set; }
 
         public Guid UserId { get; set; }
+        public string Info { get; set; }
 
         public List<Hole> Holes { get; set; }
         public List<ElementViewModel> Elements { get; set; }

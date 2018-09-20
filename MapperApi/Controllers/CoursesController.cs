@@ -11,7 +11,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Models;
+using Mapper_Api.Services;
 using Mapper_Api.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,10 +23,12 @@ namespace Mapper_Api.Controllers
     public class CoursesController : Controller
     {
         private readonly CourseDb _context;
+        private LocationService locationService;
 
-        public CoursesController(CourseDb context)
+        public CoursesController(CourseDb context, LocationService locationService)
         {
             _context = context;
+            this.locationService =  locationService;
         }
 
         // GET: api/users/{id}/courses
@@ -50,8 +54,10 @@ namespace Mapper_Api.Controllers
         }
 
         // POST: api/users/{id}/courses
+
         [Route("api/users/{uid}/courses")]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> PostUserCourse([FromRoute] Guid uid,
                 [FromBody] Course course)
         {
@@ -70,12 +76,17 @@ namespace Mapper_Api.Controllers
                     new {id = course.CourseId}, course);
         }
 
+
         // GET: api/courses
         [Route("api/courses")]
         [HttpGet]
-        public IEnumerable<Course> GetCourses()
+        public async Task<IEnumerable<Course>> GetCoursesAsync(Double? lat, Double? lon, int limit = 10)
         {
-            return _context.Courses;
+            if(lat == null || lon == null ){
+                return _context.Courses;
+            }else{
+                return await locationService.sortCourseByPosition(lat, lon, limit);     
+            }
         }
 
         // GET: api/courses/{id}
@@ -116,7 +127,8 @@ namespace Mapper_Api.Controllers
                             )
                         ).ToList(),
                         UserId = c.UserId,
-                        Holes = c.Holes
+                        Holes = c.Holes, 
+                        Info = c.Info
                     })
                     .SingleOrDefaultAsync(m => m.CourseId == id);
 
@@ -128,6 +140,7 @@ namespace Mapper_Api.Controllers
         // PUT: api/courses/{id}
         [Route("api/courses/{id}")]
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> PutCourse([FromRoute] Guid id,
                 [FromBody] Course golfCourse)
         {
@@ -154,6 +167,7 @@ namespace Mapper_Api.Controllers
         // DELETE: api/courses/{id}
         [Route("api/courses/{id}")]
         [HttpDelete]
+        [Authorize]
         public async Task<IActionResult> DeleteCourse([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);

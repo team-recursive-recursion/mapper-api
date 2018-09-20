@@ -1,6 +1,6 @@
 using System;
 
-public class IncomingMessageViewModel
+public class LiveLocationMessage
 {
     public enum DeviceType
     {

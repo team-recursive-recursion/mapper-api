@@ -8,10 +8,13 @@
 
 using System;
 using System.Net.WebSockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
+using Mapper_Api.Helpers;
 using Mapper_Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -20,6 +23,7 @@ using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace Mapper_Api
@@ -36,6 +40,7 @@ namespace Mapper_Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging();
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -55,23 +60,49 @@ namespace Mapper_Api
                         new CorsAuthorizationFilterFactory(
                                 "CorsPolicy"));
             });
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            // configure jwt authentication
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
             services.AddScoped<CourseService>();
             var connectionString =
                     Configuration.GetConnectionString("MapperContext");
             services.AddEntityFrameworkNpgsql()
                     .AddDbContext<CourseDb>(options =>
                             options.UseNpgsql(connectionString));
+                            
+            services.AddScoped<LocationService>();
 
+            // get a key at https://home.openweathermap.org/api_keys
+            // todo: remove key and use app settings json
+            // string appKey = "643fa9db96b5c946db296ff59f39ed50";
+            services.AddScoped<WeatherService>();
+            services.AddTransient<CommunicationService>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            // get a key at https://home.openweathermap.org/api_keys
-            // todo: remove key and use app settings json
-            string appKey = "643fa9db96b5c946db296ff59f39ed50";
-            WeatherService weatherService = new WeatherService(appKey);
-            CommunicationService CommunicationService = new CommunicationService(weatherService);
 
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
@@ -86,13 +117,13 @@ namespace Mapper_Api
             app.UseWebSockets(webSocketOptions);
             app.UseCors("CorsPolicy");
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                         "default",
                         "{controller=Home}/{action=Index}/{id?}");
             });
-
             app.Use(async (context, next) =>
                 {
                     if (context.Request.Path == "/ws")
@@ -100,7 +131,7 @@ namespace Mapper_Api
                         if (context.WebSockets.IsWebSocketRequest)
                         {
                             WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                            await CommunicationService.SocketHandler(context, webSocket);
+                            await  context.RequestServices.GetService<CommunicationService>().SocketHandler(context, webSocket);
                         }
                         else
                         {

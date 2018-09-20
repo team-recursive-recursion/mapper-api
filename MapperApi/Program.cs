@@ -22,7 +22,6 @@ namespace Mapper_Api
         public static void Main(string[] args)
         {
             BuildWebHost(args).Run();
-            RunAsync(args).GetAwaiter().GetResult();
         }
 
         public static IWebHost BuildWebHost(string[] args)
@@ -38,17 +37,5 @@ namespace Mapper_Api
                     .Build();
         }
 
-        private static async Task RunAsync(string[] args)
-        {
-            var env =
-                    Environment.GetEnvironmentVariable(
-                            "ASPNETCORE_ENVIRONMENT");
-
-            var serviceProvider = new ServiceCollection()
-                    .AddLogging()
-                    .AddDbContext<CourseDb>()
-                    .AddScoped<CourseService>()
-                    .BuildServiceProvider();
-        }
     }
 }

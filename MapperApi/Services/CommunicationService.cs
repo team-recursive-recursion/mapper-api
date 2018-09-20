@@ -5,6 +5,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Mapper_Api.Context;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
@@ -13,8 +14,10 @@ namespace Mapper_Api.Services
     public class CommunicationService
     {
         WeatherService WeatherService;
-        public CommunicationService(WeatherService WeatherService)
+        CourseDb CourseDb;
+        public CommunicationService(WeatherService WeatherService, CourseDb CourseDB)
         {
+            this.CourseDb = CourseDB;
             this.WeatherService = WeatherService;
         }
         
@@ -36,45 +39,92 @@ namespace Mapper_Api.Services
         private async Task<ArraySegment<byte>> GenerateResponse(byte[] input)
         {
             string query = Encoding.ASCII.GetString(input);
-            var result = JsonConvert.SerializeObject(interpretInput(query));
+            var result = JsonConvert.SerializeObject(await interpretInput(query));
             return new ArraySegment<Byte>(Encoding.ASCII.GetBytes(result.ToString()));
         }
 
-        private async Task<List<Message>> interpretInput(string query)
+        private async Task<List<LiveLocationMessage>> interpretInput(string query)
         {
-            var newList = new List<Message>();
-            var inputData = JsonConvert.DeserializeObject<List<Message>>(query);
-            foreach (var item in inputData)
+            var newList = new List<LiveLocationMessage>();
+            try
             {
-                // Example input for testing note array of objects
-                // todo: make single object and no object acceptable using try catch try throw
-                //[{"MessageType":1,"Description":"My custom payload","Payload":"My message has ------- some data"}]
-                //
-                newList.Add(new Message()
+                var inputData = JsonConvert.DeserializeObject<LiveLocationMessage>(query);
+                LiveUser liveUser = null;
+                if (inputData.UserID != null)
                 {
-                    MessageType = Message.Type.INFORMATION,
-                    Description = "--------",
-                    Payload = $"{item.Payload}"
+                    liveUser = CourseDb.LiveUser.Where(c => c.UserID == inputData.UserID).SingleOrDefault();
+                }
+
+                if (liveUser == null)
+                {
+                    liveUser = new LiveUser
+                    {
+                        UserID = new Guid()
+                    };
+
+                    CourseDb.LiveUser.Add(liveUser);
+                }
+                string additionalInfo = "";
+
+                if (inputData.Location != null){
+                    CourseDb.LiveLocation.Add(new LiveLocation {
+                        UserID = liveUser.UserID, 
+                        GeoJson = inputData.Location
+                    });
+                    additionalInfo += inputData.Location;
+                }
+
+                await CourseDb.SaveChangesAsync();
+
+                if (inputData.UserID != null)
+                {
+                    newList.Add(new LiveLocationMessage()
+                    {
+                        UserID = liveUser.UserID,
+                        Device = inputData.Device,
+                        Location = @"User Sent us info already yay " + additionalInfo
+                    });
+                }
+                else
+                {
+                    if (inputData.Device == LiveLocationMessage.DeviceType.MONITOR)
+                    {
+                        newList.Add(new LiveLocationMessage()
+                        {
+                            UserID = liveUser.UserID,
+                            Device = inputData.Device,
+                            Location = " User Created as MONITOR "
+                        });
+                    }
+                    if (inputData.Device == LiveLocationMessage.DeviceType.APPLICATION)
+                    {
+                        newList.Add(new LiveLocationMessage()
+                        {
+                            UserID = liveUser.UserID,
+                            Device = inputData.Device,
+                            Location = "User Created as APPLICATION"
+                        });
+                    }
+                    if (inputData.Device == null && inputData.UserID == Guid.Empty)
+                    {
+                        newList.Add(new LiveLocationMessage()
+                        {
+                            UserID = liveUser.UserID,
+                            Location = "User Created type unknown"
+                        });
+                    }
+                }
+            }
+
+            catch (Exception e)
+            {
+                newList.Add(new LiveLocationMessage()
+                {
+                    UserID = Guid.Empty, 
+                    Location = e.Message
                 });
             }
-            newList.Add(new Message()
-            {
-                MessageType = Message.Type.INFORMATION,
-                Description = "Weather",
-                Payload = await WeatherService.GetWeatherInLatLng(10f, 10f)
-            });
             return newList;
-        }
-        public class Message
-        {
-            public enum Type
-            {
-                WARNING, INFORMATION, LOCATION
-            }
-            public Type MessageType { get; set; }
-            public string Description { get; set; }
-            public string Payload { get; set; }
-            public Message MyMessage { get; set; }
         }
     }
 }
