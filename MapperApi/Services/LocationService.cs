@@ -45,8 +45,8 @@ namespace Mapper_Api.Services
         }
 
         public async Task<IEnumerable<LiveLocation>> getRecentPlayerLocation(String courseID){
-            string query = @"(SELECT l.""UserID"", MIN(ST_AsGeoJson(ST_geomFromWKB(l.""PointRaw""))) AS 
-            PlayerLocation From public.""LiveLocation"" l WHERE 
+            string query = @"(SELECT l.""UserID"", l.""PointRaw"", 
+            MIN(l.""CreatedAt"") as CreatedAt From public.""LiveLocation"" l WHERE 
             ST_Contains(	
                     (SELECT 
                         ST_Buffer(
@@ -64,10 +64,10 @@ namespace Mapper_Api.Services
                         )),
                     ST_GeomFromWKB(l.""PointRaw"")
             ) AND (EXTRACT(MINUTE FROM  (now() - l.""CreatedAt"")) < 10)
-            GROUP BY l.""UserID""
-            ORDER BY MIN(l.""CreatedAt"")
+            GROUP BY l.""UserID"", l.""PointRaw""
+            ORDER BY CreatedAt
             )";
-            query = query.Replace("@Param" , courseID);
+            query = query.Replace("@Param1" , courseID);
 
             List<LiveLocation> list = await _db.LiveLocation.FromSql(query).ToListAsync();
             return list;

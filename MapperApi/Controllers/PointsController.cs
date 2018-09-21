@@ -53,16 +53,7 @@ namespace Mapper_Api.Controllers
 
             var points = course.Elements.Where(m =>
                     m.ElementType == Element.ElementTypes.POINT &&
-                    m.HoleId == null).Cast<Point>()
-                    .Select( c => new PointViewModel(){
-                        CourseId = c.CourseId, 
-                        ElementId = c.ElementId, 
-                        ElementType = c.ElementType, 
-                        GeoJson = c.GeoJson, 
-                        PointType = c.PointType, 
-                        Info = c.Info, 
-                        HoleId = c.HoleId
-                    });
+                    m.HoleId == null).Cast<Point>();
 
             return Ok(points);
         }
@@ -119,16 +110,7 @@ namespace Mapper_Api.Controllers
             }
 
             var points = hole.Elements.Where(m =>
-                    m.ElementType == Element.ElementTypes.POINT).Cast<Point>()
-                    .Select( c => new PointViewModel(){
-                        CourseId = c.CourseId, 
-                        ElementId = c.ElementId, 
-                        ElementType = c.ElementType, 
-                        GeoJson = c.GeoJson, 
-                        PointType = c.PointType, 
-                        Info = c.Info, 
-                        HoleId = c.HoleId
-                    });
+                    m.ElementType == Element.ElementTypes.POINT).Cast<Point>();
 
             return Ok(points);
         }
@@ -181,15 +163,6 @@ namespace Mapper_Api.Controllers
 
             var point =
                     await _context.Points.Cast<Point>()
-                    .Select( c => new PointViewModel(){
-                        CourseId = c.CourseId, 
-                        ElementId = c.ElementId, 
-                        ElementType = c.ElementType, 
-                        GeoJson = c.GeoJson, 
-                        PointType = c.PointType, 
-                        Info = c.Info, 
-                        HoleId = c.HoleId
-                    })
                     .SingleOrDefaultAsync(m =>
                             m.ElementId == id);
 
