@@ -44,7 +44,7 @@ namespace Mapper_Api.Services
             return new ArraySegment<Byte>(Encoding.ASCII.GetBytes(result.ToString()));
         }
 
-        private async Task<List<LiveLocationMessage>> interpretInput(string query)
+        public async Task<List<LiveLocationMessage>> interpretInput(string query)
         {
             var newList = new List<LiveLocationMessage>();
             try

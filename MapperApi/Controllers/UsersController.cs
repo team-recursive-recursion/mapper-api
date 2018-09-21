@@ -55,9 +55,9 @@ namespace Mapper_Api
         [AllowAnonymous]
         [Route("api/users/match")]
         [HttpPost()]
-        public IActionResult Authenticate([FromBody]User userParam)
+        public async Task<IActionResult> Authenticate([FromBody]User userParam)
         {
-            var user = _userService.Authenticate(userParam.Email, userParam.Password);
+            var user = await _userService.Authenticate(userParam.Email, userParam.Password);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });

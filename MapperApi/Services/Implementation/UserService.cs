@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Helpers;
 using Mapper_Api.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -26,9 +27,9 @@ namespace Mapper_Api.Services
             _ZoneDB = ZoneDB;
         }
 
-        public User Authenticate(string email, string password)
+        public async Task<User> Authenticate(string email, string password)
         {
-            var user = _ZoneDB.Users.SingleOrDefault(x => x.Email == email && x.Password == password);
+            var user = await _ZoneDB.Users.SingleOrDefaultAsync(x => x.Email == email && x.Password == password);
 
             // return null if user not found
             if (user == null)
