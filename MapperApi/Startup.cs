@@ -25,6 +25,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Mapper_Api
 {
@@ -53,6 +54,7 @@ namespace Mapper_Api
             {
                 options.SerializerSettings.ReferenceLoopHandling =
                         ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             });
             services.Configure<MvcOptions>(options =>
             {
@@ -83,22 +85,30 @@ namespace Mapper_Api
                     ValidateAudience = false
                 };
             });
-            services.AddScoped<CourseService>();
+
             var connectionString =
                     Configuration.GetConnectionString("MapperContext");
+
             services.AddEntityFrameworkNpgsql()
-                    .AddDbContext<CourseDb>(options =>
+                    .AddDbContext<ZoneDB>(options =>
                             options.UseNpgsql(connectionString));
                             
             services.AddScoped<LocationService>();
 
-            // get a key at https://home.openweathermap.org/api_keys
-            // todo: remove key and use app settings json
-            // string appKey = "643fa9db96b5c946db296ff59f39ed50";
-            services.AddScoped<WeatherService>();
             services.AddTransient<CommunicationService>();
+            services.AddScoped<IWeatherService, WeatherService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IZoneService, ZoneService>();
+            services.AddScoped<IElementService, ElementService>();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Zone api", Version = "v1" });
+            });
+
         }
+        // get a key at https://home.openweathermap.org/api_keys
+        // todo: remove key and use app settings json
+        // string appKey = "643fa9db96b5c946db296ff59f39ed50";
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -124,6 +134,11 @@ namespace Mapper_Api
                         "default",
                         "{controller=Home}/{action=Index}/{id?}");
             });
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Zoning API");
+            });
             app.Use(async (context, next) =>
                 {
                     if (context.Request.Path == "/ws")
@@ -131,7 +146,7 @@ namespace Mapper_Api
                         if (context.WebSockets.IsWebSocketRequest)
                         {
                             WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                            await  context.RequestServices.GetService<CommunicationService>().SocketHandler(context, webSocket);
+                            await context.RequestServices.GetService<CommunicationService>().SocketHandler(context, webSocket);
                         }
                         else
                         {

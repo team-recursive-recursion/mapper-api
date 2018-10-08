@@ -4,34 +4,32 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using Mapper_Api.Context;
 using Mapper_Api.Helpers;
 using Mapper_Api.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Mapper_Api.Services
 {
-    public interface IUserService
-    {
-        User Authenticate(string username, string password);
-    }
 
     public class UserService : IUserService
     {
         // users hardcoded for simplicity, store in a db with hashed passwords in production applications
         private readonly AppSettings _appSettings;
-        private  CourseDb _courseDb;
+        private  ZoneDB _ZoneDB;
 
-        public UserService(IOptions<AppSettings> appSettings, CourseDb courseDb)
+        public UserService(IOptions<AppSettings> appSettings, ZoneDB ZoneDB)
         {
             _appSettings = appSettings.Value;
-            _courseDb = courseDb;
+            _ZoneDB = ZoneDB;
         }
 
-        public User Authenticate(string email, string password)
+        public async Task<User> Authenticate(string email, string password)
         {
-            var user = _courseDb.Users.SingleOrDefault(x => x.Email == email && x.Password == password);
+            var user = await _ZoneDB.Users.SingleOrDefaultAsync(x => x.Email == email && x.Password == password);
 
             // return null if user not found
             if (user == null)
@@ -58,5 +56,19 @@ namespace Mapper_Api.Services
 
             return user;
         }
+
+        public async Task<User> CreateUserAsync( User user ){
+            if (!_ZoneDB.Users.Any( u => u.Email == user.Email)) {
+                user.UserID = Guid.NewGuid();
+                _ZoneDB.Add(user);
+                await _ZoneDB.SaveChangesAsync();
+                user.Password = null;
+                user.Email = null;
+                return user;
+            } else {
+                throw new ArgumentException("User Email should be unique");
+            }
+        }
+
     }
 }
