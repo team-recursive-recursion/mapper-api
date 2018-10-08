@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace Mapper_Api.Services
 {
-    public class CommunicationService : ICommunicationService
+    public partial class CommunicationService : ICommunicationService
     {
         IWeatherService WeatherService;
         ZoneDB ZoneDB;
@@ -21,6 +21,7 @@ namespace Mapper_Api.Services
             this.ZoneDB = ZoneDB;
             this.WeatherService = WeatherService;
         }
+
 
         public async Task SocketHandler(HttpContext context, WebSocket webSocket)
         {
@@ -44,29 +45,22 @@ namespace Mapper_Api.Services
             return new ArraySegment<Byte>(Encoding.ASCII.GetBytes(result.ToString()));
         }
 
-        public async Task<List<LiveLocationMessage>> interpretInput(string query)
+        public async Task<ReturnMessage> interpretInput(string query)
         {
             try
             {
                 var inputData = JsonConvert.DeserializeObject<LiveLocationMessage>(query);
                 LiveUser liveUser = null;
-                if (inputData.UserID != null)
-                {
-                    liveUser = ZoneDB.LiveUser.Where(c => c.UserID == inputData.UserID).SingleOrDefault();
-                }
 
-                if ((liveUser = CourseDb.LiveUser
+                if ((liveUser = ZoneDB.LiveUser
                         .Where(c => c.UserID == inputData.UserID).SingleOrDefault()) == null)
                 {
                     liveUser = new LiveUser()
                     {
                         UserID = Guid.NewGuid()
                     };
-
                     ZoneDB.LiveUser.Add(liveUser);
                 }
-                string additionalInfo = "";
-
                 if (inputData.Location != null)
                 {
                     ZoneDB.LiveLocation.Add(new LiveLocation
@@ -74,38 +68,16 @@ namespace Mapper_Api.Services
                         UserID = liveUser.UserID,
                         GeoJson = inputData.Location
                     });
-                    additionalInfo += inputData.Location;
                 }
-
                 await ZoneDB.SaveChangesAsync();
-
-                if (inputData.UserID != null)
-                {
-                    CourseDb.LiveLocation.Add(new LiveLocation
-                    {
-                        UserID = liveUser.UserID,
-                        Location = @"User Sent us info already yay " + additionalInfo
-                    });
-                }
-                else
-                {
-                    if (inputData.UserID == Guid.Empty)
-                    {
-                        newList.Add(new LiveLocationMessage()
-                        {
-                            UserID = liveUser.UserID,
-                            Location = "User Created type unknown"
-                        });
-                    }
-                }
+                return new ReturnMessage(){
+                        Weather = "User string", 
+                        UserID = liveUser.UserID
+                    };
             }
             catch (Exception e)
             {
-                newList.Add(new LiveLocationMessage()
-                {
-                    UserID = Guid.Empty,
-                    Location = e.Message
-                });
+                throw new ArgumentException("Invalid user id or location");
             }
         }
     }

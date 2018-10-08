@@ -22,14 +22,14 @@ using NpgsqlTypes;
 namespace Mapper_Api.Services
 {
     public class LocationService {
-        private readonly CourseDb _db;
+        private readonly ZoneDB _db;
 
-        public LocationService(CourseDb courseDb)
+        public LocationService(ZoneDB courseDb)
         {
             _db = courseDb;
         }
 
-        public async Task<IEnumerable<Course>> sortCourseByPosition(Double? lat, Double? lon, int limit){
+        public async Task<IEnumerable<Zone>> sortCourseByPosition(Double? lat, Double? lon, int limit){
             string query = @"SELECT cs.* FROM public.""Courses"" cs LEFT JOIN 
             (SELECT *, ST_DistanceSphere(ST_geomFromWkb((el.""PolygonRaw"")), 
              ST_geomFromGeoJson('{{""type"":""Point"",""coordinates"":[ Param1 , Param2 ]}}'))
@@ -40,7 +40,7 @@ namespace Mapper_Api.Services
             query = query.Replace("Param2", lon.ToString());
             query = query.Replace("Param3", limit.ToString());
             
-            List<Course> list = await _db.Courses.FromSql(query).ToListAsync();
+            List<Zone> list = await _db.Zones.FromSql(query).ToListAsync();
             return list;
         }
 

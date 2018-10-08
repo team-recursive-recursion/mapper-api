@@ -60,9 +60,9 @@ namespace TestSuite.API.CousreService
             res.Add(liveMessage);
             // Arrange
             var mockZoneService = new Mock<ICommunicationService>();
-            mockZoneService.Setup(service =>
-                service.interpretInput(It.IsAny<string>())
-                ).ReturnsAsync(res);
+            // mockZoneService.Setup(service =>
+            //     service.interpretInput(It.IsAny<string>())
+            //     ).ReturnsAsync(res);
 
             // Act
             var result = await CommunicationService.interpretInput(query);
