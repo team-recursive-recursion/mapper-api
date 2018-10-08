@@ -11,8 +11,11 @@ namespace Mapper_Api.Models
         [Required] public string Name { get; set; }
         [Required] public string Surname { get; set; }
         [Required] public string Password { get; set; }
+
+        // Optional
         public string Token { get; internal set; }
 
-        public List<Course> Courses { get; set; }
+        // Relations
+        public List<Zone> Zones { get; set; }
     }
 }

@@ -6,20 +6,22 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Mapper_Api.Context;
+using Mapper_Api.Models;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
 namespace Mapper_Api.Services
 {
-    public partial class CommunicationService
+    public partial class CommunicationService : ICommunicationService
     {
-        WeatherService WeatherService;
-        CourseDb CourseDb;
-        public CommunicationService(WeatherService WeatherService, CourseDb CourseDB)
+        IWeatherService WeatherService;
+        ZoneDB ZoneDB;
+        public CommunicationService(IWeatherService WeatherService, ZoneDB ZoneDB)
         {
-            this.CourseDb = CourseDB;
+            this.ZoneDB = ZoneDB;
             this.WeatherService = WeatherService;
         }
+
 
         public async Task SocketHandler(HttpContext context, WebSocket webSocket)
         {
@@ -43,32 +45,31 @@ namespace Mapper_Api.Services
             return new ArraySegment<Byte>(Encoding.ASCII.GetBytes(result.ToString()));
         }
 
-        private async Task<ReturnMessage> interpretInput(string query)
+        public async Task<ReturnMessage> interpretInput(string query)
         {
             try
             {
                 var inputData = JsonConvert.DeserializeObject<LiveLocationMessage>(query);
                 LiveUser liveUser = null;
 
-                if ((liveUser = CourseDb.LiveUser
+                if ((liveUser = ZoneDB.LiveUser
                         .Where(c => c.UserID == inputData.UserID).SingleOrDefault()) == null)
                 {
                     liveUser = new LiveUser()
                     {
                         UserID = Guid.NewGuid()
                     };
-                    CourseDb.LiveUser.Add(liveUser);
+                    ZoneDB.LiveUser.Add(liveUser);
                 }
                 if (inputData.Location != null)
                 {
-                    CourseDb.LiveLocation.Add(new LiveLocation
+                    ZoneDB.LiveLocation.Add(new LiveLocation
                     {
                         UserID = liveUser.UserID,
                         GeoJson = inputData.Location
                     });
                 }
-                await CourseDb.SaveChangesAsync();
-             
+                await ZoneDB.SaveChangesAsync();
                 return new ReturnMessage(){
                         Weather = "User string", 
                         UserID = liveUser.UserID
@@ -76,7 +77,7 @@ namespace Mapper_Api.Services
             }
             catch (Exception e)
             {
-             throw new ArgumentException("Invalid user id or location");
+                throw new ArgumentException("Invalid user id or location");
             }
         }
     }
