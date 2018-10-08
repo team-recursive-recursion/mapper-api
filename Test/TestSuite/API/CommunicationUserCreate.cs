@@ -13,11 +13,8 @@ namespace TestSuite.API.CousreService
     public class CommunicationUser : BaseTest
     {
 
-        [Theory(DisplayName = "Get_retruns_OkHoles_and_Hole")]
-        [InlineData(3)]
-        [InlineData(5)]
-        [InlineData(6)]
-        public async void Get_retruns_Success_hole(int input)
+        [Fact(DisplayName = "Get_retruns_OkHoles_and_Hole")]
+        public async void Get_retruns_Success_hole()
         {
             LiveLocationMessage zone = new LiveLocationMessage()
             {
@@ -35,14 +32,7 @@ namespace TestSuite.API.CousreService
             var res = new List<LiveLocationMessage>();
             res.Add(liveMessage);
             // Arrange
-            var mockZoneService = new Mock<ICommunicationService>();
-            mockZoneService.Setup(service =>
-                service.interpretInput(It.IsAny<string>())
-                ).ReturnsAsync(res);
-
-            // Act
             var result = await CommunicationService.interpretInput(query);
-
             // Assert
             var okObjectResult = Assert.IsType<List<LiveLocationMessage>>(result);
         }

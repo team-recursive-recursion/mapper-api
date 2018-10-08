@@ -25,6 +25,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Mapper_Api
 {
@@ -97,6 +98,11 @@ namespace Mapper_Api
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IZoneService, ZoneService>();
             services.AddScoped<IElementService, ElementService>();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Zone api", Version = "v1" });
+            });
+
         }
         // get a key at https://home.openweathermap.org/api_keys
         // todo: remove key and use app settings json
@@ -125,6 +131,11 @@ namespace Mapper_Api
                 routes.MapRoute(
                         "default",
                         "{controller=Home}/{action=Index}/{id?}");
+            });
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
             app.Use(async (context, next) =>
                 {

@@ -63,11 +63,8 @@ namespace TestSuite.API.CousreService
                 Assert.IsType<Zone>(okObjectResult.Value);
         }
 
-        [Theory(DisplayName = "Get_retruns_OkHoles_and_Hole")]
-        [InlineData(3)]
-        [InlineData(5)]
-        [InlineData(6)]
-        public async void Get_retruns_Fail_hole(int input)
+        [Fact(DisplayName = "Get_retruns_OkHoles_and_Hole")]
+        public async void Get_retruns_Fail_hole()
         {
             Zone zone = new Zone()
             {
