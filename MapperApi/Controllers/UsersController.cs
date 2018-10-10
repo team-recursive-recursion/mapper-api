@@ -26,19 +26,11 @@ namespace Mapper_Api
         private IUserService _userService;
         private readonly IZoneService _zoneService;
         private LocationService _locationService;
-   
-        // public UsersController(IUserService userService, IZoneService zoneServiceI, LocationService locationService)
-        // {
-        //     _zoneService = zoneServiceI;
-        //     _userService = userService;
-        //     _locationService =  locationService;
-        // }
-
-        public UsersController(IUserService userService, IZoneService zoneServiceI)
+        public UsersController(IUserService userService, IZoneService zoneServiceI, LocationService locationService)
         {
             _zoneService = zoneServiceI;
             _userService = userService;
-            _locationService =  null;
+            _locationService =  locationService;
         }
 
         // POST: api/users
@@ -58,21 +50,21 @@ namespace Mapper_Api
             {
                 return BadRequest(new { error = e.Message });
             }
-            return CreatedAtAction("Create", new { id = user.UserID }, user);
+            return Ok(user);
         }
 
 
 // GET: api/courses
-        [Route("api/courses/test/{CourseID}")]
-        [HttpGet]
-        public async Task<IEnumerable<LiveLocation>> getLiveLocation([FromRoute]String CourseID)
-        {
-            if (_locationService != null){
-                return await _locationService.getRecentPlayerLocation(CourseID); //TODO test this
-            }
-            return null;
+        // [Route("api/courses/test/{CourseID}")]
+        // [HttpGet]
+        // public async Task<IEnumerable<LiveLocation>> getLiveLocation([FromRoute]String CourseID)
+        // {
+        //     if (_locationService != null){
+        //         return await _locationService.getRecentPlayerLocation(CourseID); //TODO test this
+        //     }
+        //     return null;
             
-        }
+        // }
 
         [AllowAnonymous]
         [Route("api/users/match")]

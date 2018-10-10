@@ -87,8 +87,7 @@ namespace Mapper_Api.Controllers
         {
             try
             {
-                return CreatedAtRoute("api/elements/{ElementID}",
-                    await elementService.CreateElementAsync(zone, element));
+                return Ok(await elementService.CreateElementAsync(zone, element));
             }
             catch (ArgumentException e)
             {
@@ -106,8 +105,7 @@ namespace Mapper_Api.Controllers
         {
             try
             {
-                return CreatedAtRoute("api/elements/{ElementID}",
-                    await elementService.CreateElementAsync(zone, element));
+                return Ok(await elementService.CreateElementAsync(zone, element));
             }
             catch (ArgumentException e)
             {

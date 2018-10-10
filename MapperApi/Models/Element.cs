@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Mapper_Api.Models
 {
-    public abstract class Element
+    public class Element
     {
         public enum ElementTypes
         {

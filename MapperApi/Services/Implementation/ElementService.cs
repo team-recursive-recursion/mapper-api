@@ -51,8 +51,10 @@ namespace Mapper_Api.Services
 
         public async Task<Element> DeleteElementAsync(Element element)
         {
-            if (context.Zones.Any(z => z.ZoneID == element.ZoneID))
+            if (context.Elements.Any(z => z.ElementId == element.ElementId))
             {
+                element = await context.Elements.Where(z => z.ElementId == element.ElementId)
+                        .FirstOrDefaultAsync();
                 try
                 {
                     context.Elements.Remove(element);
