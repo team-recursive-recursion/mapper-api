@@ -14,14 +14,24 @@ namespace Mapper_Api.Models
             POINT = 1
         }
 
-        [Required] [Key] public Guid? ElementId { get; set; }
-        [Required] public Guid? ZoneID { get; set; }
-        [Required] public Zone Zone { get; set; }
-        [Required] public ElementTypes? ElementType { get; set; }
-        [NonSerialized]
-        [Required] public byte[] Raw;
+        [Required] [Key] 
+        public Guid? ElementId { get; set; }
+
+        [Required] 
+        public Guid? ZoneID { get; set; }
+
+        [Required] 
+        public Zone Zone { get; set; }
+
+        [Required] 
+        public ElementTypes? ElementType { get; set; }
+
+        [Required] 
+        public byte[] Raw {get; set;}
+
         [Required]
         public int? ClassType {get; set;}
+
         [NotMapped]
         public virtual string GeoJson {get; set;}
         // Optional
