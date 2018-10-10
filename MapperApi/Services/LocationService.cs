@@ -45,27 +45,27 @@ namespace Mapper_Api.Services
         }
 
         public async Task<IEnumerable<LiveLocation>> getRecentPlayerLocation(String courseID){
-            string query = @"(SELECT l.""UserID"", l.""PointRaw"", 
-            MIN(l.""CreatedAt"") as CreatedAt From public.""LiveLocation"" l WHERE 
-            ST_Contains(	
-                    (SELECT 
-                        ST_Buffer(
-                            (SELECT (ST_Centroid(ST_Union(ST_GeomFromWKB(ie.""PointRaw"")))) FROM
-                                public.""Elements"" ie WHERE ie.""CourseId"" = '@Param1'),
-                            (SELECT max(ST_DistanceSphere(
-                                ST_geomFromWKB(e.""PolygonRaw""), 
-                                (SELECT (ST_Centroid(ST_Union(ST_GeomFromWKB(ie.""PointRaw"")))) FROM 
-                                public.""Elements"" ie
-                                WHERE ie.""CourseId"" = '@Param1')
-                            ))
-                            FROM public.""Elements"" e 
-                            WHERE e.""CourseId"" = '@Param1')/1000,
-                        'quad_segs=8'
-                        )),
-                    ST_GeomFromWKB(l.""PointRaw"")
-            ) AND (EXTRACT(MINUTE FROM  (now() - l.""CreatedAt"")) < 10)
-            GROUP BY l.""UserID"", l.""PointRaw""
-            ORDER BY CreatedAt
+            string query = @"(SELECT l.""UserID"", FIRST(l.""PointRaw""), MAX(l.""CreatedAt"") 
+            AS CreatedAt From public.""LiveLocation"" l Where ST_Contains(	
+	        (SELECT ST_Buffer(
+					(SELECT (ST_Centroid(ST_Union(ST_GeomFromWKB(ie.""PointRaw"")))) 
+                    FROM public.""Elements"" ie
+					where ie.""CourseId"" = '@Param1'),
+
+					(SELECT max(ST_DistanceSphere(
+							ST_geomFromWKB(e.""PolygonRaw""), 
+							(SELECT (ST_Centroid(ST_Union(ST_GeomFromWKB(ie.""PointRaw"")))) 
+                            FROM public.""Elements"" ie
+							where ie.""CourseId"" = '@Param1')
+						))
+						FROM public.""Elements"" e 
+						WHERE e.""CourseId"" = '@Param1')/1000,
+						'quad_segs=8' --Form
+		    )),
+		    ST_GeomFromWKB(l.""PointRaw"")
+	        ) AND (EXTRACT(MINUTE FROM  (now() - l.""CreatedAt"")) < 10) 
+ 	        GROUP BY l.""UserID""
+ 	        ORDER BY CreatedAt 
             )";
             query = query.Replace("@Param1" , courseID);
 
