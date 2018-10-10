@@ -1,5 +1,6 @@
 
 using System;
+using Mapper_Api.Models;
 
 public class PlayerLocation
 {

@@ -55,16 +55,16 @@ namespace Mapper_Api
 
 
 // GET: api/courses
-        // [Route("api/courses/test/{CourseID}")]
-        // [HttpGet]
-        // public async Task<IEnumerable<LiveLocation>> getLiveLocation([FromRoute]String CourseID)
-        // {
-        //     if (_locationService != null){
-        //         return await _locationService.getRecentPlayerLocation(CourseID); //TODO test this
-        //     }
-        //     return null;
+        [Route("api/liveLoc/{CourseID}")]
+        [HttpGet]
+        public async Task<IEnumerable<LiveLocation>> getLiveLocation([FromRoute]String CourseID)
+        {
+            if (_locationService != null){
+                return await _locationService.getRecentPlayerLocation(CourseID); //TODO test this
+            }
+            return null;
             
-        // }
+        }
 
         [AllowAnonymous]
         [Route("api/users/match")]
