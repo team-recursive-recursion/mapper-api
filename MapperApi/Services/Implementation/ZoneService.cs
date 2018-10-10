@@ -77,10 +77,12 @@ namespace Mapper_Api.Services
             {
                 throw new ArgumentException("Zone does not exist");
             }
-            return await context.Zones.Where(z => zone.ZoneID == z.ZoneID)
+            zone = await context.Zones.Where(z => zone.ZoneID == z.ZoneID)
             .Include(ele => ele.Elements)
             .Include(z => z.InnerZones)
-            .ThenInclude(el => el.Elements).FirstOrDefaultAsync();
+            .ThenInclude(el => el.Elements)
+            .FirstOrDefaultAsync();
+            return zone;
         }
 
         public async Task UpdateZoneAsync(Zone zone)
