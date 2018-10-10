@@ -27,12 +27,12 @@ namespace Mapper_Api
         private readonly IZoneService _zoneService;
         private LocationService _locationService;
    
-        public UsersController(IUserService userService, IZoneService zoneServiceI, LocationService locationService)
-        {
-            _zoneService = zoneServiceI;
-            _userService = userService;
-            _locationService =  locationService;
-        }
+        // public UsersController(IUserService userService, IZoneService zoneServiceI, LocationService locationService)
+        // {
+        //     _zoneService = zoneServiceI;
+        //     _userService = userService;
+        //     _locationService =  locationService;
+        // }
 
         public UsersController(IUserService userService, IZoneService zoneServiceI)
         {

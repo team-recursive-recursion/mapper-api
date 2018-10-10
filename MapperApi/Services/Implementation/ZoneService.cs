@@ -80,7 +80,6 @@ namespace Mapper_Api.Services
             zone = await context.Zones.Where(z => zone.ZoneID == z.ZoneID)
             .Include(ele => ele.Elements)
             .Include(z => z.InnerZones)
-            .ThenInclude(el => el.Elements)
             .FirstOrDefaultAsync();
             return zone;
         }

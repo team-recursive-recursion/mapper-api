@@ -56,12 +56,12 @@ namespace Mapper_Api
                         ReferenceLoopHandling.Ignore;
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             });
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add(
-                        new CorsAuthorizationFilterFactory(
-                                "CorsPolicy"));
-            });
+            // services.Configure<MvcOptions>(options =>
+            // {
+            //     options.Filters.Add(
+            //             new CorsAuthorizationFilterFactory(
+            //                     "CorsPolicy"));
+            // });
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
 
