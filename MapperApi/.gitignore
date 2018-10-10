@@ -36,5 +36,4 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
-MapperApi/Migrations/
 COS301.code-workspace
