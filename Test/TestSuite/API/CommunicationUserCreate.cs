@@ -7,6 +7,7 @@ using Mapper_Api.Services;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
+using static Mapper_Api.Services.CommunicationService;
 
 namespace TestSuite.API.CousreService
 {
@@ -34,7 +35,7 @@ namespace TestSuite.API.CousreService
             // Arrange
             var result = await CommunicationService.interpretInput(query);
             // Assert
-            var okObjectResult = Assert.IsType<List<LiveLocationMessage>>(result);
+            var okObjectResult = Assert.IsType<ReturnMessage>(result);
         }
 
         [Theory(DisplayName = "Get_retruns_OkHoles_and_Hole")]
@@ -70,7 +71,7 @@ namespace TestSuite.API.CousreService
             var result2 = await CommunicationService.interpretInput(query);
 
             // Assert
-            var okObjectResult = Assert.IsType<List<LiveLocationMessage>>(result);
+            var okObjectResult = Assert.IsType<ReturnMessage>(result);
         }
 
     }

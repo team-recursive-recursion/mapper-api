@@ -26,12 +26,19 @@ namespace Mapper_Api
         private IUserService _userService;
         private readonly IZoneService _zoneService;
         private LocationService _locationService;
-
+   
         public UsersController(IUserService userService, IZoneService zoneServiceI, LocationService locationService)
         {
             _zoneService = zoneServiceI;
             _userService = userService;
             _locationService =  locationService;
+        }
+
+        public UsersController(IUserService userService, IZoneService zoneServiceI)
+        {
+            _zoneService = zoneServiceI;
+            _userService = userService;
+            _locationService =  null;
         }
 
         // POST: api/users
@@ -60,7 +67,11 @@ namespace Mapper_Api
         [HttpGet]
         public async Task<IEnumerable<LiveLocation>> getLiveLocation([FromRoute]String CourseID)
         {
-            return await _locationService.getRecentPlayerLocation(CourseID); //TODO test this
+            if (_locationService != null){
+                return await _locationService.getRecentPlayerLocation(CourseID); //TODO test this
+            }
+            return null;
+            
         }
 
         [AllowAnonymous]
