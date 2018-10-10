@@ -31,10 +31,10 @@ namespace Mapper_Api.Services
 
         public async Task<IEnumerable<Zone>> sortCourseByPosition(Double? lat, Double? lon, int limit){
             string query = @"SELECT cs.* FROM public.""Courses"" cs LEFT JOIN 
-            (SELECT *, ST_DistanceSphere(ST_geomFromWkb((el.""PolygonRaw"")), 
-             ST_geomFromGeoJson('{{""type"":""Point"",""coordinates"":[ Param1 , Param2 ]}}'))
-             FROM public.""Elements"" AS el) AS e ON e.""CourseId"" = cs.""CourseId""   
-              GROUP BY cs.  ""CourseId"" ORDER BY MIN(e.""st_distancesphere"") LIMIT Param3";
+                    (SELECT *, ST_DistanceSphere(ST_geomFromWkb((el.""PolygonRaw"")), 
+                    ST_geomFromGeoJson('{{""type"":""Point"",""coordinates"":[ Param1 , Param2 ]}}'))
+                    FROM public.""Elements"" AS el) AS e ON e.""CourseId"" = cs.""CourseId""   
+                    GROUP BY cs.  ""CourseId"" ORDER BY MIN(e.""st_distancesphere"") LIMIT Param3";
 
             query = query.Replace("Param1", lat.ToString());
             query = query.Replace("Param2", lon.ToString());
