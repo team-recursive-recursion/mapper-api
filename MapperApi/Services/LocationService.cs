@@ -45,21 +45,21 @@ namespace Mapper_Api.Services
         }
 
         public async Task<IEnumerable<LiveLocation>> getRecentPlayerLocation(String courseID){
-            string query = @"(SELECT l.""UserID"", FIRST(l.""PointRaw""), MAX(l.""CreatedAt"") 
+            string query = @"(SELECT l.""UserID"", FIRST(l.""PointRaw"" Order by l.""CreatedAt"" DESC) AS PointRaw, MAX(l.""CreatedAt"") 
             AS CreatedAt From public.""LiveLocation"" l Where ST_Contains(	
 	        (SELECT ST_Buffer(
-					(SELECT (ST_Centroid(ST_Union(ST_GeomFromWKB(ie.""PointRaw"")))) 
+					(SELECT (ST_Centroid(ST_Union(ST_GeomFromWKB(ie.""Raw"")))) 
                     FROM public.""Elements"" ie
-					where ie.""CourseId"" = '@Param1'),
+					where ie.""ZoneID"" = '@Param1'),
 
 					(SELECT max(ST_DistanceSphere(
-							ST_geomFromWKB(e.""PolygonRaw""), 
-							(SELECT (ST_Centroid(ST_Union(ST_GeomFromWKB(ie.""PointRaw"")))) 
+							ST_geomFromWKB(e.""Raw""), 
+							(SELECT (ST_Centroid(ST_Union(ST_GeomFromWKB(ie.""Raw"")))) 
                             FROM public.""Elements"" ie
-							where ie.""CourseId"" = '@Param1')
+							where ie.""ZoneID"" = '@Param1')
 						))
 						FROM public.""Elements"" e 
-						WHERE e.""CourseId"" = '@Param1')/1000,
+						WHERE e.""ZoneID"" = '@Param1')/1000,
 						'quad_segs=8' --Form
 		    )),
 		    ST_GeomFromWKB(l.""PointRaw"")
