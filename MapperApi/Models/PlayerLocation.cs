@@ -1,4 +1,12 @@
 
+
+/***
+ * Filename: ElementsController.cs
+ * Author  : Eben du Toit
+ * Class   : PlayerLocation
+ *
+ *      Entity model for PlayerLocation
+ ***/
 using System;
 using Mapper_Api.Models;
 

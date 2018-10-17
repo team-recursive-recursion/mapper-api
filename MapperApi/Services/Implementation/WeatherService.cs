@@ -1,3 +1,11 @@
+/***
+ * Filename: ElementsController.cs
+ * Author  : Eben du Toit
+ * Class   : UserService
+ *
+ *      Service for weather information Implementation not used in app but working
+ ***/
+
 using System;
 using System.Net.Http;
 using System.Net.WebSockets;
@@ -21,11 +29,6 @@ namespace Mapper_Api.Services
 
         public async Task<string> GetWeatherInLatLng(double Lat, double Lng)
         {
-            // todo override
-            double
-            lat = -25.768926,
-            lng = 28.242805;
-
             string baseUrl = $"http://api.openweathermap.org/data/2.5/weather?lat={lat.ToString()}&lon={lng.ToString()}&appid={this.AppKey}";
             using (HttpClient client = new HttpClient())
             using (HttpResponseMessage res = await client.GetAsync(baseUrl))

@@ -1,4 +1,12 @@
 
+/***
+ * Filename: ElementsController.cs
+ * Author  : Eben du Toit
+ * Class   : LiveUser,LiveLocation 
+ *
+ *      Entity model for Live location.
+ ***/
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

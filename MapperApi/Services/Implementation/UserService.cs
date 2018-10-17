@@ -1,3 +1,11 @@
+/***
+ * Filename: ElementsController.cs
+ * Author  : Eben du Toit
+ * Class   : UserService
+ *
+ *      Service User management and authentication
+ ***/
+
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -50,8 +58,6 @@ namespace Mapper_Api.Services
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             user.Token = tokenHandler.WriteToken(token);
-
-            // remove password before returning
             user.Password = null;
 
             return user;

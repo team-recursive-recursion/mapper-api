@@ -1,4 +1,12 @@
-﻿using System;
+﻿/***
+ * Filename: ElementsController.cs
+ * Author  : Eben du Toit
+ * Class   : Element
+ *
+ *      Entity model for Element.
+ ***/
+
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using GeoJSON.Net.Contrib.Wkb;

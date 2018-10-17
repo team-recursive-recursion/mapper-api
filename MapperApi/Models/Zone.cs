@@ -1,3 +1,10 @@
+/***
+ * Filename: ElementsController.cs
+ * Author  : Eben du Toit
+ * Class   : Zone
+ *
+ *      Entity model for Zone
+ ***/
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

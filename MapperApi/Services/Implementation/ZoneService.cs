@@ -1,3 +1,11 @@
+/***
+ * Filename: ElementsController.cs
+ * Author  : Eben du Toit
+ * Class   : WeatherService
+ *
+ *      Service for elements.
+ ***/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

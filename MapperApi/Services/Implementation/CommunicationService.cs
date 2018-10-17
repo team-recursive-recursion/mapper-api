@@ -1,3 +1,11 @@
+/***
+ * Filename: ElementsController.cs
+ * Author  : Eben du Toit
+ * Class   : CommunicationService
+ *
+ *      API endpoint for elements.
+ ***/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,7 +79,7 @@ namespace Mapper_Api.Services
                 }
                 await ZoneDB.SaveChangesAsync();
                 return new ReturnMessage(){
-                        Weather = "User string", 
+                        Weather = "In development", 
                         UserID = liveUser.UserID
                     };
             }

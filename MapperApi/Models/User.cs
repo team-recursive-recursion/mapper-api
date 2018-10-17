@@ -1,4 +1,11 @@
-﻿using System;
+﻿/***
+ * Filename: ElementsController.cs
+ * Author  : Eben du Toit
+ * Class   : User
+ *
+ *      Entity model for User
+ ***/
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
