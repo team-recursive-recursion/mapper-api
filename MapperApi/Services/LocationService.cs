@@ -22,25 +22,54 @@ using NpgsqlTypes;
 namespace Mapper_Api.Services
 {
     public class LocationService {
-        private readonly CourseDb _db;
+        private readonly ZoneDB _db;
 
-        public LocationService(CourseDb courseDb)
+        public LocationService(ZoneDB courseDb)
         {
             _db = courseDb;
         }
 
-        public async Task<IEnumerable<Course>> sortCourseByPosition(Double? lat, Double? lon, int limit){
+        public async Task<IEnumerable<Zone>> sortCourseByPosition(Double? lat, Double? lon, int limit){
             string query = @"SELECT cs.* FROM public.""Courses"" cs LEFT JOIN 
-            (SELECT *, ST_DistanceSphere(ST_geomFromWkb((el.""PolygonRaw"")), 
-             ST_geomFromGeoJson('{{""type"":""Point"",""coordinates"":[ Param1 , Param2 ]}}'))
-             FROM public.""Elements"" AS el) AS e ON e.""CourseId"" = cs.""CourseId""   
-              GROUP BY cs.  ""CourseId"" ORDER BY MIN(e.""st_distancesphere"") LIMIT Param3";
+                    (SELECT *, ST_DistanceSphere(ST_geomFromWkb((el.""PolygonRaw"")), 
+                    ST_geomFromGeoJson('{{""type"":""Point"",""coordinates"":[ Param1 , Param2 ]}}'))
+                    FROM public.""Elements"" AS el) AS e ON e.""CourseId"" = cs.""CourseId""   
+                    GROUP BY cs.  ""CourseId"" ORDER BY MIN(e.""st_distancesphere"") LIMIT Param3";
 
             query = query.Replace("Param1", lat.ToString());
             query = query.Replace("Param2", lon.ToString());
             query = query.Replace("Param3", limit.ToString());
             
-            List<Course> list = await _db.Courses.FromSql(query).ToListAsync();
+            List<Zone> list = await _db.Zones.FromSql(query).ToListAsync();
+            return list;
+        }
+
+        public async Task<IEnumerable<LiveLocation>> getRecentPlayerLocation(String courseID){
+            string query = @"(SELECT l.""UserID"", FIRST(l.""PointRaw"" Order by l.""CreatedAt"" DESC) AS PointRaw, MAX(l.""CreatedAt"") 
+            AS CreatedAt From public.""LiveLocation"" l Where ST_Contains(	
+	        (SELECT ST_Buffer(
+					(SELECT (ST_Centroid(ST_Union(ST_GeomFromWKB(ie.""Raw"")))) 
+                    FROM public.""Elements"" ie
+					where ie.""ZoneID"" = '@Param1'),
+
+					(SELECT max(ST_DistanceSphere(
+							ST_geomFromWKB(e.""Raw""), 
+							(SELECT (ST_Centroid(ST_Union(ST_GeomFromWKB(ie.""Raw"")))) 
+                            FROM public.""Elements"" ie
+							where ie.""ZoneID"" = '@Param1')
+						))
+						FROM public.""Elements"" e 
+						WHERE e.""ZoneID"" = '@Param1')/1000,
+						'quad_segs=8' --Form
+		    )),
+		    ST_GeomFromWKB(l.""PointRaw"")
+	        ) AND (EXTRACT(MINUTE FROM  (now() - l.""CreatedAt"")) < 10) 
+ 	        GROUP BY l.""UserID""
+ 	        ORDER BY CreatedAt 
+            )";
+            query = query.Replace("@Param1" , courseID);
+
+            List<LiveLocation> list = await _db.LiveLocation.FromSql(query).ToListAsync();
             return list;
         }
         

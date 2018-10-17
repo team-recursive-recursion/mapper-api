@@ -8,12 +8,10 @@ namespace Mapper_Api.ViewModels
 
     public class ElementViewModel
     {
-        public Guid ElementId { get; set; }
+        public Guid ElementID { get; set; }
         public Element.ElementTypes ElementType { get; set; }
-        public Guid? HoleId { get; set; }
-        public Guid CourseId { get; set; }
+        public Guid ZoneID { get; set; }
 
-     
     }
 
 }
